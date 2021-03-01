@@ -1,19 +1,10 @@
-image: docker:latest
-
-variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
-
-services:
-  - docker:dind
+image: python:3.7-slim-buster
 
 stages:
   - style
   - test
 
 style:
-  image: python:3.7-alpine
-  stage: test
   before_script:
     - apk add musl-dev gcc
     - pip install black
@@ -23,7 +14,6 @@ style:
 
 
 test:
-  image: python:3.7-alpine
   before_script:
     - docker info
     - apk update
@@ -32,11 +22,13 @@ test:
     - curl -O https://bootstrap.pypa.io/get-pip.py
     - python3 get-pip.py
     - pip install --upgrade pip
-    - pip install docker-compose
-    - make build
-    - make train
+    - pip install -r /docker/dependencies/requirements-development.txt
+    - pip install --use-deprecated=legacy-resolver --no-cache-dir -r /docker/dependencies/x-requirements.txt
+    - python3 -c "import nltk; nltk.download('stopwords');"
+    - python3 -m spacy download pt_core_news_sm
+    - rasa train
   stage: test
   script: 
-    - make run-test-nlu
-    - make run-test-core
-    - make test-actions
+    - rasa test nlu --nlu data/nlu.yml --cross-validation
+    - rasa test core --fail-on-prediction-errors --out results/results-core-test
+    - python3 -m pytest  -e JWT_SECRET=testing_secret_value
