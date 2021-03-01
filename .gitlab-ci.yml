@@ -6,7 +6,7 @@ stages:
 
 style:
   before_script:
-    - apk add musl-dev gcc
+    - apt add musl-dev gcc
     - pip install black
   stage: test
   script:
@@ -15,10 +15,9 @@ style:
 
 test:
   before_script:
-    - docker info
-    - apk update
-    - apk upgrade
-    - apk add curl jq python3 python3-dev build-base libffi-dev libressl-dev gettext rust cargo
+    - apt update
+    - apt upgrade
+    - apt add curl jq python3 python3-dev build-base libffi-dev libressl-dev gettext rust cargo
     - curl -O https://bootstrap.pypa.io/get-pip.py
     - python3 get-pip.py
     - pip install --upgrade pip
