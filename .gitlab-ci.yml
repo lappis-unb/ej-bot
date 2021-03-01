@@ -33,4 +33,4 @@ test:
   script: 
     - rasa test nlu --nlu ./data/nlu.yml --cross-validation
     - rasa test core --fail-on-prediction-errors --out results/results-core-test
-    - python3 -m pytest  -e JWT_SECRET=testing_secret_value
+    - python3 -m pytest
