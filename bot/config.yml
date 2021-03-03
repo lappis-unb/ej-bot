@@ -13,7 +13,7 @@ pipeline:
   - name: EntitySynonymMapper
   - name: ResponseSelector
   - name: "DucklingHTTPExtractor"
-    url: "http://duck:8000"
+    url: {DUCK_SERVER_URL}
     dimensions: ["email"]
 policies:
   - name: TEDPolicy
