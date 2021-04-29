@@ -1,31 +1,44 @@
 # EJ Bot
 
 
+## Contexto
 
+Este bot faz parte do ecossistema Empurrando Juntas, composto por alguns projetos que possuem forte relação entre si. A imagem abaixo ilustra um recorte desse ecossistema, colocando em destaque o  **EJ server** - o núcleo desse contexto - e o **EJ bot**, que está no presente repositório.
+
+![Recorte do diagrama do ecossistema EJ](img/recorte-ej.png)
+
+No **EJ server** usuários podem criar conversas para iniciar discussões, a partir dessas são realizados comentários, que então são exibidos para outros usuários votarem se concordam ou não - podendo também pular caso não saibam opinar. Todas essas interações são realizadas por meio de um website. Porém, o **EJ server** também possui uma REST API, servida por meio do protocolo HTTP, que permite seu uso além do ambiente web.
+
+Dessa forma, o **EJ bot** permite a interação com conversas criadas no servidor web, por meio de uma interface conversacional, isto é, utilizando um chatbot para interação com o usuário. Para isso, o bot comunica-se com o servidor web realizando requisições HTTP.
 
 # Primeiros passos
+
+Para utilizar este projeto, é necessário primeiramente a instalação do docker e docker-compose.
+
+Depois de realizar o clone deste repositório, deve-se executar o comando:
 
 ```
 make first-run
 ```
 
+Ao final deste comando, já será possível conversar com o bot! Esse é um jeito legal de fazer sua primeira interação com o repositório, e entender um pouco do objetivo do bot.
 
 # Fluxo de trabalho
 
-Para realizar o treinamento e criar os modelos necessários para conversa do bot é realizado o comando:
-
-```
-make train
-```
-
-Para utilização do bot em terminal há o comando
-
-```
-make run-shell
-```
+São utilizados comandos make para execução de diferentes contextos e ferramentas do bot, os principais são descritos a seguir:
 
 
-Listagem e documentação dos comandos make disponíveis:
+| Comando | Descrição |
+|----------------|-------------------------------------------------------------------------|
+| make first-run | Realiza o build do ambiente, o treinamento das modelos e já abre o bot no terminal. |
+| make train | Realiza o treinamento das modelos. É necessário rodar esse comando sempre que há alterações nos arquivos de domain, nlu, stories, rules ou config.yml|
+| make run-shell | Abre o bot no terminal para realizar interações no terminal |
+| make run-x | Executa o bot no modo rasa x localmente, que fica disponível em localhost:5002|
+| make run-api | Executa o bot no modo api, é utilizado para poder rodar instâncias como webchat, telegram e rocketchat. A api fica disponível em localhost:5006 |
+| make run-webchat | Executa o  bot na versão web, fica disponível em localhost:8001 (requer a execução em paralelo do make run-api).|
+
+
+Para outros detalhes, a listagem e documentação dos comandos make disponíveis pode ser vista com o comando:
 
 ```
 make help
@@ -34,16 +47,6 @@ make help
 # Rasa Boilerplate
 
 A estrutura desse projeto foi baseada na [documentação do rasa](https://rasa.com/docs/rasa/) e [também no boilerplate](https://github.com/lappis-unb/rasa-ptbr-boilerplate).
-
-
-# Executando testes
-
-A execução de testes também é realizada por meio de comandos make, listados a seguir:
-
-- make test
-- make run-test-nlu
-- make run-test-core
-- make test-actions
 
 
 # Estrutura básica do projeto
@@ -65,9 +68,57 @@ Abaixo, segue em destaque na estrutura de pastas os arquivos que serão mais uti
         - test_actions.py # teste das ações e outros recursos, usando pytest
 ```
 
+## Como o bot funciona?
+
+Atualmente, os fluxos de uso do bot implementados, estão representados no diagrama a seguir:
+
+![Fluxograma de funcionamento atual do bot](img/fluxograma-bot.png)
+
+# Containers
+
+A aplicação é dividida em diferentes containers do docker, que são listados e explicados sucintamente a seguir.
+
+## Coach
+Realiza o treinamento das modelos
+
+## Rasa
+Permite a execução do rasa no modo de api, shell.
+
+## Rasa X
+Permite a execução do rasa x, que tem uma ampla gama de ferramentas de desenvolvimento do chatbot, como uma interface de testes, treinamento de modelos, correção de intents e testes com usuários.
+
+## Duckling
+
+Execute o servidor duckling que extrai entidades como e-mail, valores numéricos e urls
+
+## Webchat
+
+Executa um servidor Nginx, utilizando o arquivo html em ```webchat/index.html```
 
 
-# WebChat
+# Testes
+
+O rasa possui uma [documentação básica de testes](https://rasa.com/docs/rasa/testing-your-assistant/), recomenda-se sua leitura antes da execução dos comandos.
+
+Além dos testes, o Gitlab CI executa a folha de estilo do projeto, implementada por meio da biblioteca **black**.
+
+A execução de testes também é realizada por meio de comandos make, listados a seguir:
+
+
+| Comando | Descrição |
+|----------------|-------------------------------------------------------------------------|
+| make test | Executa os testes listados no arquivo bot/tests/test_stories.yml. Esses testes são e2e, simulando a interação do usuário com o bot. |
+| make test-actions | Executa os testes listados na pasta bot/tests/ que sejam do tipo python (.py). Esses testes são unitários, testando os métodos que são utilizados nas actions do bot. |
+| make run-test-nlu | Executa o teste do NLU por meio da validação cruzada, que cria automaticamente várias divisões de treinamento/teste a partir das intents que foram criadas no arquivo bot/data/nlu.yml|
+| make run-test-core | Executa uma avaliação da modelo de diálogo treinada em um conjunto de histórias de teste, criado automaticamente pelo rasa analisando as histórias em bot/data/stories.yml |
+
+Os testes são executados pela Integração Contínua, e ela está utilizando a flag --fail-on-prediction-errors , que significa que caso predições dos testes realizados pelo rasa não estejam corretas, quebrará a Integração Contínua. Há a possível evolução para utilização da flag
+--fail-on-warnings, que quebrará mesmo com problemas menores.
+
+
+# Canais do bot
+
+## WebChat
 
 Você pode simular uma conversa com o ejBot a partir de um webchat.
 
@@ -80,7 +131,7 @@ Para que seja possível resgatar dados da EJ, é necessário que o endereço que
 hospedado possua uma conexão com a EJ (Rasa Conversation). Para isso, basta ir na EJ, na conversa que queira conectar, e nela a parte de Ferramentas > Rasa Chatbot. Lá deve ser incluido o endereço, nesse caso, `http://localhost:8001/`.
 
 
-# Telegram
+## Telegram
 
 Para configurar o bot do telegram, é necessário sua criação com o [Fatherbot](https://core.telegram.org/bots#3-how-do-i-create-a-bot), recebndo também um token. O bot no telegram vem por padrão desativado, você deve copiar o conteúdo do arquivo `bot/credentials.telegram.yml` para o arquivo `bot/credentials.yml`
 e atualizar as respectivas variáveis de ambiente (nomeadas a seguir), no arquivo `env/auth.env`:
@@ -93,7 +144,10 @@ custom_channels.TelegramInputChannel:
   webhook_url: "${TELEGRAM_WEBHOOK_URL}"
 ```
 
-Nesse repositório, foi criado um bot para ambiente de desenvolvimento local, chamado duda_local_bot. Porém, o telegram aceita webhooks apenas que possuem o protocolo HTTPS.
+
+Vale lembrar que para a execução do bot no telegram basta a inclusão desses dados e a execução do comando ```make run-api```.
+
+Neste repositório, foi criado um bot para ambiente de desenvolvimento local, chamado duda_local_bot. Porém, o telegram aceita webhooks apenas que possuem o protocolo HTTPS.
 Então para testá-la você pode fazer o download e instalação do aplicativo [ngrok](https://ngrok.com/download). Então, vá para o diretório que possui o programa e execute o comando :
 
 ```shell
@@ -136,8 +190,8 @@ Existem 3 bots diferentes da duda, cada um de um ambiente diferente. São eles:
 
 Para que o bot inicie a conversa e fale as instruções, basta dizer um oi, ou enviar /start. Após essa mensagem, o bot dará instruções sobre como prosseguir.
 
-Existe também o comando do telegram /help que lista todos os comandos disponíveis. Atualmente, o único comando disponível é o /participar [ID_CONVERSA]. Quando em conversa privada, o bot já 
-inicia com uma conversa pré selecionada por administradores. 
+Existe também o comando do telegram /help que lista todos os comandos disponíveis. Atualmente, os únicos comando disponíveis são:
+- /selecionarconversa [ID_CONVERSA]   (Gera link para participação em uma conversa específica)
+- /participar   (Participa de uma conversa pré selecionada)
 
-Logo, quando em um grupo, para que haja participação em uma conversa, é necessário que um usuário
-selecione um ID de conversa, para que o bot consiga carregá-la.
+O bot atualmente não está disponível para grupos no telegram.

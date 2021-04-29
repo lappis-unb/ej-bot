@@ -18,8 +18,6 @@ from .utils import define_vote_utter, VOTE_VALUES, authenticate_user
 logger = logging.getLogger(__name__)
 
 
-#
-#
 class ActionGetConversationTitle(Action):
     def name(self):
         return "action_get_conversation_title"
@@ -40,6 +38,21 @@ class ActionGetConversationTitle(Action):
 
 
 class ActionSetupConversation(Action):
+    """
+    Logs user in EJ and get their conversation statistic according to their account
+    If user provides an email, it will be used to generate login token. If not,
+    rasa conversation id will be used instead
+
+    returns the following slots, filled:
+        - user_token: generated when logging in EJ
+        - number_comments: total number of comments in current conversation
+        - number_voted_comments: number of comments that were already voted by current user
+        - current_comment_id: id of the comment that will be displayed
+        - comment_text: text content of the comment that will be displayed
+
+    if any problem occurs during connection with EJ, conversation will be restarted
+    """
+
     def name(self):
         return "action_setup_conversation"
 
@@ -107,6 +120,17 @@ class ActionFollowUpForm(Action):
 
 
 class ActionAskVote(Action):
+    """
+    This action is called when the vote form is active.
+    It shows a comment for user to vote on, and also their statistics in the conversation.
+
+    If user is in a channel that can render buttons, "Concordar", "Discordar" and "Pular"
+    buttons are displayed
+    If not, user is instructed to vote use number (1,-1 and 0)
+
+    if any problem occurs during connection with EJ, conversation will be restarted
+    """
+
     def name(self) -> Text:
         return "action_ask_vote"
 
@@ -162,6 +186,26 @@ class ActionAskVote(Action):
 
 
 class ValidateVoteForm(FormValidationAction):
+    """
+    This action is called when the vote form is active.
+    After ActionAskVote ran, action_listen is activated and user should input.
+    This action validates what user typed
+
+    return:
+        dict with fields of the form values, in this case, only vote value.
+
+    If the returned value is set to None, bot will again call ActionAskVote until a
+    not null value is returned in this ValidateVoteForm action.
+    With that, we mantain our user in a loop of this form until they want to quit OR
+    all comments from the conversation are already voted on.
+
+    The followed logic is:
+        - If user value is one of : "Concordar", "Discordar, "Pular", 0, 1, -1
+        a vote is computed
+        - If user value is PARAR, it exists from the loop
+        - If user value is not any of these, it is considered as a new comment, that is sent to EJ
+    """
+
     def name(self) -> Text:
         return "validate_vote_form"
 
@@ -245,6 +289,16 @@ class ActionGetConversationId(Action):
 
 
 class ActionSetChannelInfo(Action):
+    """
+    Rasa set current user channel on tracker.get_latest_input_channel()
+    but it cannot read nuances such as:
+        - Being on a private or group chat on telegram or rocketchat
+        - Being on rocketchat livechat or any other kind of chat
+
+    This kind of data is set on message metadata, and we access it to
+    set current channel with more detail
+    """
+
     def name(self):
         return "action_set_channel_info"
 
