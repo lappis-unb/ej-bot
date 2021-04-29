@@ -20,6 +20,7 @@ rules:
     steps:
       - intent: url
       - action: utter_welcome
+
   - rule: Help command
     steps:
       - intent: help

@@ -10,22 +10,67 @@ stories:
       - action: action_get_conversation_id
       - action: utter_start
 
-  - story: Greet group in telegram chat
+  - story: Generate group interaction in telegram
     steps:
       - intent: start
       - action: action_set_channel_info
       - slot_was_set:
-          - current_channel_info: "telegram_group"
-      - action: utter_ask_group_participate
+        - current_channel_info: 'telegram'
+      - action: utter_welcome
       - intent: start_group_interaction
-      - action: action_setup_by_user_conversation
+      - action: utter_send_telegram_generated_url
+
+  - story: Participate on default conversation after generated link
+    steps:
+      - intent: start_group_interaction
+      - action: utter_send_telegram_generated_url
+      - intent: participate_on_telegram
+      - action: utter_ask_user_particpate
+      - action: action_get_conversation_title
+      - action: action_get_conversation_id
       - action: utter_start
-      - action: utter_stop_conversation
-      - action: vote_form
-      - active_loop: vote_form
-      - active_loop: null
-      - action: action_follow_up_form
-      - action: utter_thanks_participation
+
+  - story: Start conversation in telegram as another channels
+    steps:
+      - intent: start
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: utter_welcome
+      - intent: participate_on_telegram
+      - action: utter_ask_user_particpate
+      - action: action_get_conversation_title
+      - action: action_get_conversation_id
+      - action: utter_start
+
+  - story: Start conversation from telegram without payload
+    # When someone starts a conversation with the bot on telegram
+    # it always sends a "start" message
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id: null
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: utter_welcome
+
+  - story: Start conversation from telegram link
+  # When using a link with a payload user send to bot a message
+  # start [payload]. We use it to set conversation_id
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: action_get_conversation_title
+      - action: utter_agreed_participation
+      - action: utter_ask_email
+      - action: utter_explain_ask_email
+      - action: utter_email_is_optional
+      - action: utter_send_email
 
   - story: Explains user participation after they agreed and get current channel info
     steps:
@@ -50,20 +95,6 @@ stories:
       - action: action_get_conversation_title
       - action: action_get_conversation_id
       - action: utter_start
-      - intent: disagree
-      - action: utter_disagreed_participation
-      - action: utter_stopped
-      - action: utter_next_conversation
-      - action: utter_finish
-      - action: action_restart
-
-  - story: Group don't want to participate sad path
-    steps:
-      - intent: start
-      - action: action_set_channel_info
-      - slot_was_set:
-          - current_channel_info: "telegram_group"
-      - action: utter_ask_group_participate
       - intent: disagree
       - action: utter_disagreed_participation
       - action: utter_stopped
@@ -118,8 +149,3 @@ stories:
       - action: utter_next_conversation
       - action: utter_finish
       - action: action_restart
-
-  - story: Start group interaction on telegram
-    steps:
-      - intent: start_group_interaction
-      - action: action_setup_by_user_conversation

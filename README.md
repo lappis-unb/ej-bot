@@ -82,8 +82,9 @@ hospedado possua uma conexão com a EJ (Rasa Conversation). Para isso, basta ir 
 
 # Telegram
 
-Para configurar o bot do telegram, é necessário sua criação com o [Fatherbot](https://core.telegram.org/bots#3-how-do-i-create-a-bot). A partir disso, obterá um token e um username, esses
-dois devem ser escritos no arquivo `bot/credentials.yml`, substituindo os valores:
+Para configurar o bot do telegram, é necessário sua criação com o [Fatherbot](https://core.telegram.org/bots#3-how-do-i-create-a-bot), recebndo também um token. O bot no telegram vem por padrão desativado, você deve copiar o conteúdo do arquivo `bot/credentials.telegram.yml` para o arquivo `bot/credentials.yml`
+e atualizar as respectivas variáveis de ambiente (nomeadas a seguir), no arquivo `env/auth.env`:
+
 
 ```yml
 custom_channels.TelegramInputChannel:

@@ -2,19 +2,14 @@ version: "2.0"
 nlu:
   - intent: start_group_interaction
     examples: |
-      - participar 1
-      - participar 56
-      - participar 12
-      - participar 33
-      - participar 18
-      - participar na conversa 56
-      - participar na conversa de id 433
-      - id da conversa: 1
-      - id conversa 1
-      - id da conversa: vinte e um 
-      - participar catorze
-      - participar quatorze
-      - participar dezoito
+      - selecionarconversa [1](conversation_id)
+      - selecionarconversa [56](conversation_id)
+      - selecionarconversa [12](conversation_id)
+      - selecionarconversa [33](conversation_id)
+      - selecionarconversa [18](conversation_id)
+      - selecionarconversa conversa [56](conversation_id)
+      - selecionarconversa id [433](conversation_id)
+
   - intent: start
     examples: |
       - começar a conversar
@@ -32,7 +27,19 @@ nlu:
       - muito prazer
       - eae
       - fala duda
+
+  - intent: start_with_conversation_id
+    examples: |
       - start
+      - start [433](conversation_id)
+      - start [56](conversation_id)
+      - start [33](conversation_id)
+      - start [dois](conversation_id)
+      - start [23](conversation_id)
+      - start [7](conversation_id)
+      - start [1](conversation_id)
+      - start [quatro](conversation_id)
+
   - intent: agree
     examples: |
       - sim
@@ -68,6 +75,7 @@ nlu:
       - não obg
       - nao to de boa
       - Discordar
+
   - intent: pass
     examples: |
       - não sei
@@ -76,6 +84,7 @@ nlu:
       - passa
       - próxima pergunta
       - Pular
+
   - intent: email
     examples: |
       - meu email é nome@dominio.com
@@ -88,6 +97,7 @@ nlu:
       - sh@email.com.br
       - meu email@email.com.br
       - nos@email.com.br
+
   - intent: stop
     examples: |
       - para
@@ -104,6 +114,7 @@ nlu:
       - podemos parar
       - cansei de responder
       - não quero mais responder
+
   - intent: invalid_email
     examples: |
       - @wlor
@@ -124,6 +135,11 @@ nlu:
       - https://cidadedemocratica.org.br
       - https://www.google.com
       - http://localhost:8001
+      - http://other.com.br/
+
+  - intent: participate_on_telegram
+    examples: |
+      - participar
 
   - intent: help
     examples: |
@@ -131,9 +147,9 @@ nlu:
       - help
       - comandos disponíveis
       - quais comandos posso usar?
+
   - intent: out_of_context
     examples: |
-      - 4 + 2 = ?
       - Queria pedir uma pizza
       - Como tá o tempo?
       - Como vc tá?
@@ -142,3 +158,7 @@ nlu:
       - asdfgasd
       - oque
       - que
+      - 4 + 2 = ?
+      - quanto é 4+2?
+      - quanto é 3 + 2?
+      - ahn

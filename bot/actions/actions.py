@@ -3,18 +3,17 @@
 #
 # See this guide on how to implement these action:
 # https://rasa.com/docs/rasa/custom-actions
-
-from .ej_connector import API
+import os
+import logging
 from typing import Text, List, Any, Dict
 
-#
 from rasa_sdk import Action, Tracker, FormValidationAction
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet, FollowupAction, EventType
 from rasa_sdk.types import DomainDict
-import logging
+
 from .ej_connector import API, EJCommunicationError
-from .utils import define_vote_utter, VOTE_VALUES
+from .utils import define_vote_utter, VOTE_VALUES, authenticate_user
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +25,13 @@ class ActionGetConversationTitle(Action):
         return "action_get_conversation_title"
 
     def run(self, dispatcher, tracker, domain):
-        conversation_id = 56
+        conversation_id = "7"
         logger.debug("INFO")
         logger.debug(conversation_id)
         conversation_title = API.get_conversation_title(conversation_id)
         logger.debug(conversation_title)
+        if tracker.get_slot("conversation_id"):
+            conversation_id = tracker.get_slot("conversation_id")
         logger.debug("INFO")
         return [
             SlotSet("conversation_title", conversation_title),
@@ -47,15 +48,10 @@ class ActionSetupConversation(Action):
         conversation_id = tracker.get_slot("conversation_id")
         try:
             last_intent = tracker.latest_message["intent"].get("name")
+            user_info = authenticate_user(user_email, last_intent, tracker.sender_id)
+            user = user_info["user"]
+            dispatcher.utter_message(template=user_info["utter_name"])
 
-            if user_email and last_intent == "email":
-                user = API.get_or_create_user(tracker.sender_id, user_email, user_email)
-                if user:
-                    dispatcher.utter_message(template="utter_got_email")
-            else:
-                user = API.get_or_create_user(tracker.sender_id)
-                if user:
-                    dispatcher.utter_message(template="utter_user_want_anonymous")
             statistics = API.get_user_conversation_statistics(
                 conversation_id, user.token
             )
@@ -92,6 +88,10 @@ class ActionSetupConversation(Action):
 
 
 class ActionFollowUpForm(Action):
+    # TODO: transform this action in two stories
+    # use:
+    # - slot_was_set:
+    #   - vote: parar
     def name(self):
         return "action_follow_up_form"
 
@@ -183,24 +183,7 @@ class ValidateVoteForm(FormValidationAction):
             sent_vote = API.send_comment_vote(comment_id, slot_value, token)
 
             if sent_vote["created"]:
-                if tracker.get_latest_input_channel() == "telegram":
-                    logger.debug(tracker.latest_message["metadata"])
-                    if "callback_query" in tracker.latest_message["metadata"]:
-                        metadata = tracker.latest_message["metadata"]["callback_query"]
-                        telegram_username = metadata["message"]["from"]["username"]
-                    else:
-                        metadata = tracker.latest_message["metadata"]["message"]
-                        telegram_username = telegram_username = tracker.latest_message[
-                            "metadata"
-                        ]["from"]["username"]
-                    name = metadata["from"]["first_name"]
-                    user_id = f"{metadata['from']['id']}-telegram"
-                    logger.debug(metadata["from"]["first_name"])
-                    dispatcher.utter_message(
-                        text=f"Obrigada {telegram_username}, seu voto foi computado."
-                    )
-                else:
-                    dispatcher.utter_message(template="utter_vote_received")
+                dispatcher.utter_message(template="utter_vote_received")
             statistics = API.get_user_conversation_statistics(conversation_id, token)
             if statistics["missing_votes"] > 0:
                 # user still has comments to vote, remain in loop
@@ -220,34 +203,6 @@ class ValidateVoteForm(FormValidationAction):
             else:
                 dispatcher.utter_message(template="utter_send_comment_error")
         return {"vote": None}
-
-
-class ActionSetupByUserConversation(Action):
-    def name(self):
-        return "action_setup_by_user_conversation"
-
-    def run(self, dispatcher, tracker, domain):
-        conversation_id = tracker.get_slot("number")
-        logger.debug("INFO:    " + str(conversation_id))
-        logger.debug(conversation_id)
-
-        if tracker.get_slot("current_channel_info") == "telegram_group":
-            try:
-                conversation_title = API.get_conversation_title(conversation_id)
-                logger.debug(conversation_title)
-                return [
-                    SlotSet("conversation_title", conversation_title),
-                    SlotSet("conversation_id", conversation_id),
-                ]
-            except EJCommunicationError:
-                dispatcher.utter_message(template="utter_ej_communication_error")
-                dispatcher.utter_message(template="utter_error_try_again_later")
-                return [FollowupAction("action_restart")]
-        else:
-            dispatcher.utter_message(
-                text="Opa, parece que você não pode fazer isso por aqui."
-            )
-            return [FollowupAction("action_restart")]
 
 
 class ActionGetConversationId(Action):
@@ -305,13 +260,11 @@ class ActionSetChannelInfo(Action):
             if "agent" in tracker.latest_message["metadata"]:
                 channel = "rocket_livechat"
         if tracker.get_latest_input_channel() == "telegram":
-            if tracker.latest_message["metadata"]["message"]["chat"]["type"] == "group":
-                channel = "telegram_group"
-                return [
-                    SlotSet("current_channel_info", channel),
-                    FollowupAction("utter_ask_group_participate"),
-                ]
+            bot_telegram_username = os.getenv("TELEGRAM_BOT_NAME")
+            return [
+                SlotSet("current_channel_info", channel),
+                SlotSet("bot_telegram_username", bot_telegram_username),
+            ]
         return [
             SlotSet("current_channel_info", channel),
-            FollowupAction("utter_ask_user_particpate"),
         ]
