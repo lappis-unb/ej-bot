@@ -29,11 +29,16 @@ intents:
       use_entities: true
   - help:
       use_entities: true
+  - start_with_conversation_id:
+      use_entities: true
+  - participate_on_telegram:
+      use_entities: true
 entities:
   - email
   - number
   - url
   - current_channel_info
+  - conversation_id
 slots:
   change_comment:
     type: rasa.shared.core.slots.BooleanSlot
@@ -56,12 +61,10 @@ slots:
     auto_fill: true
     influence_conversation: true
   conversation_id:
-    type: rasa.shared.core.slots.FloatSlot
+    type: rasa.shared.core.slots.TextSlot
     initial_value: null
     auto_fill: true
     influence_conversation: true
-    max_value: 1.0
-    min_value: 0.0
   current_comment_id:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
@@ -110,15 +113,20 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
+  bot_telegram_username:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
 responses:
   utter_welcome:
     - text: Olá,  Muito prazer, eu sou a Duda!
+    - channel: telegram
+      text: Olá muito prazer, eu sou a Duda! Caso queira começar uma nova coleta digite /selecionarconversa [id] . Se quiser participar, digite /participar
   utter_start:
     - text: Eu estava querendo saber a opinião de outras pessoas a respeito de {conversation_title}.
   utter_ask_user_particpate:
     - text: Topa um bate-papo comigo?
-  utter_ask_group_participate:
-    - text: Vocês topam bater um papo comigo? A conversa pode ser selecionada a partir de /participar [id]
   utter_agreed_participation:
     - text: Ah maravilha 😄
     - text: Eu agradeço muito!
@@ -147,8 +155,6 @@ responses:
     - text: Anotado!
     - text: Beleza, anotei aqui.
     - text: Entendo, registrado.
-    - channel: telegram
-      text: Anotei aqui {telegram_username}
   utter_out_of_context:
     - text: Desculpe, não sei se entendi 😕
   utter_sent_comment:
@@ -177,18 +183,22 @@ responses:
   utter_ej_connection_doesnt_exist:
     - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
-    - text: A lista de comandos disponíveis atualmente é \n /participar [id] - Em um grupo de telegram, pode-se escolher a conversa para iniciar um debate, a partir do seu id.
+    - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
+    - channel: telegram
+      text: A lista de comandos disponíveis atualmente é \n\n /selecionarconversa [id] - Escolha a conversa da EJ para gerarmos uma nova coleta \n\n /participar - Participe de uma coleta pré-selecionada.
   utter_explain_no_button_participation:
-    - text: Para concordar com um comentário, digite 1. \n Para discordar de um comentário, digite -1. \n Caso queira pular um comentário, digite 0.
+    - text: Para concordar com um comentário, digite 1. \n\n Para discordar de um comentário, digite -1. \n\n Caso queira pular um comentário, digite 0.
   utter_explain_button_participation:
-    - text: Para concordar com um comentário, digite 1 ou clique no botão Concordar, para discordar de um comentário, digite -1 ou clique no botão Discordar. \n Caso queira pular um comentário, digite 0 ou clique no botão Pular.
+    - text: Para concordar com um comentário, digite 1 ou clique no botão Concordar, para discordar de um comentário, digite -1 ou clique no botão Discordar. \n\n Caso queira pular um comentário, digite 0 ou clique no botão Pular.
+  utter_send_telegram_generated_url:
+    - channel: telegram
+      text: Envie no grupo a seguinte url t.me/{bot_telegram_username}?start={conversation_id}
 actions:
   - action_get_conversation_title
-  - action_setup_conversation
   - action_ask_vote
   - action_follow_up_form
   - validate_vote_form
-  - action_setup_by_user_conversation
+  - action_setup_conversation
   - action_get_conversation_id
   - action_set_channel_info
 forms:

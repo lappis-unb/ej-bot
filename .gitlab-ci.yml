@@ -30,6 +30,8 @@ test:
     - cd bot
     - rasa train
   stage: test
+  variables:
+    RASA_DUCKLING_HTTP_URL: "http://duck:8000"
   script:
     - rasa test nlu --nlu ./data/nlu.yml --cross-validation
     - rasa test core --fail-on-prediction-errors --out results/results-core-test

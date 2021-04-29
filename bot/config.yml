@@ -13,7 +13,7 @@ pipeline:
   - name: EntitySynonymMapper
   - name: ResponseSelector
   - name: "DucklingEntityExtractor"
-    url: "http://duck:8000"
+    url: ${RASA_DUCKLING_HTTP_URL}
     dimensions: ["email", "number", "url"]
 policies:
   - name: TEDPolicy

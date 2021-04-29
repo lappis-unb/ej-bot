@@ -24,6 +24,7 @@ services:
   # All the models are trained by this coach.
   coach:
     <<: *bot-common-build
+    <<: *bot-common
     volumes:
       - ./bot/models/:/bot/models/
     command: "make train"
