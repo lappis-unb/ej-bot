@@ -44,6 +44,9 @@ Para outros detalhes, a listagem e documentação dos comandos make disponíveis
 make help
 ```
 
+Como mostrado no diagrama  do ecossistema EJ, para que o bot funcione ele depende de uma instância da EJ server rodando. Por padrão, a variável de ambiente `EJ_HOST` vem com valor do ambiente de homologação da pencillabs, `https://ejplatform.pencillabs.com.br`. Porém, caso necessário, 
+ o desenvolvedor pode apontar o bot local para uma instância local da EJ, por meio do IP privado. Para isso ele pode digitar o comando `hostname -I` ou `ip addr | grep wl`, e realizar a substituição pelo IP de sua máquina por meio das instruções que estão no arquivo `env/servers.env`, onde também deve substituir o valor da variável.
+
 # Rasa Boilerplate
 
 A estrutura desse projeto foi baseada na [documentação do rasa](https://rasa.com/docs/rasa/) e [também no boilerplate](https://github.com/lappis-unb/rasa-ptbr-boilerplate).
@@ -133,9 +136,18 @@ hospedado possua uma conexão com a EJ (Rasa Conversation). Para isso, basta ir 
 
 ## Telegram
 
-Para configurar o bot do telegram, é necessário sua criação com o [Fatherbot](https://core.telegram.org/bots#3-how-do-i-create-a-bot), recebndo também um token. O bot no telegram vem por padrão desativado, você deve copiar o conteúdo do arquivo `bot/credentials.telegram.yml` para o arquivo `bot/credentials.yml`
+Para configurar o bot do telegram, é necessário sua criação com o [Fatherbot](https://core.telegram.org/bots#3-how-do-i-create-a-bot). A partir disso, obterá um token e um username. Além desses valores, deve-se ter o link do webhook, que em ambiente local, deve ser gerado pelo ngrok, como é explicado no próximo subtópico.  O bot no telegram vem por padrão desativado, você deve copiar o conteúdo do arquivo `bot/credentials.telegram.yml` para o arquivo `bot/credentials.yml`
 e atualizar as respectivas variáveis de ambiente (nomeadas a seguir), no arquivo `env/auth.env`:
 
+
+```env
+TOKEN_PROVIDED_BY_FATHER_BOT=token
+BOT_USERNAME=username_bot
+TELEGRAM_WEBHOOK_URL=https://ngrok_server/webhooks/telegram/webhook"
+```
+
+Além de colocar os valores das váriveis, a seguinte seção do arquivo `bot/credentials.local.yml`
+deve ser descomentada:
 
 ```yml
 custom_channels.TelegramInputChannel:
@@ -144,8 +156,9 @@ custom_channels.TelegramInputChannel:
   webhook_url: "${TELEGRAM_WEBHOOK_URL}"
 ```
 
-
 Vale lembrar que para a execução do bot no telegram basta a inclusão desses dados e a execução do comando ```make run-api```.
+
+## Configuração do ngrok
 
 Neste repositório, foi criado um bot para ambiente de desenvolvimento local, chamado duda_local_bot. Porém, o telegram aceita webhooks apenas que possuem o protocolo HTTPS.
 Então para testá-la você pode fazer o download e instalação do aplicativo [ngrok](https://ngrok.com/download). Então, vá para o diretório que possui o programa e execute o comando :
