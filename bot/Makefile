@@ -42,7 +42,7 @@ shell:
 	rasa shell -m models/ -vv --endpoints endpoints.yml --port 5006
 
 api:
-	rasa run -m models/ -vv --endpoints endpoints.yml --enable-api --port 5006 --auth-token thisismysecret --cors "*"
+	rasa run -m models/ -vv --credentials credentials.${ENV}.yml --endpoints endpoints.yml --enable-api --port 5006 --auth-token thisismysecret --cors "*"
 
 # ACTIONS
 actions:
