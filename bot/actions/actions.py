@@ -320,5 +320,6 @@ class ActionSetChannelInfo(Action):
                 SlotSet("bot_telegram_username", bot_telegram_username),
             ]
         return [
+            FollowupAction("utter_ask_user_particpate"),
             SlotSet("current_channel_info", channel),
         ]
