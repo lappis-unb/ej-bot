@@ -104,6 +104,7 @@ stories:
       - action: action_set_channel_info
       - slot_was_set:
         - current_channel_info: 'telegram'
+      - action: action_get_conversation_info
       - action: utter_show_topic_of_discussion
       - action: utter_ask_user_particpate
       - intent: agree
