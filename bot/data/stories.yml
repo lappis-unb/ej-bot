@@ -5,10 +5,51 @@ stories:
     steps:
       - intent: start
       - action: action_set_channel_info
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
       - action: utter_ask_user_particpate
-      - action: action_get_conversation_title
-      - action: action_get_conversation_id
-      - action: utter_start
+      - checkpoint: check_start_interaction
+
+  - story: Explains user participation after they agreed and get current channel info
+    steps:
+      - checkpoint: check_start_interaction
+      - intent: agree
+      - action: utter_agreed_participation
+      - action: utter_ask_email
+      - action: utter_explain_ask_email
+      - action: utter_email_is_optional
+      - action: utter_send_email
+      - checkpoint: check_explain_participation
+
+  - story: Activate vote form with user email
+    steps:
+      - checkpoint: check_explain_participation
+      - or:
+        - intent: disagree
+        - intent: email
+          entities:
+            - email
+      - action: action_setup_conversation
+      - action: utter_stop_conversation
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - action: action_follow_up_form
+      - action: utter_thanks_participation
+      - action: utter_goodbye
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
+
+  - story: User don't want to participate sad path
+    steps:
+      - checkpoint: check_start_interaction
+      - intent: disagree
+      - action: utter_disagreed_participation
+      - action: utter_stopped
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
 
   - story: Generate group interaction in telegram
     steps:
@@ -25,10 +66,9 @@ stories:
       - intent: start_group_interaction
       - action: utter_send_telegram_generated_url
       - intent: participate_on_telegram
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
       - action: utter_ask_user_particpate
-      - action: action_get_conversation_title
-      - action: action_get_conversation_id
-      - action: utter_start
 
   - story: Start conversation in telegram as another channels
     steps:
@@ -38,10 +78,9 @@ stories:
         - current_channel_info: 'telegram'
       - action: utter_welcome
       - intent: participate_on_telegram
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
       - action: utter_ask_user_particpate
-      - action: action_get_conversation_title
-      - action: action_get_conversation_id
-      - action: utter_start
 
   - story: Start conversation from telegram without payload
     # When someone starts a conversation with the bot on telegram
@@ -65,66 +104,14 @@ stories:
       - action: action_set_channel_info
       - slot_was_set:
         - current_channel_info: 'telegram'
-      - action: action_get_conversation_title
-      - action: utter_agreed_participation
-      - action: utter_ask_email
-      - action: utter_explain_ask_email
-      - action: utter_email_is_optional
-      - action: utter_send_email
-
-  - story: Explains user participation after they agreed and get current channel info
-    steps:
-      - intent: start
-      - action: action_set_channel_info
+      - action: utter_show_topic_of_discussion
       - action: utter_ask_user_particpate
-      - action: action_get_conversation_title
-      - action: action_get_conversation_id
-      - action: utter_start
       - intent: agree
       - action: utter_agreed_participation
       - action: utter_ask_email
       - action: utter_explain_ask_email
       - action: utter_email_is_optional
       - action: utter_send_email
-
-  - story: User don't want to participate sad path
-    steps:
-      - intent: start
-      - action: action_set_channel_info
-      - action: utter_ask_user_particpate
-      - action: action_get_conversation_title
-      - action: action_get_conversation_id
-      - action: utter_start
-      - intent: disagree
-      - action: utter_disagreed_participation
-      - action: utter_stopped
-      - action: utter_next_conversation
-      - action: utter_finish
-      - action: action_restart
-
-  - story: Activate vote form with user email
-    steps:
-      - intent: email
-        entities:
-          - email
-      - action: action_setup_conversation
-      - action: utter_stop_conversation
-      - action: vote_form
-      - active_loop: vote_form
-      - active_loop: null
-      - action: action_follow_up_form
-      - action: utter_thanks_participation
-
-  - story: User want to participate without email
-    steps:
-      - intent: disagree
-      - action: action_setup_conversation
-      - action: utter_stop_conversation
-      - action: vote_form
-      - active_loop: vote_form
-      - active_loop: null
-      - action: action_follow_up_form
-      - action: utter_thanks_participation
 
   - story: User provides invalid email
     steps:
@@ -141,6 +128,10 @@ stories:
       - active_loop: null
       - action: action_follow_up_form
       - action: utter_thanks_participation
+      - action: utter_goodbye
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
 
   - story: Goodbye happy path
     steps:
@@ -148,4 +139,4 @@ stories:
       - action: utter_goodbye
       - action: utter_next_conversation
       - action: utter_finish
-      - action: action_restart
+      - action: action_session_start

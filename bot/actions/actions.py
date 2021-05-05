@@ -18,25 +18,8 @@ from .utils import define_vote_utter, VOTE_VALUES, authenticate_user
 logger = logging.getLogger(__name__)
 
 
-class ActionGetConversationTitle(Action):
-    def name(self):
-        return "action_get_conversation_title"
-
-    def run(self, dispatcher, tracker, domain):
-        conversation_id = "7"
-        logger.debug("INFO")
-        logger.debug(conversation_id)
-        conversation_title = API.get_conversation_title(conversation_id)
-        logger.debug(conversation_title)
-        if tracker.get_slot("conversation_id"):
-            conversation_id = tracker.get_slot("conversation_id")
-        logger.debug("INFO")
-        return [
-            SlotSet("conversation_title", conversation_title),
-            SlotSet("conversation_id", conversation_id),
-        ]
-
-
+#
+#
 class ActionSetupConversation(Action):
     """
     Logs user in EJ and get their conversation statistic according to their account
@@ -72,7 +55,7 @@ class ActionSetupConversation(Action):
         except EJCommunicationError:
             dispatcher.utter_message(template="utter_ej_communication_error")
             dispatcher.utter_message(template="utter_error_try_again_later")
-            return [FollowupAction("action_restart")]
+            return [FollowupAction("action_session_start")]
 
         if tracker.get_slot("current_channel_info") == "rocket_livechat":
             # explain how user can vote according to current channel
@@ -115,7 +98,7 @@ class ActionFollowUpForm(Action):
             dispatcher.utter_message(template="utter_stopped")
 
         return [
-            FollowupAction("utter_thanks_participation"),
+            SlotSet("vote", None),
         ]
 
 
@@ -144,7 +127,7 @@ class ActionAskVote(Action):
         except EJCommunicationError:
             dispatcher.utter_message(template="utter_ej_communication_error")
             dispatcher.utter_message(template="utter_error_try_again_later")
-            return [FollowupAction("action_restart")]
+            return [FollowupAction("action_session_start")]
         total_comments = statistics["missing_votes"] + statistics["votes"]
         number_voted_comments = statistics["votes"]
 
@@ -154,7 +137,7 @@ class ActionAskVote(Action):
             except EJCommunicationError:
                 dispatcher.utter_message(template="utter_ej_communication_error")
                 dispatcher.utter_message(template="utter_error_try_again_later")
-                return [FollowupAction("action_restart")]
+                return [FollowupAction("action_session_start")]
             comment_content = new_comment["content"]
             message = f"{comment_content} \n O que você acha disso ({number_voted_comments}/{total_comments})?"
             if "metadata" in tracker.latest_message:
@@ -249,43 +232,56 @@ class ValidateVoteForm(FormValidationAction):
         return {"vote": None}
 
 
-class ActionGetConversationId(Action):
+class ActionGetConversationInfo(Action):
     """
-    Send request to EJ with current URL where the bot is hosted
-    Get conversation ID and Title in return
-    Should not be executed if in other channel other than socketio
-    (first condition verified in run)
+    When in socketio channel:
+        Send request to EJ with current URL where the bot is hosted
+        Get conversation ID and Title in return
+
+    When in other channels:
+        Get already set slot conversation id and send it to EJ
+        to get corresponding conversation title
     """
 
     def name(self):
-        return "action_get_conversation_id"
+        return "action_get_conversation_info"
 
     def run(self, dispatcher, tracker, domain):
-        if not tracker.get_latest_input_channel() == "socketio":
-            # this action is only ran in webchat (socketio) channels
-            return [FollowupAction("utter_start")]
-        bot_url = tracker.get_slot("url")
-        logger.debug("GET CONVERSATION ID")
-        logger.debug(bot_url)
-        logger.debug("GET CONVERSATION ID")
-        try:
-            conversation_info = API.get_conversation_info_by_url(bot_url)
-        except EJCommunicationError:
-            dispatcher.utter_message(template="utter_ej_communication_error")
-            dispatcher.utter_message(template="utter_error_try_again_later")
-            return [FollowupAction("action_restart")]
-        if conversation_info:
-            # TODO: If a domain has more than one conversation, need to think how to deal with it
-            conversation_title = conversation_info[0]["conversation"]
-            conversation_id = conversation_info[0]["links"]["conversation"][-2]
-            return [
-                SlotSet("conversation_title", conversation_title),
-                SlotSet("conversation_id", conversation_id),
-            ]
+        if tracker.get_latest_input_channel() == "socketio":
+            bot_url = tracker.get_slot("url")
+            logger.debug("GET CONVERSATION ID")
+            logger.debug(bot_url)
+            logger.debug("GET CONVERSATION ID")
+            try:
+                conversation_info = API.get_conversation_info_by_url(bot_url)
+            except EJCommunicationError:
+                dispatcher.utter_message(template="utter_ej_communication_error")
+                dispatcher.utter_message(template="utter_error_try_again_later")
+                return [FollowupAction("action_session_start")]
+            if conversation_info:
+                # TODO: If a domain has more than one conversation, need to think how to deal with it
+                conversation_title = conversation_info[0]["conversation"]
+                conversation_id = conversation_info[0]["links"]["conversation"][-2]
+
+            else:
+                dispatcher.utter_message(template="utter_ej_connection_doesnt_exist")
+                dispatcher.utter_message(template="utter_error_try_again_later")
+                return [FollowupAction("action_session_start")]
         else:
-            dispatcher.utter_message(template="utter_ej_connection_doesnt_exist")
-            dispatcher.utter_message(template="utter_error_try_again_later")
-            return [FollowupAction("action_restart")]
+            conversation_id = tracker.get_slot("conversation_id")
+            if conversation_id:
+                logger.debug("INFO")
+                logger.debug(conversation_id)
+                conversation_title = API.get_conversation_title(conversation_id)
+                logger.debug(conversation_title)
+            else:
+                dispatcher.utter_message(template="utter_no_selected_conversation")
+                return [FollowupAction("action_session_start")]
+
+        return [
+            SlotSet("conversation_title", conversation_title),
+            SlotSet("conversation_id", conversation_id),
+        ]
 
 
 class ActionSetChannelInfo(Action):
@@ -320,6 +316,6 @@ class ActionSetChannelInfo(Action):
                 SlotSet("bot_telegram_username", bot_telegram_username),
             ]
         return [
-            FollowupAction("utter_ask_user_particpate"),
+            FollowupAction("action_get_conversation_info"),
             SlotSet("current_channel_info", channel),
         ]
