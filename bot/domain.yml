@@ -123,7 +123,7 @@ responses:
     - text: Olá,  Muito prazer, eu sou a Duda!
     - channel: telegram
       text: Olá muito prazer, eu sou a Duda! Caso queira começar uma nova coleta digite /selecionarconversa [id] . Se quiser participar, digite /participar
-  utter_start:
+  utter_show_topic_of_discussion:
     - text: Eu estava querendo saber a opinião de outras pessoas a respeito de {conversation_title}.
   utter_ask_user_particpate:
     - text: Topa um bate-papo comigo?
@@ -193,13 +193,14 @@ responses:
   utter_send_telegram_generated_url:
     - channel: telegram
       text: Envie no grupo a seguinte url t.me/{bot_telegram_username}?start={conversation_id}
+  utter_no_selected_conversation:
+    - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
 actions:
-  - action_get_conversation_title
   - action_ask_vote
   - action_follow_up_form
   - validate_vote_form
   - action_setup_conversation
-  - action_get_conversation_id
+  - action_get_conversation_info
   - action_set_channel_info
 forms:
   vote_form:

@@ -8,10 +8,9 @@ stories:
       oi
     intent: start
   - action: action_set_channel_info
+  - action: action_get_conversation_info
+  - action: utter_show_topic_of_discussion
   - action: utter_ask_user_particpate
-  - action: action_get_conversation_title
-  - action: action_get_conversation_id
-  - action: utter_start
 
 - story: User utters out of context 
   steps:
@@ -26,10 +25,9 @@ stories:
       olá
     intent: start
   - action: action_set_channel_info
+  - action: action_get_conversation_info
+  - action: utter_show_topic_of_discussion
   - action: utter_ask_user_particpate
-  - action: action_get_conversation_title
-  - action: action_get_conversation_id
-  - action: utter_start
   - user: |
       não
     intent: disagree
@@ -37,7 +35,7 @@ stories:
   - action: utter_stopped
   - action: utter_next_conversation
   - action: utter_finish
-  - action: action_restart
+  - action: action_session_start
 
 - story: User agree to use email
   steps:
@@ -45,10 +43,9 @@ stories:
       oi
     intent: start
   - action: action_set_channel_info
+  - action: action_get_conversation_info
+  - action: utter_show_topic_of_discussion
   - action: utter_ask_user_particpate
-  - action: action_get_conversation_title
-  - action: action_get_conversation_id
-  - action: utter_start
   - user: |
       sim
     intent: agree
@@ -66,6 +63,13 @@ stories:
   - action: utter_stop_conversation
   - action: vote_form
   - active_loop: vote_form
+  - active_loop: null
+  - action: action_follow_up_form
+  - action: utter_thanks_participation
+  - action: utter_goodbye
+  - action: utter_next_conversation
+  - action: utter_finish
+  - action: action_session_start
 
 - story: User want to participate without email
   steps:
@@ -73,10 +77,9 @@ stories:
       oi
     intent: start
   - action: action_set_channel_info
+  - action: action_get_conversation_info
+  - action: utter_show_topic_of_discussion
   - action: utter_ask_user_particpate
-  - action: action_get_conversation_title
-  - action: action_get_conversation_id
-  - action: utter_start
   - user: |
       sim
     intent: agree
@@ -92,6 +95,13 @@ stories:
   - action: utter_stop_conversation
   - action: vote_form
   - active_loop: vote_form
+  - active_loop: null
+  - action: action_follow_up_form
+  - action: utter_thanks_participation
+  - action: utter_goodbye
+  - action: utter_next_conversation
+  - action: utter_finish
+  - action: action_session_start
 
 - story: User provide invalid email
   steps:
@@ -99,10 +109,9 @@ stories:
       olá
     intent: start
   - action: action_set_channel_info
+  - action: action_get_conversation_info
+  - action: utter_show_topic_of_discussion
   - action: utter_ask_user_particpate
-  - action: action_get_conversation_title
-  - action: action_get_conversation_id
-  - action: utter_start
   - user: |
       sim
     intent: agree
