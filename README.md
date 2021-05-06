@@ -207,4 +207,13 @@ Existe também o comando do telegram /help que lista todos os comandos disponív
 - /selecionarconversa [ID_CONVERSA]   (Gera link para participação em uma conversa específica)
 - /participar   (Participa de uma conversa pré selecionada)
 
-O bot atualmente não está disponível para grupos no telegram.
+Um possível fluxo de uso do bot no telegram:
+
+1. Procure o bot (Duda - EJ Bot) na aba de busca do Telegram;
+2. Converse com o bot no privado. Selecione qual conversa você deseja que seus usuários participem. Você vai precisar verificar na EJ qual o ID da conversa desejada.
+
+        /selecionarconversa 56
+
+3. Envie a resposta do bot no grupo ou canal desejado;
+4. Quando seu público clicar no link, irá ser direcionado para uma conversa privada com o bot, e poderá participar
+da coleta;
