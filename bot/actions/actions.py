@@ -84,10 +84,6 @@ class ActionSetupConversation(Action):
 
 
 class ActionFollowUpForm(Action):
-    # TODO: transform this action in two stories
-    # use:
-    # - slot_was_set:
-    #   - vote: parar
     def name(self):
         return "action_follow_up_form"
 
@@ -99,6 +95,7 @@ class ActionFollowUpForm(Action):
 
         return [
             SlotSet("vote", None),
+            SlotSet("conversation_id", None),
         ]
 
 

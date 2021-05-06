@@ -129,6 +129,7 @@ nlu:
       - meu email é @nome
       - email: @maria
       - meu email: roberto@
+      - email@emali
 
   - intent: url
     examples: |

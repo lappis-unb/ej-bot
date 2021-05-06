@@ -113,6 +113,22 @@ stories:
       - action: utter_explain_ask_email
       - action: utter_email_is_optional
       - action: utter_send_email
+      - or:
+        - intent: disagree
+        - intent: email
+          entities:
+            - email
+      - action: action_setup_conversation
+      - action: utter_stop_conversation
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - action: action_follow_up_form
+      - action: utter_thanks_participation
+      - action: utter_goodbye
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
 
   - story: User provides invalid email
     steps:

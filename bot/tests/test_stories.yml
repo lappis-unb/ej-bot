@@ -133,7 +133,6 @@ stories:
     intent: url
   - action: utter_welcome
   - action: utter_introduce_ej
-  - action: utter_introduce_ej
   - action: utter_explain_how_to_participate
 
 
