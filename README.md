@@ -217,3 +217,10 @@ Um possível fluxo de uso do bot no telegram:
 3. Envie a resposta do bot no grupo ou canal desejado;
 4. Quando seu público clicar no link, irá ser direcionado para uma conversa privada com o bot, e poderá participar
 da coleta;
+
+
+# Ambiente de Homologação
+
+Toda vez que é realizado o deploy da aplicaçao, é realizado um novo treinamento do bot e então gerado um novo arquivo de model (salvo em `bot/models/*.tar.gz`). Dessa forma, existiu um problema quanto à ocupação de memória na máquina de homologação, que contornamos por meio de uma tarefa cron. Essa tarefa executa o script que encontra-se em `docker/clean_old_models.py`, que exclui as models que tenham mais de 1 semana de idade, caso haja mais de uma model na pasta. Para realizar a configuração para que a tarefa cron rode diariamente, basta rodar o comando:
+
+`$ make run-cron`
