@@ -57,6 +57,8 @@ run-webchat: ## Run bot in web mode, hosted in localhost:8001
 run-actions: ## Run actions server, as an api avaiable in localhost:5055
 	docker-compose run -d --name actions --rm --service-ports actions make actions
 
+run-cron: ## Install and run cron for deleting models automatically
+	docker-compose run --name bot bot docker/run-cron.sh
 
 ############################## TESTS ##############################
 test: run-duck ## Run tests in bot/tests/test_stories.yml
