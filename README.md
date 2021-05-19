@@ -195,9 +195,9 @@ http://127.0.0.1:4040 .
 
 Existem 3 bots diferentes da duda, cada um de um ambiente diferente. São eles:
 
-- duda_local_bot: ambiente de desenvolvimento local;
-- duda_dev_bot: ambiente de homologação;
-- duda_ej_bot: ambiente de produção.
+- duda_local_bot: ambiente de desenvolvimento local, que deve apontar para a instância local do desenvolvedor, criada via ngrok;
+- DudaEjDevBot: ambiente de homologação, que aponta para a instância https://rasaserver.pencillabs.com.br/;
+- DudaEjBot: ambiente de produção, que aponta para a instância https://rasaserverprod.pencillabs.com.br/.
 
 ## Interações em grupo
 
