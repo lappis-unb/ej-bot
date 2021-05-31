@@ -96,7 +96,7 @@ Execute o servidor duckling que extrai entidades como e-mail, valores numéricos
 
 ## Webchat
 
-Executa um servidor Nginx, utilizando o arquivo html em ```webchat/index.html```
+Executa um servidor Nginx, utilizando o arquivo html em `webchat/index.html`.
 
 
 # Testes
@@ -136,27 +136,36 @@ hospedado possua uma conexão com a EJ (Rasa Conversation). Para isso, basta ir 
 
 ## Telegram
 
-Para configurar o bot do telegram, é necessário sua criação com o [Fatherbot](https://core.telegram.org/bots#3-how-do-i-create-a-bot). A partir disso, obterá um token e um username. Além desses valores, deve-se ter o link do webhook, que em ambiente local, deve ser gerado pelo ngrok, como é explicado no próximo subtópico.  O bot no telegram vem por padrão desativado, você deve copiar o conteúdo do arquivo `bot/credentials.telegram.yml` para o arquivo `bot/credentials.yml`
-e atualizar as respectivas variáveis de ambiente (nomeadas a seguir), no arquivo `env/auth.env`:
+Para configurar o bot do telegram, é necessário sua criação com o [Fatherbot](https://core.telegram.org/bots#3-how-do-i-create-a-bot). A partir disso, obterá um token e um username. Além desses valores, deve-se ter o link do webhook, que em ambiente local deve ser gerado pelo ngrok, como é explicado no próximo subtópico.  O bot no telegram vem por padrão desativado, então você deve descomentar as linhas do arquivo `bot/credentials.local.yml`, referentes à conexão com o Telegram.
+Além disso, também é necessário atualizar as respectivas variáveis de ambiente (nomeadas a seguir), no arquivo `env/auth.env`:
 
-
-```env
-TOKEN_PROVIDED_BY_FATHER_BOT=token
-BOT_USERNAME=username_bot
-TELEGRAM_WEBHOOK_URL=https://ngrok_server/webhooks/telegram/webhook"
 ```
-
+TELEGRAM_TOKEN=<token que o fatherbot vai gerar>
+TELEGRAM_BOT_NAME=<nome do bot de teste que você criou>
+TELEGRAM_WEBHOOK_URL=<url https do ngrok>
+```
 Além de colocar os valores das váriveis, a seguinte seção do arquivo `bot/credentials.local.yml`
 deve ser descomentada:
-
-```yml
+```
 custom_channels.TelegramInputChannel:
   access_token: ${TOKEN_PROVIDED_BY_FATHER_BOT}
   verify: ${BOT_USERNAME}
   webhook_url: "${TELEGRAM_WEBHOOK_URL}"
 ```
 
-Vale lembrar que para a execução do bot no telegram basta a inclusão desses dados e a execução do comando ```make run-api```.
+Ao final da configuração, seu arquivo `env/auth.env` deve ficar parecido com isso:
+
+```
+JWT_SECRET=thisismysecret
+# Variables used in credentials.yml
+TELEGRAM_TOKEN=1787218495:AAG2Kk7Q3S6vwA6neptdO0uyon-OdhXXZIM
+TELEGRAM_BOT_NAME=DudaDavidBot
+TELEGRAM_WEBHOOK_URL= https://895f9f8dad71.ngrok.io/webhooks/telegram/webhook
+ROCKET_USER=
+ROCKET_PASSWORD=
+ROCKET_URL=
+```
+Vale lembrar que para a execução do bot no telegram basta a inclusão desses dados e a execução do comando `make run-api`.
 
 ## Configuração do ngrok
 
@@ -189,7 +198,7 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 ```
 
 Informações mais detalhadas das requisições realizadas para o endereço podem ser verificadas em
-http://127.0.0.1:4040 .
+http://127.0.0.1:4040.
 
 ## Ambientes da duda
 
