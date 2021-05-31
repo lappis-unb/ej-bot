@@ -42,13 +42,12 @@ def auth_headers(token):
 
 class API:
     @staticmethod
-    def get_conversation_title(conversation_id):
+    def get_conversation(conversation_id):
         try:
             response = requests.get(conversation_url(conversation_id), headers=HEADERS)
-            title = response.json()["title"]
+            return response.json()
         except:
             raise EJCommunicationError
-        return title
 
     @staticmethod
     def get_or_create_user(sender_id, name="Participante anônimo", email=""):

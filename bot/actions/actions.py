@@ -40,6 +40,7 @@ class ActionSetupConversation(Action):
         return "action_setup_conversation"
 
     def run(self, dispatcher, tracker, domain):
+        logger.debug("action ActionSetupConversation called")
         user_email = tracker.get_slot("email")
         conversation_id = tracker.get_slot("conversation_id")
         try:
@@ -65,12 +66,6 @@ class ActionSetupConversation(Action):
 
         statistics = API.get_user_conversation_statistics(conversation_id, user.token)
         first_comment = API.get_next_comment(conversation_id, user.token)
-        logger.debug("INFO")
-        logger.debug(user)
-        logger.debug(statistics)
-        logger.debug(conversation_id)
-        logger.debug(first_comment)
-        logger.debug("INFO")
         return [
             SlotSet("number_voted_comments", statistics["votes"]),
             SlotSet(
@@ -88,6 +83,7 @@ class ActionFollowUpForm(Action):
         return "action_follow_up_form"
 
     def run(self, dispatcher, tracker, domain):
+        logger.debug("action ActionFollowUpForm called")
         vote = tracker.get_slot("vote")
 
         if vote == "parar":
@@ -117,6 +113,7 @@ class ActionAskVote(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
+        logger.debug("action ActionAskVote called")
         conversation_id = tracker.get_slot("conversation_id")
         token = tracker.get_slot("ej_user_token")
         try:
@@ -197,9 +194,9 @@ class ValidateVoteForm(FormValidationAction):
         domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate vote value."""
+        logger.debug("form validator ValidateVoteForm called")
         token = tracker.get_slot("ej_user_token")
         conversation_id = tracker.get_slot("conversation_id")
-        logger.debug(slot_value)
 
         dispatcher.utter_message(text=type(slot_value))
         if str(slot_value) in VOTE_VALUES:
@@ -244,11 +241,9 @@ class ActionGetConversationInfo(Action):
         return "action_get_conversation_info"
 
     def run(self, dispatcher, tracker, domain):
+        logger.debug("action ActionGetConversationInfo called")
         if tracker.get_latest_input_channel() == "socketio":
             bot_url = tracker.get_slot("url")
-            logger.debug("GET CONVERSATION ID")
-            logger.debug(bot_url)
-            logger.debug("GET CONVERSATION ID")
             try:
                 conversation_info = API.get_conversation_info_by_url(bot_url)
             except EJCommunicationError:
@@ -257,8 +252,8 @@ class ActionGetConversationInfo(Action):
                 return [FollowupAction("action_session_start")]
             if conversation_info:
                 # TODO: If a domain has more than one conversation, need to think how to deal with it
-                conversation_title = conversation_info[0]["conversation"]
-                conversation_id = conversation_info[0]["links"]["conversation"][-2]
+                conversation_text = conversation_info.get("conversation").get("text")
+                conversation_id = conversation_info.get("conversation").get("id")
 
             else:
                 dispatcher.utter_message(template="utter_ej_connection_doesnt_exist")
@@ -267,16 +262,14 @@ class ActionGetConversationInfo(Action):
         else:
             conversation_id = tracker.get_slot("conversation_id")
             if conversation_id:
-                logger.debug("INFO")
-                logger.debug(conversation_id)
-                conversation_title = API.get_conversation_title(conversation_id)
-                logger.debug(conversation_title)
+                conversation = API.get_conversation(conversation_id)
+                conversation_text = conversation.get("text")
             else:
                 dispatcher.utter_message(template="utter_no_selected_conversation")
                 return [FollowupAction("action_session_start")]
 
         return [
-            SlotSet("conversation_title", conversation_title),
+            SlotSet("conversation_title", conversation_text),
             SlotSet("conversation_id", conversation_id),
         ]
 
@@ -296,11 +289,7 @@ class ActionSetChannelInfo(Action):
         return "action_set_channel_info"
 
     def run(self, dispatcher, tracker, domain):
-        logger.debug("SET CHANNEL INFO")
-        logger.debug(tracker.latest_message["metadata"])
-        logger.debug(tracker.latest_message)
-        logger.debug(tracker.slots)
-        logger.debug("SET CHANNEL INFO")
+        logger.debug("action ActionSetChannelInfo called")
         channel = tracker.get_latest_input_channel()
 
         if tracker.get_latest_input_channel() == "rocketchat":
@@ -315,4 +304,27 @@ class ActionSetChannelInfo(Action):
         return [
             FollowupAction("action_get_conversation_info"),
             SlotSet("current_channel_info", channel),
+        ]
+
+class ActionSetConversationSlots(Action):
+    """
+    This action is called when the user whants to creates a participation link.
+    After start_group_interaction itent, this action is called.
+
+    return:
+        conversation_text and conversation_id slots
+    """
+    def name(self):
+        return "action_set_conversation_slots"
+
+    def run(self, dispatcher, tracker, domain):
+        logger.debug("action ActionSetConversationSlots called")
+        conversation_id = tracker.get_slot("conversation_id")
+        conversation_text = ""
+        if conversation_id:
+            conversation = API.get_conversation(conversation_id)
+            conversation_text = conversation.get("text")
+        return [
+            SlotSet("conversation_text", conversation_text),
+            SlotSet("conversation_id", conversation_id),
         ]

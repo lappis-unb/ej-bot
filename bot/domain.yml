@@ -2,8 +2,8 @@ version: "2.0"
 config:
   store_entities_as_slots: true
 session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+  session_expiration_time: 10
+  carry_over_slots_to_new_session: false
 intents:
   - agree:
       use_entities: true
@@ -65,6 +65,11 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: true
+  conversation_text:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: false
+    influence_conversation: false
   current_comment_id:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
@@ -122,9 +127,18 @@ responses:
   utter_welcome:
     - text: Olá, Muito prazer, eu sou a Duda!
     - channel: telegram
-      text: Olá muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ. \n A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. \n\n Caso queira começar uma nova coleta digite /selecionarconversa [id] . Se quiser participar, digite /participar
+      text: >
+        Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
+        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
+
+
+        /selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
+
+        /participar: Utilize esse comando para participar de uma coleta pré-selecionada;
   utter_introduce_ej:
-    - text: Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações.
+    - text: > 
+        Eu sou a assistente virtual da plataforma EJ. 
+        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações.
   utter_explain_how_to_participate:
     - text: Você pode participar de uma de nossas consultas pelo nosso site, site de parceiros ou até por aqui! Me manda um "oi" se quiser participar 😉
   utter_show_topic_of_discussion:
@@ -164,7 +178,9 @@ responses:
   utter_sent_comment:
     - text: Certo, já anotei seu comentário, muito obrigada pela sua contribuição!!
   utter_send_comment_error:
-    - text: Hmmm não sei o que aconteceu. \nEu não consegui salvar seu comentário
+    - text: > 
+        Hmmm não sei o que aconteceu. 
+        Eu não consegui salvar seu comentário
   utter_ask_send_comment_again:
     - text: Faz assim, tenta me mandar ele novamente mais tarde, pode ser?!
   utter_voted_all_comments:
@@ -189,14 +205,27 @@ responses:
   utter_help:
     - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
     - channel: telegram
-      text: A lista de comandos disponíveis atualmente é \n\n /selecionarconversa [id] - Escolha a conversa da EJ para gerarmos uma nova coleta \n\n /participar - Participe de uma coleta pré-selecionada.
+      text: > 
+        A lista de comandos disponíveis atualmente é: 
+        /selecionarconversa [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
+        /participar - Participe de uma coleta pré-selecionada.
   utter_explain_no_button_participation:
-    - text: Para concordar com um comentário, digite 1. \n\n Para discordar de um comentário, digite -1. \n\n Caso queira pular um comentário, digite 0.
+    - text: > 
+        Para concordar com um comentário, digite 1. 
+        Para discordar de um comentário, digite -1. 
+        Caso queira pular um comentário, digite 0.
   utter_explain_button_participation:
-    - text: Para concordar com um comentário, digite 1 ou clique no botão Concordar, para discordar de um comentário, digite -1 ou clique no botão Discordar. \n\n Caso queira pular um comentário, digite 0 ou clique no botão Pular.
+    - text: > 
+        Para concordar com um comentário, digite 1 ou clique no botão Concordar, para discordar de um comentário, digite -1 ou clique no botão Discordar. 
+        Caso queira pular um comentário, digite 0 ou clique no botão Pular.
   utter_send_telegram_generated_url:
     - channel: telegram
-      text: Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. \n\n Para participar basta clicar no link a seguir t.me/{bot_telegram_username}?start={conversation_id}
+      text: > 
+        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 
+
+        {conversation_text}.
+
+        Para participar basta clicar no link t.me/{bot_telegram_username}?start={conversation_id}.
   utter_no_selected_conversation:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
 actions:
@@ -206,6 +235,7 @@ actions:
   - action_setup_conversation
   - action_get_conversation_info
   - action_set_channel_info
+  - action_set_conversation_slots
 forms:
   vote_form:
     vote:

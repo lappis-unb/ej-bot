@@ -59,6 +59,7 @@ stories:
         - current_channel_info: 'telegram'
       - action: utter_welcome
       - intent: start_group_interaction
+      - action: action_set_conversation_slots
       - action: utter_send_telegram_generated_url
 
   - story: Participate on default conversation after generated link

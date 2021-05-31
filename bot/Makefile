@@ -46,4 +46,4 @@ api:
 
 # ACTIONS
 actions:
-	rasa run actions --actions actions -vv --debug
+	rasa run actions --actions actions -vv --debug --auto-reload

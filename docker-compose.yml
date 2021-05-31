@@ -26,7 +26,7 @@ services:
     <<: *bot-common-build
     <<: *bot-common
     volumes:
-      - ./bot/models/:/bot/models/
+      - ./bot/:/bot/
     command: "make train"
 
   # ================================= Bot =====================================
@@ -42,11 +42,10 @@ services:
       - 5006:5006
       - 5004:5004
       - 5005:5005
-    depends_on:
-      - actions
     # https://github.com/docker/compose/issues/6767
     networks:
       - bot-network
+    command: sh -c "make api"
 
   # ================================= Actions =================================
   # Rasa middleware used to connect with external APIs.
@@ -57,7 +56,7 @@ services:
     ports:
       - 5055:5055
     volumes:
-      - ./bot/actions:/bot/actions
+      - ./bot:/bot
     command: sh -c "make actions"
     environment:
       JWT_SECRET: RRrWj+H2QEqV9O7iKBrU0zuB

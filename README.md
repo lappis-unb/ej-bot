@@ -35,6 +35,7 @@ São utilizados comandos make para execução de diferentes contextos e ferramen
 | make run-shell | Abre o bot no terminal para realizar interações no terminal |
 | make run-x | Executa o bot no modo rasa x localmente, que fica disponível em localhost:5002|
 | make run-api | Executa o bot no modo api, é utilizado para poder rodar instâncias como webchat, telegram e rocketchat. A api fica disponível em localhost:5006 |
+| make run-actions | Executa a api de custom actions. É essa api que implementa toda a comunicação com a EJ e outros serviços externos ao bot. |
 | make run-webchat | Executa o  bot na versão web, fica disponível em localhost:8001 (requer a execução em paralelo do make run-api).|
 
 
