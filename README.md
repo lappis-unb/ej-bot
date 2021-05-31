@@ -142,7 +142,7 @@ Além disso, também é necessário atualizar as respectivas variáveis de ambie
 ```
 TELEGRAM_TOKEN=<token que o fatherbot vai gerar>
 TELEGRAM_BOT_NAME=<nome do bot de teste que você criou>
-TELEGRAM_WEBHOOK_URL=<url https do ngrok>
+TELEGRAM_WEBHOOK_URL=<url https do ngrok, que iremos gerar no próximo subtopico>
 ```
 Além de colocar os valores das váriveis, a seguinte seção do arquivo `bot/credentials.local.yml`
 deve ser descomentada:
@@ -153,20 +153,6 @@ custom_channels.TelegramInputChannel:
   webhook_url: "${TELEGRAM_WEBHOOK_URL}"
 ```
 
-Ao final da configuração, seu arquivo `env/auth.env` deve ficar parecido com isso:
-
-```
-JWT_SECRET=thisismysecret
-# Variables used in credentials.yml
-TELEGRAM_TOKEN=1787218495:AAG2Kk7Q3S6vwA6neptdO0uyon-OdhXXZIM
-TELEGRAM_BOT_NAME=DudaDavidBot
-TELEGRAM_WEBHOOK_URL= https://895f9f8dad71.ngrok.io/webhooks/telegram/webhook
-ROCKET_USER=
-ROCKET_PASSWORD=
-ROCKET_URL=
-```
-Vale lembrar que para a execução do bot no telegram basta a inclusão desses dados e a execução do comando `make run-api`.
-
 ## Configuração do ngrok
 
 Neste repositório, foi criado um bot para ambiente de desenvolvimento local, chamado duda_local_bot. Porém, o telegram aceita webhooks apenas que possuem o protocolo HTTPS.
@@ -176,7 +162,7 @@ Então para testá-la você pode fazer o download e instalação do aplicativo [
 $ ./ngrok http 5006
 ```
 Com isso, será criado um túnel e serão exibidas as seguintes informações no terminal, copie o
-endereço https que direciona para o localhost:5006 e o substitua na variável TELEGRAM_WEBHOOK_URL, 
+endereço https que direciona para o localhost:5006 e o substitua na variável `TELEGRAM_WEBHOOK_URL`, 
 não esquecendo de acrescentar o /webhooks/telegram/webhook ao final da URL (no exemplo ficaria:
 **https://10483b5f4.ngrok.io/webhooks/telegram/webhook**):
 
@@ -199,6 +185,26 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 
 Informações mais detalhadas das requisições realizadas para o endereço podem ser verificadas em
 http://127.0.0.1:4040.
+
+## Integração com a EJ
+
+O bot, no ambiente local, utiliza o arquivo `env/servers.env` para se conectar nos serviços necessários para seu pleno funcionamento. Um desses serviços é a API da EJ. Por padrão o bot irá se conectar na EJ de homologação, mas você pode apontar o bot para uma instância local da EJ. Basta alterar a variável `EJ_HOST`, para o ip:porta do servidor django. Por exemplo, `EJ_HOST=192.168.15.100:8000`. 
+
+
+Ao final da configuração, seu arquivo `env/auth.env` deve ficar parecido com isso:
+
+```
+JWT_SECRET=thisismysecret
+# Variables used in credentials.yml
+TELEGRAM_TOKEN=1787218495:AAG2Kk7Q3S6vwA6neptdO0uyon-OdhXXZIM
+TELEGRAM_BOT_NAME=DudaDavidBot
+TELEGRAM_WEBHOOK_URL=https://895f9f8dad71.ngrok.io/webhooks/telegram/webhook
+ROCKET_USER=
+ROCKET_PASSWORD=
+ROCKET_URL=
+```
+
+Para testar se seu bot do Telegram irá se conectar na EJ, basta subir a api do rasa via `make run-api`.
 
 ## Ambientes da duda
 
