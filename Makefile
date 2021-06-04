@@ -13,37 +13,39 @@ stop: ## Runs docker-compose stop commmand
 
 ############################## BOILERPLATE ##############################
 
-
-first-run: ## Build docker services, train models and put the bot to run on shell. Sucessful if by the end you can chat with the bot via terminal
-	build train run-shell 
-
 build-requirements:
-	docker build . --no-cache -f docker/requirements.Dockerfile -t botrequirements
+	docker build . -f docker/requirements.Dockerfile -t botrequirements
 
 build: build-requirements build-coach build-bot build-x
 
 build-bot:
-	docker-compose build --no-cache bot
+	docker-compose build bot
 
 build-x:
-	docker-compose build --no-cache x
+	docker-compose build x
 
 build-coach:
-	docker-compose build --no-cache coach
+	docker-compose build coach
 
-train: ## Generate a tar.gz file in bot/models/, that is used for the bot interpretation
+## Generate a tar.gz file in bot/models/, that is used for the bot interpretation
+train:
 	mkdir -p bot/models
 	docker-compose up coach
 
-run-duck: ## Run duckling server that extract entities such as email, number and urls
+## Run duckling server that extract entities such as email, number and urls
+run-duck:
 	docker-compose up -d duckling
+
+## Prepare bot image and train the first model
+prepare: build train
 
 ############################## ENVIRONMENTS ##############################
 
 run-shell: run-duck ## Run bot in shell, sucessful when shows "Bot loaded. Type a message and press enter (use '/stop' to exit): "    
 	docker-compose run --name bot bot make shell
 
-run-api: run-duck ## Run api locally, it is hosted in localhost:5006 and is used for webchat, telegram and rocketchat integrations
+## Run api locally, it is hosted in localhost:5006 and is used for webchat, telegram and rocketchat integrations
+run-api: run-duck
 	docker-compose up bot
 
 run-x: run-duck ## Run bot in rasa x mode locally, hosted in localhost:5002 
@@ -52,7 +54,8 @@ run-x: run-duck ## Run bot in rasa x mode locally, hosted in localhost:5002
 run-webchat: ## Run bot in web mode, hosted in localhost:8001
 	docker-compose up webchat
 
-run-actions: ## Run actions server, as an api avaiable in localhost:5055
+## Run actions server, as an api avaiable in localhost:5055
+run-actions: 
 	docker-compose up actions
 
 run-cron: ## Install and run cron for deleting models automatically

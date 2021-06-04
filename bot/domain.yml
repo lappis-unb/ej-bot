@@ -142,7 +142,10 @@ responses:
   utter_explain_how_to_participate:
     - text: Você pode participar de uma de nossas consultas pelo nosso site, site de parceiros ou até por aqui! Me manda um "oi" se quiser participar 😉
   utter_show_topic_of_discussion:
-    - text: No momento eu estava querendo saber a sua opinião a respeito de {conversation_title}.
+    - text: >
+        No momento, eu estava querendo saber a sua opinião a respeito do seguinte assunto:
+
+        {conversation_text}.
   utter_ask_user_particpate:
     - text: Topa um bate-papo comigo?
   utter_agreed_participation:

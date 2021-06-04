@@ -13,15 +13,16 @@ Dessa forma, o **EJ bot** permite a interação com conversas criadas no servido
 
 # Primeiros passos
 
-Para utilizar este projeto, é necessário primeiramente a instalação do docker e docker-compose.
+Para começar a conversar com a Duda é necessário primeiramente a instalação do docker e docker-compose. **O ambiente de desenvolvimento do bot foi homologado em distribuições linux Debian-like**. Instaladas as dependências necessárias, siga os seguintes passos:
 
-Depois de realizar o clone deste repositório, deve-se executar o comando:
+1. Abra quatro terminais;
+2. No primeiro execute o comando `make prepare`, espere o comando finalizar. Ele é responsável por gerar a imagem base para os containers do bot, actions e couch;
+3. Após a finalização do comando anterior, suba a api (no segundo terminal): `make run-api`;
+4. Agora, suba o servidor de actions (no terceiro terminal): `make run-actions`;
+5. Agora, subra o webchat (no quarto terminal): `make run-webchat`;
 
-```
-make first-run
-```
+Feito isso, você poderá interagir com bot acessando, no seu browser, o endereço `http://localhost:8001`. Mande um oi pra a Duda, que ela irá trazer comentários da EJ para que você responda. Por padrão, o bot irá se conectar no ambiente de homologação da EJ (https://ejplatform.pencillabs.com.br/). Para alterar esse comportamento, leia a subseção **Canais do Bot**. 
 
-Ao final deste comando, já será possível conversar com o bot! Esse é um jeito legal de fazer sua primeira interação com o repositório, e entender um pouco do objetivo do bot.
 
 # Fluxo de trabalho
 
@@ -30,13 +31,14 @@ São utilizados comandos make para execução de diferentes contextos e ferramen
 
 | Comando | Descrição |
 |----------------|-------------------------------------------------------------------------|
-| make first-run | Realiza o build do ambiente, o treinamento das modelos e já abre o bot no terminal. |
+| make prepare | Realiza o build do ambiente e o treinamento do primeiro modelo. |
 | make train | Realiza o treinamento das modelos. É necessário rodar esse comando sempre que há alterações nos arquivos de domain, nlu, stories, rules ou config.yml|
 | make run-shell | Abre o bot no terminal para realizar interações no terminal |
 | make run-x | Executa o bot no modo rasa x localmente, que fica disponível em localhost:5002|
 | make run-api | Executa o bot no modo api, é utilizado para poder rodar instâncias como webchat, telegram e rocketchat. A api fica disponível em localhost:5006 |
 | make run-actions | Executa a api de custom actions. É essa api que implementa toda a comunicação com a EJ e outros serviços externos ao bot. |
 | make run-webchat | Executa o  bot na versão web, fica disponível em localhost:8001 (requer a execução em paralelo do make run-api).|
+| make clean | Remove os containers e limpa o ambiente. |
 
 
 Para outros detalhes, a listagem e documentação dos comandos make disponíveis pode ser vista com o comando:
