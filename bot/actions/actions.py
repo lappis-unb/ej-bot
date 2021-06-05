@@ -306,6 +306,7 @@ class ActionSetChannelInfo(Action):
             SlotSet("current_channel_info", channel),
         ]
 
+
 class ActionSetConversationSlots(Action):
     """
     This action is called when the user whants to creates a participation link.
@@ -314,6 +315,7 @@ class ActionSetConversationSlots(Action):
     return:
         conversation_text and conversation_id slots
     """
+
     def name(self):
         return "action_set_conversation_slots"
 

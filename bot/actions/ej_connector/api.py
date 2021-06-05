@@ -46,7 +46,7 @@ class API:
         try:
             response = requests.get(conversation_url(conversation_id), headers=HEADERS)
             conversation = response.json()
-            if(len(conversation) == 0):
+            if len(conversation) == 0:
                 raise EJCommunicationError
             return conversation
         except:
@@ -57,9 +57,7 @@ class API:
         user = User(sender_id, name, email)
         try:
             response = requests.post(
-                REGISTRATION_URL,
-                data=user.serialize(),
-                headers=HEADERS,
+                REGISTRATION_URL, data=user.serialize(), headers=HEADERS,
             )
             user.token = response.json()["key"]
         except:
@@ -93,18 +91,9 @@ class API:
         if choice in VOTE_CHOICES:
             choice = VOTE_CHOICES[choice]
 
-        body = json.dumps(
-            {
-                "comment": comment_id,
-                "choice": choice,
-            }
-        )
+        body = json.dumps({"comment": comment_id, "choice": choice,})
         try:
-            response = requests.post(
-                VOTES_URL,
-                data=body,
-                headers=auth_headers(token),
-            )
+            response = requests.post(VOTES_URL, data=body, headers=auth_headers(token),)
             response = response.json()
         except Exception as e:
             raise EJCommunicationError
@@ -117,9 +106,7 @@ class API:
         )
         try:
             response = requests.post(
-                COMMENTS_URL,
-                data=body,
-                headers=auth_headers(token),
+                COMMENTS_URL, data=body, headers=auth_headers(token),
             )
             response = response.json()
         except Exception as e:
