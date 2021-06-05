@@ -63,16 +63,20 @@ run-cron: ## Install and run cron for deleting models automatically
 
 ############################## TESTS ##############################
 test: run-duck ## Run tests in bot/tests/test_stories.yml
-	docker-compose run --name bot --rm bot make test
+	docker-compose up -d bot
+	docker-compose exec bot make test
 
 test-actions: ## Run tests in bot/tests/ that  are in files of type .py (python files)
-	docker-compose run --rm bot make test-actions
+	docker-compose up -d bot
+	docker-compose exec bot make test-actions
 
-run-test-nlu:
-	docker-compose run --name bot --rm bot make test-nlu
+test-nlu:
+	docker-compose up -d bot
+	docker-compose exec bot make test-nlu
 
-run-test-core:
-	docker-compose run  --name bot --rm bot make test-core
+test-core:
+	docker-compose up -d bot
+	docker-compose exec bot make test-core
 
 
 validate:

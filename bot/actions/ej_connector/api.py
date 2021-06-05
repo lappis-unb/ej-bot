@@ -45,7 +45,10 @@ class API:
     def get_conversation(conversation_id):
         try:
             response = requests.get(conversation_url(conversation_id), headers=HEADERS)
-            return response.json()
+            conversation = response.json()
+            if(len(conversation) == 0):
+                raise EJCommunicationError
+            return conversation
         except:
             raise EJCommunicationError
 
