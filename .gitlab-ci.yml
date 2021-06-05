@@ -11,7 +11,7 @@ stages:
 
 style:
   before_script:
-    - pip install black
+    - pip install black==21.5b2
   stage: test
   script:
     - black --check .
