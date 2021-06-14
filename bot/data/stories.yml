@@ -15,20 +15,40 @@ stories:
       - checkpoint: check_start_interaction
       - intent: agree
       - action: utter_agreed_participation
-      - action: utter_ask_email
-      - action: utter_explain_ask_email
-      - action: utter_email_is_optional
-      - action: utter_send_email
+      - action: utter_ask_phone_number
+      - action: utter_explain_ask_phone_number
+      - action: utter_phone_number_is_optional
+      - action: utter_send_phone_number
       - checkpoint: check_explain_participation
 
-  - story: Activate vote form with user email
+  - story: User provides invalid phone number
+    steps:
+      - intent: invalid_phone_number
+      - action: utter_invalid_phone_number
+      - action: utter_ask_phone_number_again
+      - intent: phone_number
+        entities:
+          - phone_number
+      - action: action_setup_conversation
+      - action: utter_stop_conversation
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - action: action_follow_up_form
+      - action: utter_thanks_participation
+      - action: utter_goodbye
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
+
+  - story: Activate vote form with user phone number
     steps:
       - checkpoint: check_explain_participation
       - or:
         - intent: disagree
-        - intent: email
+        - intent: phone_number
           entities:
-            - email
+            - phone_number
       - action: action_setup_conversation
       - action: utter_stop_conversation
       - action: vote_form
@@ -110,35 +130,15 @@ stories:
       - action: utter_ask_user_particpate
       - intent: agree
       - action: utter_agreed_participation
-      - action: utter_ask_email
-      - action: utter_explain_ask_email
-      - action: utter_email_is_optional
-      - action: utter_send_email
+      - action: utter_ask_phone_number
+      - action: utter_explain_ask_phone_number
+      - action: utter_phone_number_is_optional
+      - action: utter_send_phone_number
       - or:
         - intent: disagree
-        - intent: email
+        - intent: phone_number
           entities:
-            - email
-      - action: action_setup_conversation
-      - action: utter_stop_conversation
-      - action: vote_form
-      - active_loop: vote_form
-      - active_loop: null
-      - action: action_follow_up_form
-      - action: utter_thanks_participation
-      - action: utter_goodbye
-      - action: utter_next_conversation
-      - action: utter_finish
-      - action: action_session_start
-
-  - story: User provides invalid email
-    steps:
-      - intent: invalid_email
-      - action: utter_invalid_email
-      - action: utter_ask_email_again
-      - intent: email
-        entities:
-          - email
+            - phone_number
       - action: action_setup_conversation
       - action: utter_stop_conversation
       - action: vote_form

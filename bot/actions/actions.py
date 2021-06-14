@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class ActionSetupConversation(Action):
     """
     Logs user in EJ and get their conversation statistic according to their account
-    If user provides an email, it will be used to generate login token. If not,
+    If user provides an phone number, it will be used to generate login token. If not,
     rasa conversation id will be used instead
 
     returns the following slots, filled:
@@ -41,11 +41,13 @@ class ActionSetupConversation(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionSetupConversation called")
-        user_email = tracker.get_slot("email")
+        user_phone_number = tracker.get_slot("phone_number")
         conversation_id = tracker.get_slot("conversation_id")
         try:
             last_intent = tracker.latest_message["intent"].get("name")
-            user_info = authenticate_user(user_email, last_intent, tracker.sender_id)
+            user_info = authenticate_user(
+                user_phone_number, last_intent, tracker.sender_id
+            )
             user = user_info["user"]
             dispatcher.utter_message(template=user_info["utter_name"])
 

@@ -17,7 +17,7 @@ from actions.ej_connector.api import (
 
 CONVERSATION_ID = "1"
 TOKEN = "mock_token_value"
-EMAIL = "email@email.com"
+PHONE_NUMBER = "61992852776"
 SENDER_ID = "mock_rasa_sender_id"
 
 
@@ -39,11 +39,11 @@ class APIClassTest(unittest.TestCase):
         assert response.token == response_value["key"]
 
     @patch("actions.ej_connector.api.requests.post")
-    def test_create_user_in_ej_with_email(self, mock_post):
+    def test_create_user_in_ej_with_phone_number(self, mock_post):
         response_value = {"key": "key_value"}
         mock_post.return_value = Mock(ok=True)
         mock_post.return_value.json.return_value = response_value
-        response = API.get_or_create_user(SENDER_ID, EMAIL, EMAIL)
+        response = API.get_or_create_user(SENDER_ID, PHONE_NUMBER, PHONE_NUMBER)
         assert response.token == response_value["key"]
 
     @patch("actions.ej_connector.api.requests.post")
@@ -52,13 +52,13 @@ class APIClassTest(unittest.TestCase):
         mock_post.return_value = Mock(ok=True)
         mock_post.return_value.json.return_value = response_value
         with pytest.raises(EJCommunicationError):
-            API.get_or_create_user(SENDER_ID, EMAIL, EMAIL)
+            API.get_or_create_user(SENDER_ID, PHONE_NUMBER, PHONE_NUMBER)
 
     @patch("actions.ej_connector.api.requests.post")
     def test_create_user_returns_forbidden_response(self, mock_post):
         mock_post.return_value = Mock(status=401), "forbidden"
         with pytest.raises(EJCommunicationError):
-            API.get_or_create_user(SENDER_ID, EMAIL, EMAIL)
+            API.get_or_create_user(SENDER_ID, PHONE_NUMBER, PHONE_NUMBER)
 
     @patch("actions.ej_connector.api.requests.get")
     def test_get_conversation(self, mock_get):
@@ -208,11 +208,12 @@ class UserClassTest(unittest.TestCase):
         assert user.name == ""
         assert user.display_name == ""
 
-    def test_user_init_with_mail(self):
-        user = User(SENDER_ID, email=EMAIL)
-        assert user.email == EMAIL
-        assert user.password == EMAIL
-        assert user.password_confirm == EMAIL
+    def test_user_init_with_phone_number(self):
+        user = User(SENDER_ID, phone_number=PHONE_NUMBER)
+        assert user.phone_number == PHONE_NUMBER
+        assert "-rasa@mail.com" in user.email
+        assert "-rasa" in user.password
+        assert "-rasa" in user.password_confirm
         assert user.stats == {}
         assert user.name == ""
         assert user.display_name == ""
@@ -224,12 +225,12 @@ class UserClassTest(unittest.TestCase):
         dict_user = json.loads(serialized_user)
         assert "-rasa@mail.com" in dict_user["email"]
 
-    def test_user_serializer_with_mail(self):
-        user = User(SENDER_ID, email=EMAIL)
+    def test_user_serializer_with_phone_number(self):
+        user = User(SENDER_ID, phone_number=PHONE_NUMBER)
         serialized_user = user.serialize()
         assert type(serialized_user) == str
         dict_user = json.loads(serialized_user)
-        assert dict_user["email"] == EMAIL
+        assert dict_user["phone_number"] == PHONE_NUMBER
 
 
 class EjUrlsGenerationClassTest(unittest.TestCase):

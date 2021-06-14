@@ -14,7 +14,8 @@ pipeline:
   - name: ResponseSelector
   - name: "DucklingEntityExtractor"
     url: ${RASA_DUCKLING_HTTP_URL}
-    dimensions: ["email", "number", "url"]
+    locale: en_US
+    dimensions: ["url", "phone-number"]
 policies:
   - name: TEDPolicy
     max_history: 10

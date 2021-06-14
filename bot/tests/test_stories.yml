@@ -37,7 +37,7 @@ stories:
   - action: utter_finish
   - action: action_session_start
 
-- story: User agree to use email
+- story: User agree to use phone number
   steps:
   - user: |
       oi
@@ -50,15 +50,15 @@ stories:
       sim
     intent: agree
   - action: utter_agreed_participation
-  - action: utter_ask_email
-  - action: utter_explain_ask_email
-  - action: utter_email_is_optional
-  - action: utter_send_email
+  - action: utter_ask_phone_number
+  - action: utter_explain_ask_phone_number
+  - action: utter_phone_number_is_optional
+  - action: utter_send_phone_number
   - user: |
-      meu email: [email@user.com](email)
-    intent: email
+      [61995213456](phone-number)
+    intent: phone_number
   - slot_was_set:
-    - email: email@user.com
+    - phone-number: "61995213456"
   - action: action_setup_conversation
   - action: utter_stop_conversation
   - action: vote_form
@@ -71,7 +71,7 @@ stories:
   - action: utter_finish
   - action: action_session_start
 
-- story: User want to participate without email
+- story: User want to participate without phone number
   steps:
   - user: |
       oi
@@ -84,10 +84,10 @@ stories:
       sim
     intent: agree
   - action: utter_agreed_participation
-  - action: utter_ask_email
-  - action: utter_explain_ask_email
-  - action: utter_email_is_optional
-  - action: utter_send_email
+  - action: utter_ask_phone_number
+  - action: utter_explain_ask_phone_number
+  - action: utter_phone_number_is_optional
+  - action: utter_send_phone_number
   - user: |
       não
     intent: disagree
@@ -103,7 +103,7 @@ stories:
   - action: utter_finish
   - action: action_session_start
 
-- story: User provide invalid email
+- story: User provide invalid phone number
   steps:
   - user: |
       olá
@@ -116,15 +116,15 @@ stories:
       sim
     intent: agree
   - action: utter_agreed_participation
-  - action: utter_ask_email
-  - action: utter_explain_ask_email
-  - action: utter_email_is_optional
-  - action: utter_send_email
+  - action: utter_ask_phone_number
+  - action: utter_explain_ask_phone_number
+  - action: utter_phone_number_is_optional
+  - action: utter_send_phone_number
   - user: |
-      @mario
-    intent: invalid_email
-  - action: utter_invalid_email
-  - action: utter_ask_email_again
+      aaaaaa
+    intent: invalid_phone_number
+  - action: utter_invalid_phone_number
+  - action: utter_ask_phone_number_again
 
 - story: Start interaction with bot via webchat
   steps:

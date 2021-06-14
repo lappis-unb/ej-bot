@@ -13,11 +13,11 @@ intents:
       use_entities: true
   - start:
       use_entities: true
-  - email:
+  - phone_number:
+      use_entities: true
+  - invalid_phone_number:
       use_entities: true
   - out_of_context:
-      use_entities: true
-  - invalid_email:
       use_entities: true
   - stop:
       use_entities: true
@@ -34,11 +34,10 @@ intents:
   - participate_on_telegram:
       use_entities: true
 entities:
-  - email
-  - number
   - url
   - current_channel_info
   - conversation_id
+  - phone-number
 slots:
   change_comment:
     type: rasa.shared.core.slots.BooleanSlot
@@ -55,8 +54,8 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  email:
-    type: rasa.shared.core.slots.TextSlot
+  phone-number:
+    type: rasa.shared.core.slots.FloatSlot
     initial_value: null
     auto_fill: true
     influence_conversation: true
@@ -106,8 +105,6 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  number:
-    type: rasa.shared.core.slots.FloatSlot
   current_channel_info:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
@@ -155,21 +152,21 @@ responses:
     - text: Poooxa ☹️
     - text: Ah que pena ☹️
   utter_stop_conversation:
-    - text: Se você não quiser mais conversar comigo ou quiser terminar conversa é so me falar!!(é só escrever PARAR)
-  utter_ask_email:
-    - text: Você poderia me passar seu email?
-  utter_explain_ask_email:
+    - text: Se você não quiser mais conversar comigo ou quiser terminar a conversa é so me falar! (é só escrever PARAR)
+  utter_ask_phone_number:
+    - text: Você poderia me passar seu telefone com DDD?
+  utter_explain_ask_phone_number:
     - text: Eu juro que não vou mandar spam. É só uma forma de eu poder ligar você a sua opinião
-  utter_email_is_optional:
+  utter_phone_number_is_optional:
     - text: Ah e se você não quiser não tem problema, eu mantenho a sua identidade secreta 🤫
-  utter_send_email:
-    - text: Já pode mandar seu email aqui
-  utter_invalid_email:
+  utter_send_phone_number:
+    - text: Já pode mandar seu telefone com DDD aqui
+  utter_invalid_phone_number:
     - text: Hmmm acho que você escreveu alguma coisa errada 😕
-  utter_ask_email_again:
-    - text: Pode enviar seu email novamente, por favor?
-  utter_got_email:
-    - text: Já anotei aqui o seu email, obrigada 😉
+  utter_ask_phone_number_again:
+    - text: Pode enviar seu telefone novamente, por favor?
+  utter_got_phone_number:
+    - text: Já anotei aqui o seu telefone, obrigada 😉
   utter_user_want_anonymous:
     - text: Beleza, vamos prosseguir!
   utter_vote_received:
