@@ -17,16 +17,16 @@ def define_vote_utter(metadata, message):
     return message
 
 
-def authenticate_user(user_email, last_intent, current_rasa_conversation_id):
+def authenticate_user(user_phone_number, last_intent, current_rasa_conversation_id):
     """
-    Differentiate user type of login (using email or anonymous)
+    Differentiate user type of login (using phone number or anonymous)
     providing the current flow for conversation
     """
-    if user_email and last_intent == "email":
+    if user_phone_number and last_intent == "phone_number":
         user = API.get_or_create_user(
-            current_rasa_conversation_id, user_email, user_email
+            current_rasa_conversation_id, user_phone_number, user_phone_number
         )
-        utter_name = "utter_got_email"
+        utter_name = "utter_got_phone_number"
     else:
         user = API.get_or_create_user(current_rasa_conversation_id)
         utter_name = "utter_user_want_anonymous"

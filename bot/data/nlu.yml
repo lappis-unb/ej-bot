@@ -84,19 +84,20 @@ nlu:
       - passa
       - próxima pergunta
       - Pular
-
-  - intent: email
+  
+  - intent: phone_number
     examples: |
-      - meu email é nome@dominio.com
-      - email@nome.com
-      - email: esteemail@outroservidor.com
-      - meu email: email@email.com.br
-      - tudo bem, meu email é email@nome.com
-      - esse é o meu email email@nome.com
-      - anota ai meu email email@nome.com
-      - sh@email.com.br
-      - meu email@email.com.br
-      - nos@email.com.br
+      - (61)991287365
+      - (61)994028900
+      - (62)984638274
+      - (11)986542677
+      - (86)981274536
+      - (31)982358919
+      - 61992852776
+      - 61992337635
+      - 87986211267
+      - 33998312511
+      - 11999654232
 
   - intent: stop
     examples: |
@@ -114,22 +115,15 @@ nlu:
       - podemos parar
       - cansei de responder
       - não quero mais responder
-
-  - intent: invalid_email
+  
+  - intent: invalid_phone_number
     examples: |
-      - @wlor
-      - @algumacoisa.
-      - @nome.
-      - roberto@email
-      - nome@algo
-      - roberto@
-      - maria@
-      - @joao
-      - @joao.
-      - meu email é @nome
-      - email: @maria
-      - meu email: roberto@
-      - email@emali
+      - 123
+      - 00000
+      - 111111
+      - asdhja
+      - aaaaaa
+      - telefone
 
   - intent: url
     examples: |

@@ -53,8 +53,8 @@ class API:
             raise EJCommunicationError
 
     @staticmethod
-    def get_or_create_user(sender_id, name="Participante anônimo", email=""):
-        user = User(sender_id, name, email)
+    def get_or_create_user(sender_id, name="Participante anônimo", phone_number=""):
+        user = User(sender_id, name, phone_number)
         try:
             response = requests.post(
                 REGISTRATION_URL,
