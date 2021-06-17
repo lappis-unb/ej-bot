@@ -271,7 +271,7 @@ class ActionGetConversationInfo(Action):
                 return [FollowupAction("action_session_start")]
 
         return [
-            SlotSet("conversation_title", conversation_text),
+            SlotSet("conversation_text", conversation_text),
             SlotSet("conversation_id", conversation_id),
         ]
 

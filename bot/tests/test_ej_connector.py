@@ -63,14 +63,12 @@ class APIClassTest(unittest.TestCase):
     @patch("actions.ej_connector.api.requests.get")
     def test_get_conversation(self, mock_get):
         response_value = {
-            "title": "This is the conversation title",
             "text": "This is the conversation title",
             "links": {"self": "http://localhost:8000/api/v1/conversations/1/"},
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = response_value
         response = API.get_conversation(CONVERSATION_ID)
-        assert response.get("title") == response_value["title"]
         assert response.get("text") == response_value["text"]
 
     @patch("actions.ej_connector.api.requests.get")

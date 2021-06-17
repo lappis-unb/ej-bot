@@ -100,11 +100,6 @@ slots:
       - discordar
       - pular
       - parar
-  conversation_title:
-    type: rasa.shared.core.slots.TextSlot
-    initial_value: null
-    auto_fill: true
-    influence_conversation: false
   current_channel_info:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
