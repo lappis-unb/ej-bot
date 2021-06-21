@@ -44,7 +44,7 @@ deploy:
   script:
     - /bin/sh -c 'git clone -b stable --depth=1 https://gitlab+deploy-token-155341:xWz-bGxYnvTLcZCzsHEG@gitlab.com/pencillabs/infraestructure/core.git'
     - cd core
-    - bin/pencilctl build rasa -e dev -c prod --no-cache --push
+    - bin/pencilctl build rasa -e dev -c prod -b develop --no-cache --push
   only:
     refs:
-      - master
+      - develop
