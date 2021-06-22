@@ -18,7 +18,7 @@ train-nlu:
 
 # CORE
 train:
-	rasa train -vv
+	rasa train -vv --domain $(domain)
 
 # TESTS
 test:
