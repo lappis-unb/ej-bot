@@ -27,8 +27,7 @@ services:
     <<: *bot-common
     volumes:
       - ./bot/:/bot/
-    command: "make train"
-
+    command: "make train domain=${domain}"
   # ================================= Bot =====================================
   # Rasa open source server
   bot:

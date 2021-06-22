@@ -1,0 +1,238 @@
+version: "2.0"
+config:
+  store_entities_as_slots: true
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+intents:
+  - agree:
+      use_entities: true
+  - disagree:
+      use_entities: true
+  - pass:
+      use_entities: true
+  - start:
+      use_entities: true
+  - phone_number:
+      use_entities: true
+  - invalid_phone_number:
+      use_entities: true
+  - out_of_context:
+      use_entities: true
+  - stop:
+      use_entities: true
+  - welcome:
+      use_entities: true
+  - start_group_interaction:
+      use_entities: true
+  - url:
+      use_entities: true
+  - help:
+      use_entities: true
+  - start_with_conversation_id:
+      use_entities: true
+  - participate_on_telegram:
+      use_entities: true
+entities:
+  - url
+  - current_channel_info
+  - conversation_id
+  - phone-number
+slots:
+  change_comment:
+    type: rasa.shared.core.slots.BooleanSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  comment_text:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  ej_user_token:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  phone-number:
+    type: rasa.shared.core.slots.FloatSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: true
+  conversation_id:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: true
+  conversation_text:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: false
+    influence_conversation: false
+  current_comment_id:
+    type: rasa.shared.core.slots.FloatSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+    max_value: 1.0
+    min_value: 0.0
+  number_comments:
+    type: rasa.shared.core.slots.FloatSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+    max_value: 1.0
+    min_value: 0.0
+  number_voted_comments:
+    type: rasa.shared.core.slots.FloatSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+    max_value: 1.0
+    min_value: 0.0
+  vote:
+    type: rasa.shared.core.slots.CategoricalSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+    values:
+      - concordar
+      - discordar
+      - pular
+      - parar
+  current_channel_info:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: true
+  url:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  bot_telegram_username:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+responses:
+  utter_welcome:
+    - text: Olá, Muito prazer, eu sou a Duda!
+    - channel: telegram
+      text: >
+        Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
+        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
+
+
+        /selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
+
+        /participar: Utilize esse comando para participar de uma coleta pré-selecionada;
+  utter_introduce_ej:
+    - text: > 
+        Eu sou a assistente virtual da plataforma EJ. 
+        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações.
+  utter_explain_how_to_participate:
+    - text: Você pode participar de uma de nossas consultas pelo nosso site, site de parceiros ou até por aqui! Me manda um "oi" se quiser participar 😉
+  utter_show_topic_of_discussion:
+    - text: >
+        No momento, eu estava querendo saber a sua opinião a respeito do seguinte assunto:
+
+        {conversation_text}.
+  utter_ask_user_particpate:
+    - text: Topa um bate-papo comigo?
+  utter_agreed_participation:
+    - text: Ah maravilha 😄
+    - text: Eu agradeço muito!
+  utter_disagreed_participation:
+    - text: Poooxa ☹️
+    - text: Ah que pena ☹️
+  utter_stop_conversation:
+    - text: Se você não quiser mais conversar comigo ou quiser terminar a conversa é so me falar! (é só escrever PARAR)
+  utter_ask_phone_number:
+    - text: Você poderia me passar seu telefone com DDD?
+  utter_explain_ask_phone_number:
+    - text: Eu juro que não vou mandar spam. É só uma forma de eu poder ligar você a sua opinião
+  utter_phone_number_is_optional:
+    - text: Ah e se você não quiser não tem problema, eu mantenho a sua identidade secreta 🤫
+  utter_send_phone_number:
+    - text: Já pode mandar seu telefone com DDD aqui
+  utter_invalid_phone_number:
+    - text: Hmmm acho que você escreveu alguma coisa errada 😕
+  utter_ask_phone_number_again:
+    - text: Pode enviar seu telefone novamente, por favor?
+  utter_got_phone_number:
+    - text: Já anotei aqui o seu telefone, obrigada 😉
+  utter_user_want_anonymous:
+    - text: Beleza, vamos prosseguir!
+  utter_vote_received:
+    - text: Anotado!
+    - text: Anotei aqui.
+    - text: Entendo, registrado.
+  utter_out_of_context:
+    - text: Desculpe, não sei se entendi 😕
+  utter_sent_comment:
+    - text: Certo, já anotei seu comentário, muito obrigada pela sua contribuição!!
+  utter_send_comment_error:
+    - text: > 
+        Hmmm não sei o que aconteceu. 
+        Eu não consegui salvar seu comentário
+  utter_ask_send_comment_again:
+    - text: Faz assim, tenta me mandar ele novamente mais tarde, pode ser?!
+  utter_voted_all_comments:
+    - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
+  utter_thanks_participation:
+    - text: Eu fico muito feliz por você ter participado 🤗!
+    - text: Muito obrigada pela sua participação 🤗🤗🤗
+  utter_stopped:
+    - text: Só de você ter me respondido ja me ajudou, muito obrigada!
+  utter_next_conversation:
+    - text: Depois conversamos mais 😘
+  utter_finish:
+    - text: Ah quando quiser trocar uma ideia é só me mandar um "Oi".
+  utter_goodbye:
+    - text: Pode deixar que te mantenho por dentro sobre as novidades sobre esse assunto
+  utter_ej_communication_error:
+    - text: Opa, parece que não estou conseguindo acessar nosso servidor.
+  utter_error_try_again_later:
+    - text: Tive um problema técnico, por favor tente participar mais tarde.
+  utter_ej_connection_doesnt_exist:
+    - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
+  utter_help:
+    - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
+    - channel: telegram
+      text: > 
+        A lista de comandos disponíveis atualmente é: 
+        /selecionarconversa [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
+        /participar - Participe de uma coleta pré-selecionada.
+  utter_explain_no_button_participation:
+    - text: > 
+        Para concordar com um comentário, digite 1. 
+        Para discordar de um comentário, digite -1. 
+        Caso queira pular um comentário, digite 0.
+  utter_explain_button_participation:
+    - text: > 
+        Para concordar com um comentário, digite 1 ou clique no botão Concordar, para discordar de um comentário, digite -1 ou clique no botão Discordar. 
+        Caso queira pular um comentário, digite 0 ou clique no botão Pular.
+  utter_send_telegram_generated_url:
+    - channel: telegram
+      text: > 
+        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 
+
+        {conversation_text}.
+
+        Para participar basta clicar no link t.me/{bot_telegram_username}?start={conversation_id}.
+  utter_no_selected_conversation:
+    - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
+actions:
+  - action_ask_vote
+  - action_follow_up_form
+  - validate_vote_form
+  - action_setup_conversation
+  - action_get_conversation_info
+  - action_set_channel_info
+  - action_set_conversation_slots
+forms:
+  vote_form:
+    vote:
+      - type: from_text
+e2e_actions: []

@@ -16,7 +16,7 @@ Dessa forma, o **EJ bot** permite a interação com conversas criadas no servido
 Para começar a conversar com a Duda é necessário primeiramente a instalação do docker e docker-compose. **O ambiente de desenvolvimento do bot foi homologado em distribuições linux Debian-like**. Instaladas as dependências necessárias, siga os seguintes passos:
 
 1. Abra quatro terminais;
-2. No primeiro execute o comando `make prepare`, espere o comando finalizar. Ele é responsável por gerar a imagem base para os containers do bot, actions e couch;
+2. No primeiro execute o comando `make prepare`, espere o comando finalizar. Ele é responsável por gerar a imagem base para os containers do bot, actions e couch. O `make prepare` usa como padrão o domínio domain.default.yml. Para especificar outro domínio, por exemplo o do boca de lobo, é só especificar o dominio da seguinte forma: `make prepare domain=bocadelobo`;
 3. Após a finalização do comando anterior, suba a api (no segundo terminal): `make run-api`;
 4. Agora, suba o servidor de actions (no terceiro terminal): `make run-actions`;
 5. Agora, subra o webchat (no quarto terminal): `make run-webchat`;
@@ -31,8 +31,8 @@ São utilizados comandos make para execução de diferentes contextos e ferramen
 
 | Comando | Descrição |
 |----------------|-------------------------------------------------------------------------|
-| make prepare | Realiza o build do ambiente e o treinamento do primeiro modelo. |
-| make train | Realiza o treinamento das modelos. É necessário rodar esse comando sempre que há alterações nos arquivos de domain, nlu, stories, rules ou config.yml|
+| make prepare | Realiza o build do ambiente e o treinamento do primeiro modelo. Sem especificar o domínio, é utilizado o domínio padrão (domain.default.yml). Para especificar outro domínio, por exemplo o boca de lobo, é necessário especificá-lo da seguinte forma: `make prepare domain=bocadelobo`. No momento, existem dois domínios diferentes, o `default` e o `bocadelobo`.|
+| make train | Realiza o treinamento dos modelos. É necessário rodar esse comando sempre que há alterações nos arquivos de domain, nlu, stories, rules ou config.yml. Sem especificar o domínio, é utilizado para o treinamento o domínio padrão (domain.default.yml). Para especificar outro domínio, por exemplo o boca de lobo, é necessário especificá-lo da seguinte forma: `make train domain=bocadelobo`. No momento, existem dois domínios diferentes, o `default` e o `bocadelobo`.|
 | make run-shell | Abre o bot no terminal para realizar interações no terminal |
 | make run-x | Executa o bot no modo rasa x localmente, que fica disponível em localhost:5002|
 | make run-api | Executa o bot no modo api, é utilizado para poder rodar instâncias como webchat, telegram e rocketchat. A api fica disponível em localhost:5006 |

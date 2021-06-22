@@ -1,5 +1,5 @@
 current_dir := $(shell pwd)
-user := $(shell whoami)
+user := $(shell whoami) 
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -30,8 +30,7 @@ build-coach:
 ## Generate a tar.gz file in bot/models/, that is used for the bot interpretation
 train:
 	mkdir -p bot/models
-	docker-compose up coach
-
+	domain=$(if $(findstring bocadelobo, $(domain)),domain.bocadelobo.yml,domain.default.yml) docker-compose up coach
 ## Run duckling server that extract entities such as email, number and urls
 run-duck:
 	docker-compose up -d duckling
@@ -80,10 +79,10 @@ test-core:
 
 
 validate:
-	docker-compose run  --name bot --rm bot rasa data validate --domain domain.yml --data data/ -vv
+	docker-compose run  --name bot --rm bot rasa data validate --domain $(if $(findstring bocadelobo, $(domain)),domain.$(domain).yml,domain.default.yml) --data data/ -vv
 
 visualize:
-	docker-compose run --name coach --rm  -v $(current_dir)/bot:/coach coach rasa visualize --domain domain.yml --stories data/stories.md --config config.yml --nlu data/nlu.md --out ./graph.html -vv
+	docker-compose run --name coach --rm  -v $(current_dir)/bot:/coach coach rasa visualize --domain $(if $(findstring bocadelobo, $(domain)),domain.$(domain).yml,domain.default.yml) --stories data/stories.md --config config.yml --nlu data/nlu.md --out ./graph.html -vv
 	$(info )
 	$(info Caso o FIREFOX não seja iniciado automáticamente, abra o seguinte arquivo com seu navegador:)
 	$(info bot/graph.html)
