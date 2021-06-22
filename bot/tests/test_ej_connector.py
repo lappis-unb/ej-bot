@@ -61,6 +61,34 @@ class APIClassTest(unittest.TestCase):
             API.get_or_create_user(SENDER_ID, PHONE_NUMBER, PHONE_NUMBER)
 
     @patch("actions.ej_connector.api.requests.get")
+    def test_get_conversations(self, mock_get):
+        response_value = {
+            "text": "This is the conversation title",
+            "id": "1",
+        }
+        mock_get.return_value = Mock(ok=True)
+        mock_get.return_value.json.return_value = response_value
+        response = API.get_conversations()
+        assert response.get("text") == response_value["text"]
+        assert response.get("id") == response_value["id"]
+
+    @patch("actions.ej_connector.api.requests.get")
+    def test_get_conversations_ej_invalid_response(self, mock_get):
+        mock_get.return_value = Mock(status=500), "internal server error"
+        with pytest.raises(EJCommunicationError):
+            API.get_conversations()
+
+    @patch("actions.ej_connector.api.requests.get")
+    def test_get_unavailable_conversations(self, mock_get):
+        response_value = {
+            "count": 0,
+        }
+        mock_get.return_value = Mock(ok=True)
+        mock_get.return_value.json.return_value = response_value
+        response = API.get_conversations()
+        assert response.get("count") == response_value["count"]
+
+    @patch("actions.ej_connector.api.requests.get")
     def test_get_conversation(self, mock_get):
         response_value = {
             "text": "This is the conversation title",

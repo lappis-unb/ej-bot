@@ -9,6 +9,7 @@ HEADERS = {
 VOTE_CHOICES = {"Pular": 0, "Concordar": 1, "Discordar": -1}
 HOST = os.getenv("EJ_HOST")
 API_URL = f"{HOST}/api/v1"
+CONVERSATIONS_URL = f"{API_URL}/conversations/"
 REGISTRATION_URL = f"{HOST}/rest-auth/registration/"
 VOTES_URL = f"{API_URL}/votes/"
 COMMENTS_URL = f"{API_URL}/comments/"
@@ -47,6 +48,17 @@ class API:
             response = requests.get(conversation_url(conversation_id), headers=HEADERS)
             conversation = response.json()
             if len(conversation) == 0:
+                raise EJCommunicationError
+            return conversation
+        except:
+            raise EJCommunicationError
+
+    @staticmethod
+    def get_conversations():
+        try:
+            response = requests.get(CONVERSATIONS_URL, headers=HEADERS)
+            conversation = response.json()
+            if response.status_code == 500:
                 raise EJCommunicationError
             return conversation
         except:
