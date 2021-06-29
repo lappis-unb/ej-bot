@@ -85,19 +85,24 @@ nlu:
       - próxima pergunta
       - Pular
   
+  - regex: regex_phone_number
+    examples: |
+      - ^\(?\d{2}\)?[\s-]?[\s9]?\d{4}-?\d{4}$
+
   - intent: phone_number
     examples: |
-      - (61)991287365
-      - (61)994028900
-      - (62)984638274
-      - (11)986542677
-      - (86)981274536
-      - (31)982358919
-      - 61992852776
-      - 61992337635
-      - 87986211267
-      - 33998312511
-      - 11999654232
+      - meu número é [61981167578](regex_phone_number)
+      - [61992852776](regex_phone_number)
+      - [(61)998476538](regex_phone_number)
+      - [(62)991287365](regex_phone_number)
+      - [(11)994028900](regex_phone_number)
+      - [(86)984638274](regex_phone_number)
+      - [(21)986542677](regex_phone_number)
+      - [(31)981274536](regex_phone_number)
+      - [61992337635](regex_phone_number)
+      - [87986211267](regex_phone_number)
+      - [33998312511](regex_phone_number)
+      - [11999654232](regex_phone_number)
 
   - intent: stop
     examples: |
@@ -124,6 +129,18 @@ nlu:
       - asdhja
       - aaaaaa
       - telefone
+      - 111111111111111111
+      - ldhuahsduashd
+      - opa
+      - 6161
+      - 0000000000000000000000000
+      - 0000000000
+      - 01213231223123123213213
+      - rsrasdashduasd
+      - adahsudsahdu
+      - nao interessa
+      - 68numero
+      - 54554354343543453535353534
 
   - intent: url
     examples: |

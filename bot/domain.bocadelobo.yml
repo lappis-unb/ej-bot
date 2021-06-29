@@ -37,7 +37,7 @@ entities:
   - url
   - current_channel_info
   - conversation_id
-  - phone-number
+  - regex_phone_number
 slots:
   change_comment:
     type: rasa.shared.core.slots.BooleanSlot
@@ -54,7 +54,7 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  phone-number:
+  regex_phone_number:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
     auto_fill: true
