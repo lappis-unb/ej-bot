@@ -28,7 +28,7 @@ stories:
       - action: utter_ask_phone_number_again
       - intent: phone_number
         entities:
-          - phone_number
+          - regex_phone_number
       - action: action_setup_conversation
       - action: utter_stop_conversation
       - action: vote_form
@@ -48,7 +48,7 @@ stories:
         - intent: disagree
         - intent: phone_number
           entities:
-            - phone_number
+            - regex_phone_number
       - action: action_setup_conversation
       - action: utter_stop_conversation
       - action: vote_form
@@ -138,7 +138,7 @@ stories:
         - intent: disagree
         - intent: phone_number
           entities:
-            - phone_number
+            - regex_phone_number
       - action: action_setup_conversation
       - action: utter_stop_conversation
       - action: vote_form

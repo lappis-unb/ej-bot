@@ -8,6 +8,11 @@ pipeline:
     analyzer: "char_wb"
     min_ngram: 1
     max_ngram: 4
+  - name: RegexEntityExtractor
+    case_sensitive: False
+    use_lookup_tables: False
+    use_regexes: True
+    "use_word_boundaries": True
   - name: DIETClassifier
     epochs: 55
   - name: EntitySynonymMapper
@@ -15,7 +20,8 @@ pipeline:
   - name: "DucklingEntityExtractor"
     url: ${RASA_DUCKLING_HTTP_URL}
     locale: en_US
-    dimensions: ["url", "phone-number"]
+    dimensions: ["url"]
+
 policies:
   - name: TEDPolicy
     max_history: 10
