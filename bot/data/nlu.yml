@@ -10,6 +10,13 @@ nlu:
       - selecionarconversa conversa [56](conversation_id)
       - selecionarconversa id [433](conversation_id)
 
+  - intent: display_conversations
+    examples: |
+      - mostrarlista
+      - lista
+      - listar
+      - listarconversas
+
   - intent: start
     examples: |
       - começar a conversar
@@ -60,6 +67,7 @@ nlu:
       - pode ser
       - bora
       - Concordar
+      
   - intent: disagree
     examples: |
       - não

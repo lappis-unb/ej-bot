@@ -78,6 +78,8 @@ stories:
       - slot_was_set:
         - current_channel_info: 'telegram'
       - action: utter_welcome
+      - intent: display_conversations
+      - action: action_get_conversations
       - intent: start_group_interaction
       - action: action_set_conversation_slots
       - action: utter_send_telegram_generated_url
