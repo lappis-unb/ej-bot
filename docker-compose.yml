@@ -28,6 +28,7 @@ services:
     volumes:
       - ./bot/:/bot/
     command: "make train domain=${domain}"
+
   # ================================= Bot =====================================
   # Rasa open source server
   bot:
@@ -44,7 +45,7 @@ services:
     # https://github.com/docker/compose/issues/6767
     networks:
       - bot-network
-    command: sh -c "make api"
+    command: "run --enable-api --cors *"
 
   # ================================= Actions =================================
   # Rasa middleware used to connect with external APIs.
@@ -56,7 +57,7 @@ services:
       - 5055:5055
     volumes:
       - ./bot:/bot
-    command: sh -c "make actions"
+    command: "run actions"
     environment:
       JWT_SECRET: RRrWj+H2QEqV9O7iKBrU0zuB
     networks:
@@ -78,7 +79,7 @@ services:
       - GIT_PYTHON_REFRESH=quiet
     depends_on:
       - actions
-    command: sh -c "make x"
+    command: "x"
     networks:
       - bot-network
 
