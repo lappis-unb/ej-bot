@@ -39,7 +39,7 @@ entities:
   - url
   - current_channel_info
   - conversation_id
-  - phone-number
+  - regex_phone_number
 slots:
   change_comment:
     type: rasa.shared.core.slots.BooleanSlot
@@ -56,7 +56,7 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  phone-number:
+  regex_phone_number:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
     auto_fill: true
@@ -217,7 +217,6 @@ responses:
   utter_no_conversations:
     - text: >
         Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
-
   utter_explain_no_button_participation:
     - text: > 
         Para concordar com um comentário, digite 1. 

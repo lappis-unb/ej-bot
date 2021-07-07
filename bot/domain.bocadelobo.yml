@@ -33,6 +33,8 @@ intents:
       use_entities: true
   - participate_on_telegram:
       use_entities: true
+  - display_conversations:
+      use_entities: true
 entities:
   - url
   - current_channel_info
@@ -123,10 +125,11 @@ responses:
         Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
         A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
 
+        /listarconversas - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
 
         /selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
 
-        /participar: Utilize esse comando para participar de uma coleta pré-selecionada;
+        /participar: Utilize esse comando para participar de uma coleta pré-selecionada.
   utter_introduce_ej:
     - text: > 
         Eu sou a assistente virtual da plataforma EJ. 
@@ -201,9 +204,19 @@ responses:
     - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
     - channel: telegram
       text: > 
-        A lista de comandos disponíveis atualmente é: 
+        A lista de comandos disponíveis atualmente é:
+        /listarconversas - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa. 
         /selecionarconversa [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
         /participar - Participe de uma coleta pré-selecionada.
+  utter_show_conversations:
+    - text: >
+        Essa é a lista das conversas disponíveis para coleta. Basta escolher o assunto e verificar qual é o seu ID. 
+  utter_explain_id_conversation:
+    - text: >
+        Você pode precisar do ID para selecionar uma conversa depois 😉
+  utter_no_conversations:
+    - text: >
+        Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
   utter_explain_no_button_participation:
     - text: > 
         Para concordar com um comentário, digite 1. 
@@ -231,6 +244,8 @@ actions:
   - action_get_conversation_info
   - action_set_channel_info
   - action_set_conversation_slots
+  - action_get_conversations
+  
 forms:
   vote_form:
     vote:

@@ -335,7 +335,7 @@ class ActionSetConversationSlots(Action):
         ]
 
 
-class ActionGetConversationList(Action):
+class ActionGetConversation(Action):
     """
     This action is called when the user wants to see all the available conversations.
     It shows the ID and the Title of the conversation.
