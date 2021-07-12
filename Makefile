@@ -13,10 +13,8 @@ stop: ## Runs docker-compose stop commmand
 
 ############################## BOILERPLATE ##############################
 
-build-requirements:
-	docker build . -f docker/requirements.Dockerfile -t botrequirements
-
-build: build-requirements build-coach build-bot build-x
+build: 
+	docker-compose build
 
 build-bot:
 	docker-compose build bot

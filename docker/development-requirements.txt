@@ -1,4 +1,7 @@
--r requirements.txt
+-r actions-requirements.txt
+
+#nltk==3.4.5
+#spacy==3.0.0
 
 # lint/format/types
 black==21.5b2

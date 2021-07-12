@@ -3,7 +3,7 @@ version: "3.4"
 x-bot-common-build: &bot-common-build
   build:
     context: .
-    dockerfile: ./docker/bot.Dockerfile
+    dockerfile: ./docker/Dockerfile
 
 x-bot-common: &bot-common
   env_file:
@@ -45,7 +45,7 @@ services:
     # https://github.com/docker/compose/issues/6767
     networks:
       - bot-network
-    command: "run --enable-api --cors *"
+    entrypoint: "make api"
 
   # ================================= Actions =================================
   # Rasa middleware used to connect with external APIs.
@@ -57,29 +57,9 @@ services:
       - 5055:5055
     volumes:
       - ./bot:/bot
-    command: "run actions"
+    entrypoint: "make actions"
     environment:
       JWT_SECRET: RRrWj+H2QEqV9O7iKBrU0zuB
-    networks:
-      - bot-network
-
-  # ================================= RASA X ==================================
-  # Rasa X application
-  x:
-    container_name: x
-    <<: *bot-common
-    <<: *bot-common-build
-    restart: unless-stopped
-    volumes:
-      - ./bot/:/bot/
-      - /bot/tests/:/bot/tests/
-    ports:
-      - 5002:5002
-    environment:
-      - GIT_PYTHON_REFRESH=quiet
-    depends_on:
-      - actions
-    command: "x"
     networks:
       - bot-network
 

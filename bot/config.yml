@@ -14,14 +14,13 @@ pipeline:
     use_regexes: True
     "use_word_boundaries": True
   - name: DIETClassifier
-    epochs: 55
+    epochs: 100
   - name: EntitySynonymMapper
   - name: ResponseSelector
   - name: "DucklingEntityExtractor"
     url: ${RASA_DUCKLING_HTTP_URL}
-    locale: en_US
-    dimensions: ["url"]
-
+    locale: BR
+    dimensions: ["url", "phone-number"]
 policies:
   - name: TEDPolicy
     max_history: 10
