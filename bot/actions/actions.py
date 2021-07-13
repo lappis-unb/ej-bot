@@ -202,7 +202,6 @@ class ValidateVoteForm(FormValidationAction):
         token = tracker.get_slot("ej_user_token")
         conversation_id = tracker.get_slot("conversation_id")
 
-        dispatcher.utter_message(text=type(slot_value))
         if str(slot_value) in VOTE_VALUES:
             comment_id = tracker.get_slot("current_comment_id")
             sent_vote = API.send_comment_vote(comment_id, slot_value, token)
@@ -217,7 +216,7 @@ class ValidateVoteForm(FormValidationAction):
                 # user voted in all comments, can exit loop
                 dispatcher.utter_message(template="utter_voted_all_comments")
                 dispatcher.utter_message(template="utter_thanks_participation")
-                return [{"vote": str(slot_value).lower()}]
+                return {"vote": str(slot_value).lower()}
         elif str(slot_value).upper() == "PARAR":
             return {"vote": "parar"}
         else:
