@@ -133,7 +133,7 @@ responses:
 
           /listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
 
-          /selecionarconversa [id]: Iniciar uma nova coleta. Em [id] indique o número da conversa na EJ; 
+          /selecionarconversa [id]: Gera o link de participação, que pode ser enviado para grupos, canais ou diretamente para um contato. Em [id] indique o número da conversa na EJ; 
 
           /participar: Participar de uma coleta pré-selecionada. 
 
@@ -213,17 +213,17 @@ responses:
       text: > 
           💡 A lista de comandos disponíveis atualmente é:
 
-          /listarconversas - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+          /listarconversas - Lista as conversas públicas disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
  
-          /selecionarconversa [id] - Iniciar uma nova coleta. Em [id] indique o número da conversa na EJ;
+          /selecionarconversa [id] - Gera o link de participação, que pode ser enviado para grupos, canais ou diretamente para um contato. Em [id] indique o número da conversa na EJ;
         
           /participar - Participe de uma coleta pré-selecionada.
   utter_show_conversations:
     - text: >
-        Essa é a lista das conversas disponíveis para coleta. Basta escolher o assunto e verificar qual é o seu ID. 
+        Essa é a lista das conversas públicas disponíveis para participação.
   utter_explain_id_conversation:
     - text: >
-        Você pode precisar do ID para selecionar uma conversa depois 😉
+        Utilize o identificador para gerar o link de participação, com o comando /selecionarconversa 😉
   utter_no_conversations:
     - text: >
         Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
