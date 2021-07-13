@@ -31,9 +31,17 @@ class TelegramInputChannel(TelegramInput):
     def name(cls) -> Text:
         return "telegram"
 
-    def get_metadata(self, request):
-        metadata = request.json
-        return metadata
+    @staticmethod
+    def _is_location(message) -> bool:
+        return message.location is not None
+
+    @staticmethod
+    def _is_user_message(message) -> bool:
+        return message.text is not None
+
+    @staticmethod
+    def _is_button(message) -> bool:
+        return message.callback_query is not None
 
     def blueprint(
         self, on_new_message: Callable[[UserMessage], Awaitable[Any]]

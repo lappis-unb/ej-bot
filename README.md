@@ -24,6 +24,8 @@ Para começar a conversar com a Duda é necessário primeiramente a instalação
 Feito isso, você poderá interagir com bot acessando, no seu browser, o endereço `http://localhost:8001`. Mande um oi pra a Duda, que ela irá trazer comentários da EJ para que você responda. Por padrão, o bot irá se conectar no ambiente de homologação da EJ (https://ejplatform.pencillabs.com.br/). Para alterar esse comportamento, leia a subseção **Canais do Bot**. 
 
 
+É necessário rodar o comando `make clean` sempre que for trocar de domain para evitar que o bot se perca no fluxo.
+
 # Fluxo de trabalho
 
 São utilizados comandos make para execução de diferentes contextos e ferramentas do bot, os principais são descritos a seguir:
@@ -132,6 +134,8 @@ Você pode simular uma conversa com o ejBot a partir de um webchat.
 2. Acesse a pagina em `http://localhost:8001/`;
 
 É provável que você precise retreinar o bot, e recriar os containers da API para que a configuração do canal socketio seja aplicada.
+
+É recomendado abrir uma nova aba quando for reinicializar uma conversa com o Chatbot. Caso o bot não esteja reconhecendo uma intent, é necessário executar os comandos `make clean` e `make train`. 
 
 Para que seja possível resgatar dados da EJ, é necessário que o endereço que o webchat está
 hospedado possua uma conexão com a EJ (Rasa Conversation). Para isso, basta ir na EJ, na conversa que queira conectar, e nela a parte de Ferramentas > Rasa Chatbot. Lá deve ser incluido o endereço, nesse caso, `http://localhost:8001/`.

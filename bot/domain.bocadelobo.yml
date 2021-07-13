@@ -33,6 +33,8 @@ intents:
       use_entities: true
   - participate_on_telegram:
       use_entities: true
+  - display_conversations:
+      use_entities: true
 entities:
   - url
   - current_channel_info
@@ -117,22 +119,31 @@ slots:
     influence_conversation: false
 responses:
   utter_welcome:
-    - text: Olá, Muito prazer, eu sou a Duda!
+    - text: >
+        Olá lobinhos e lobinhas! 🐺 
     - channel: telegram
       text: >
-        Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
-        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
+          Olá lobinhos e lobinhas! 🐺
 
+          Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
 
-        /selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
+          Comigo você pode fazer coletas de opinião ou participar de uma. 
 
-        /participar: Utilize esse comando para participar de uma coleta pré-selecionada;
+          Os seguintes comandos estão disponíveis:
+
+          /listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+
+          /selecionarconversa [id]: Iniciar uma nova coleta. Em [id] indique o número da conversa na EJ; 
+
+          /participar: Participar de uma coleta pré-selecionada. 
+
+          /help: Menu de ajuda; 
   utter_introduce_ej:
     - text: > 
-        Eu sou a assistente virtual da plataforma EJ. 
-        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações.
+        Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
+        A Plataforma Ej realiza consultas de opinião com foco em Estado e Organizações.
   utter_explain_how_to_participate:
-    - text: Você pode participar de uma de nossas consultas pelo nosso site, site de parceiros ou até por aqui! Me manda um "oi" se quiser participar 😉
+    - text: Você pode participar de uma de nossas consultas pelo nosso site, site de parceiros ou até por aqui! Me manda um "Oi" se quiser participar 😉
   utter_show_topic_of_discussion:
     - text: >
         No momento, eu estava querendo saber a sua opinião a respeito do seguinte assunto:
@@ -141,13 +152,11 @@ responses:
   utter_ask_user_particpate:
     - text: Topa um bate-papo comigo?
   utter_agreed_participation:
-    - text: Ah maravilha 😄
-    - text: Eu agradeço muito!
+    - text: Oba! 😊
   utter_disagreed_participation:
-    - text: Poooxa ☹️
-    - text: Ah que pena ☹️
+    - text: Poxa, que pena! ☹️ 
   utter_stop_conversation:
-    - text: Se você não quiser mais conversar comigo ou quiser terminar a conversa é so me falar! (é só escrever PARAR)
+    - text: Se você não quiser mais conversar comigo ou quiser terminar a conversa é só digitar “Parar”
   utter_ask_phone_number:
     - text: Você poderia me passar seu telefone com DDD?
   utter_explain_ask_phone_number:
@@ -165,62 +174,89 @@ responses:
   utter_user_want_anonymous:
     - text: Beleza, vamos prosseguir!
   utter_vote_received:
-    - text: Anotado!
-    - text: Anotei aqui.
-    - text: Entendo, registrado.
+    - text: ✏️ Anotado! 
+    - text: ✏️ Entendo, registrado. 
+    - text: ✏️ Anotei aqui. 
   utter_out_of_context:
     - text: Desculpe, não sei se entendi 😕
   utter_sent_comment:
     - text: Certo, já anotei seu comentário, muito obrigada pela sua contribuição!!
   utter_send_comment_error:
     - text: > 
-        Hmmm não sei o que aconteceu. 
+        Ops, não sei o que aconteceu 😬
         Eu não consegui salvar seu comentário
   utter_ask_send_comment_again:
     - text: Faz assim, tenta me mandar ele novamente mais tarde, pode ser?!
   utter_voted_all_comments:
     - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
   utter_thanks_participation:
-    - text: Eu fico muito feliz por você ter participado 🤗!
-    - text: Muito obrigada pela sua participação 🤗🤗🤗
+    - text: Fico muito feliz por você ter participado 🤗
   utter_stopped:
-    - text: Só de você ter me respondido ja me ajudou, muito obrigada!
+    - text: Só de você ter me respondido já me ajudou. Muito obrigada! 😘
+  utter_stopped_after_disagreed:
+    - text: Mas só de você ter me respondido já me ajudou. Muito obrigada! 😘
   utter_next_conversation:
     - text: Depois conversamos mais 😘
   utter_finish:
-    - text: Ah quando quiser trocar uma ideia é só me mandar um "Oi".
+    - text: Ah, quando quiser trocar uma ideia é só me mandar um "Oi".
   utter_goodbye:
     - text: Pode deixar que te mantenho por dentro sobre as novidades sobre esse assunto
   utter_ej_communication_error:
-    - text: Opa, parece que não estou conseguindo acessar nosso servidor.
+    - text: Ops, parece que não estou conseguindo acessar nosso servidor. 🤔
   utter_error_try_again_later:
-    - text: Tive um problema técnico, por favor tente participar mais tarde.
+    - text: Tive um problema técnico, por favor tente participar mais tarde. 🤝
   utter_ej_connection_doesnt_exist:
     - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
     - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
     - channel: telegram
       text: > 
-        A lista de comandos disponíveis atualmente é: 
-        /selecionarconversa [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
-        /participar - Participe de uma coleta pré-selecionada.
+          💡 A lista de comandos disponíveis atualmente é:
+
+          /listarconversas - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+ 
+          /selecionarconversa [id] - Iniciar uma nova coleta. Em [id] indique o número da conversa na EJ;
+        
+          /participar - Participe de uma coleta pré-selecionada.
+  utter_show_conversations:
+    - text: >
+        Essa é a lista das conversas disponíveis para coleta. Basta escolher o assunto e verificar qual é o seu ID. 
+  utter_explain_id_conversation:
+    - text: >
+        Você pode precisar do ID para selecionar uma conversa depois 😉
+  utter_no_conversations:
+    - text: >
+        Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
   utter_explain_no_button_participation:
     - text: > 
-        Para concordar com um comentário, digite 1. 
-        Para discordar de um comentário, digite -1. 
-        Caso queira pular um comentário, digite 0.
+        Digite o número correspondente ou clique no botão:
+
+         1 - Concordar com um comentário
+
+        -1 - Discordar de um comentário
+
+         0 - Pular um comentário
   utter_explain_button_participation:
     - text: > 
-        Para concordar com um comentário, digite 1 ou clique no botão Concordar, para discordar de um comentário, digite -1 ou clique no botão Discordar. 
-        Caso queira pular um comentário, digite 0 ou clique no botão Pular.
+        Digite o número correspondente ou clique no botão:
+
+         1 - Concordar com um comentário
+
+        -1 - Discordar de um comentário
+
+         0 - Pular um comentário
   utter_send_telegram_generated_url:
     - channel: telegram
       text: > 
-        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 
+        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. 
+ 
+        Gostaríamos da sua participação na seguinte discussão: 
 
         {conversation_text}.
 
-        Para participar basta clicar no link t.me/{bot_telegram_username}?start={conversation_id}.
+        🚀 Bora começar? 
+
+        Para participar, escolha uma coleta clicando no link: t.me/{bot_telegram_username}?start={conversation_id}.
   utter_no_selected_conversation:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
 actions:
@@ -231,6 +267,8 @@ actions:
   - action_get_conversation_info
   - action_set_channel_info
   - action_set_conversation_slots
+  - action_get_conversations
+
 forms:
   vote_form:
     vote:
