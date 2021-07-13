@@ -42,7 +42,7 @@ class ActionSetupConversation(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionSetupConversation called")
-        user_phone_number = tracker.get_slot("phone_number")
+        user_phone_number = tracker.get_slot("regex_phone_number")
         conversation_id = tracker.get_slot("conversation_id")
         try:
             last_intent = tracker.latest_message["intent"].get("name")
@@ -90,6 +90,7 @@ class ActionFollowUpForm(Action):
         vote = tracker.get_slot("vote")
 
         if vote == "parar":
+            dispatcher.utter_message(template="utter_thanks_participation")
             dispatcher.utter_message(template="utter_stopped")
 
         return [

@@ -99,14 +99,12 @@ nlu:
 
   - intent: phone_number
     examples: |
-      - meu número é [61981167578](regex_phone_number)
       - [61992852776](regex_phone_number)
       - [(61)998476538](regex_phone_number)
       - [(62)991287365](regex_phone_number)
       - [(11)994028900](regex_phone_number)
-      - [(86)984638274](regex_phone_number)
-      - [(21)986542677](regex_phone_number)
-      - [(31)981274536](regex_phone_number)
+      - [1140028922](regex_phone_number)
+      - [8933789902](regex_phone_number)
       - [61992337635](regex_phone_number)
       - [87986211267](regex_phone_number)
       - [33998312511](regex_phone_number)

@@ -35,8 +35,6 @@ stories:
       - active_loop: vote_form
       - active_loop: null
       - action: action_follow_up_form
-      - action: utter_thanks_participation
-      - action: utter_goodbye
       - action: utter_next_conversation
       - action: utter_finish
       - action: action_session_start
@@ -55,8 +53,6 @@ stories:
       - active_loop: vote_form
       - active_loop: null
       - action: action_follow_up_form
-      - action: utter_thanks_participation
-      - action: utter_goodbye
       - action: utter_next_conversation
       - action: utter_finish
       - action: action_session_start
@@ -66,8 +62,7 @@ stories:
       - checkpoint: check_start_interaction
       - intent: disagree
       - action: utter_disagreed_participation
-      - action: utter_stopped
-      - action: utter_next_conversation
+      - action: utter_stopped_after_disagreed
       - action: utter_finish
       - action: action_session_start
 
@@ -147,8 +142,6 @@ stories:
       - active_loop: vote_form
       - active_loop: null
       - action: action_follow_up_form
-      - action: utter_thanks_participation
-      - action: utter_goodbye
       - action: utter_next_conversation
       - action: utter_finish
       - action: action_session_start
@@ -156,7 +149,6 @@ stories:
   - story: Goodbye happy path
     steps:
       - action: utter_thanks_participation
-      - action: utter_goodbye
       - action: utter_next_conversation
       - action: utter_finish
       - action: action_session_start

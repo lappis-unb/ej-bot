@@ -39,7 +39,7 @@ entities:
   - url
   - current_channel_info
   - conversation_id
-  - phone-number
+  - regex_phone_number
 slots:
   change_comment:
     type: rasa.shared.core.slots.BooleanSlot
@@ -56,7 +56,7 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  phone-number:
+  regex_phone_number:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
     auto_fill: true
@@ -125,7 +125,7 @@ responses:
         Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
         A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
 
-        /listarconversas - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+        /listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
 
         /selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
 
@@ -188,6 +188,8 @@ responses:
     - text: Muito obrigada pela sua participação 🤗🤗🤗
   utter_stopped:
     - text: Só de você ter me respondido ja me ajudou, muito obrigada!
+  utter_stopped_after_disagreed:
+    - text: Mas só de você ter me respondido já me ajudou. Muito obrigada! 😘
   utter_next_conversation:
     - text: Depois conversamos mais 😘
   utter_finish:
