@@ -5,7 +5,7 @@ from sanic import Blueprint, response
 from sanic.request import Request
 from sanic.response import HTTPResponse
 from typing import Text, Any, Callable, Awaitable
-from telebot.types import Update
+from telebot.types import Update, Message
 
 from rasa.core.channels.channel import UserMessage
 from rasa.shared.constants import INTENT_MESSAGE_PREFIX
@@ -32,16 +32,20 @@ class TelegramInputChannel(TelegramInput):
         return "telegram"
 
     @staticmethod
-    def _is_location(message) -> bool:
+    def _is_location(message: Message) -> bool:
         return message.location is not None
 
     @staticmethod
-    def _is_user_message(message) -> bool:
+    def _is_user_message(message: Message) -> bool:
         return message.text is not None
 
     @staticmethod
-    def _is_button(message) -> bool:
+    def _is_button(message: Update) -> bool:
         return message.callback_query is not None
+
+    @staticmethod
+    def _is_edited_message(message: Update) -> bool:
+        return message.edited_message is not None
 
     def blueprint(
         self, on_new_message: Callable[[UserMessage], Awaitable[Any]]
@@ -76,6 +80,9 @@ class TelegramInputChannel(TelegramInput):
                 if self._is_button(update):
                     msg = update.callback_query.message
                     text = update.callback_query.data
+                elif self._is_edited_message(update):
+                    msg = update.edited_message
+                    text = update.edited_message.text
                 else:
                     msg = update.message
                     if self._is_user_message(msg):
