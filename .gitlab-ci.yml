@@ -1,4 +1,7 @@
-image: python:3.7-slim-buster
+image: 
+  name: rasa/rasa:2.8.0
+  entrypoint: [""]
+
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -9,42 +12,50 @@ stages:
   - test
   - deploy
 
-style:
+check_style_with_black:
   before_script:
-    - pip install black==21.5b2
-  stage: test
+    - export PATH=/app/bin/:/app/:$PATH
+    - export PYTHONPATH=/app/:$PYTHONPATH
+    - pip install -t /app/ black==21.5b2
+  stage: style
   script:
     - black --check .
 
-test:
+bocadelobo_domain:
   before_script:
-    - apt-get update
-    - apt-get -y install curl jq python3-dev libffi-dev gettext cargo
-    - curl -O https://bootstrap.pypa.io/get-pip.py
-    - python3 get-pip.py
-    - pip install --upgrade pip
-    - pip install -r ./docker/dependencies/requirements-development.txt
-    - pip install --use-deprecated=legacy-resolver --no-cache-dir -r ./docker/dependencies/x-requirements.txt
-    - python3 -c "import nltk; nltk.download('stopwords');"
-    - python3 -m spacy download pt_core_news_sm
-    - cd bot
-    - rasa train --domain domain.bocadelobo.yml
+    - export PATH=/app/bin/:/app/:$PATH
+    - export PYTHONPATH=/app/:$PYTHONPATH
+    - pip install -r ./docker/development-requirements.txt -t /app
   stage: test
   variables:
     RASA_DUCKLING_HTTP_URL: "http://duck:8000"
   script:
+    - cd bot && rasa train --domain domain.bocadelobo.yml
     - rasa test nlu --nlu ./data/nlu.yml --cross-validation
     - rasa test core --fail-on-prediction-errors --out results/results-core-test
     - python3 -m pytest
 
-deploy:
+default_domain:
+  before_script:
+    - export PATH=/app/bin/:/app/:$PATH
+    - export PYTHONPATH=/app/:$PYTHONPATH
+    - pip install -r ./docker/development-requirements.txt -t /app
+  stage: test
+  variables:
+    RASA_DUCKLING_HTTP_URL: "http://duck:8000"
+  script:
+    - cd bot && rasa train --domain domain.default.yml
+    - rasa test nlu --nlu ./data/nlu.yml --cross-validation
+    - rasa test core --fail-on-prediction-errors --out results/results-core-test
+    - python3 -m pytest
+
+deploy_to_dev:
   stage: deploy
   before_script:
-    - apt update && apt-get -y install bash git
+    - apt update && apt install -y bash git
   script:
     - /bin/sh -c 'git clone -b stable --depth=1 https://gitlab+deploy-token-155341:xWz-bGxYnvTLcZCzsHEG@gitlab.com/pencillabs/infraestructure/core.git'
-    - cd core
-    - bin/pencilctl build rasa -e dev -c prod -b develop --no-cache --push
+    - cd core && bin/pencilctl build rasadefault -e dev -c prod -b develop --no-cache --push
   only:
     refs:
       - develop
