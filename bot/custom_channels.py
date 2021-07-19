@@ -70,7 +70,6 @@ class TelegramInputChannel(TelegramInput):
         @telegram_webhook.route("/webhook", methods=["GET", "POST"])
         async def message(request: Request) -> Any:
             if request.method == "POST":
-
                 request_dict = request.json
                 update = Update.de_json(request_dict)
                 if not out_channel.get_me().username == self.verify:
@@ -85,6 +84,9 @@ class TelegramInputChannel(TelegramInput):
                     text = update.edited_message.text
                 else:
                     msg = update.message
+                    if msg is None:
+                        logger.debug("UPDATE MSG IS NONE")
+                        return response.text("success")
                     if self._is_user_message(msg):
                         text = msg.text.replace("/bot", "")
                         if msg.text[0] == "/":
