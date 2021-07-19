@@ -85,6 +85,9 @@ class TelegramInputChannel(TelegramInput):
                     text = update.edited_message.text
                 else:
                     msg = update.message
+                    if msg is None:
+                        logger.debug("UPDATE MSG IS NONE")
+                        return response.text("success")
                     if self._is_user_message(msg):
                         text = msg.text.replace("/bot", "")
                         if msg.text[0] == "/":
