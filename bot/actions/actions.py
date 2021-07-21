@@ -14,7 +14,7 @@ from rasa_sdk.events import SlotSet, FollowupAction, EventType
 from rasa_sdk.types import DomainDict
 
 from .ej_connector import API, EJCommunicationError
-from .utils import define_vote_utter, VOTE_VALUES, authenticate_user
+from .utils import *
 
 logger = logging.getLogger(__name__)
 
@@ -88,10 +88,17 @@ class ActionFollowUpForm(Action):
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionFollowUpForm called")
         vote = tracker.get_slot("vote")
+        voting_service = VotingService(vote, "")
 
-        if vote == "parar":
+        if voting_service.stop_participation():
             dispatcher.utter_message(template="utter_thanks_participation")
             dispatcher.utter_message(template="utter_stopped")
+
+        if voting_service.changes_current_participation_link():
+            return [
+                SlotSet("vote", None),
+                FollowupAction("action_get_conversation_info"),
+            ]
 
         return [
             SlotSet("vote", None),
@@ -109,6 +116,8 @@ class ActionAskVote(Action):
     If not, user is instructed to vote use number (1,-1 and 0)
 
     if any problem occurs during connection with EJ, conversation will be restarted
+
+    https://rasa.com/docs/rasa/forms/#using-a-custom-action-to-ask-for-the-next-slot
     """
 
     def name(self) -> Text:
@@ -117,7 +126,7 @@ class ActionAskVote(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        logger.debug("action ActionAskVote called")
+
         conversation_id = tracker.get_slot("conversation_id")
         token = tracker.get_slot("ej_user_token")
         try:
@@ -185,6 +194,8 @@ class ValidateVoteForm(FormValidationAction):
         a vote is computed
         - If user value is PARAR, it exists from the loop
         - If user value is not any of these, it is considered as a new comment, that is sent to EJ
+
+    https://rasa.com/docs/rasa/forms/#validating-form-input
     """
 
     def name(self) -> Text:
@@ -201,32 +212,28 @@ class ValidateVoteForm(FormValidationAction):
         logger.debug("form validator ValidateVoteForm called")
         token = tracker.get_slot("ej_user_token")
         conversation_id = tracker.get_slot("conversation_id")
+        voting_service = VotingService(slot_value, token)
+        conversation_service = ConversationService(conversation_id, token)
 
-        if str(slot_value) in VOTE_VALUES:
+        if voting_service.stop_participation():
+            return VotingService.stop_voting()
+
+        current_intent = tracker.latest_message.get("intent").get("name")
+        if VotingService.intent_starts_new_conversation(current_intent):
+            return VotingService.new_participation_link()
+
+        if voting_service.vote_is_valid():
             comment_id = tracker.get_slot("current_comment_id")
-            sent_vote = API.send_comment_vote(comment_id, slot_value, token)
-
-            if sent_vote["created"]:
+            vote = voting_service.new_vote(comment_id)
+            if vote["created"]:
                 dispatcher.utter_message(template="utter_vote_received")
-            statistics = API.get_user_conversation_statistics(conversation_id, token)
-            if statistics["missing_votes"] > 0:
-                # user still has comments to vote, remain in loop
-                return {"vote": None}
+            if conversation_service.user_have_comments_to_vote():
+                return VotingService.continue_voting()
             else:
-                # user voted in all comments, can exit loop
                 dispatcher.utter_message(template="utter_voted_all_comments")
                 dispatcher.utter_message(template="utter_thanks_participation")
-                return {"vote": str(slot_value).lower()}
-        elif str(slot_value).upper() == "PARAR":
-            return {"vote": "parar"}
-        else:
-            # register a new comment instead of a vote
-            response = API.send_new_comment(conversation_id, slot_value, token)
-            if response["created"]:
-                dispatcher.utter_message(template="utter_sent_comment")
-            else:
-                dispatcher.utter_message(template="utter_send_comment_error")
-        return {"vote": None}
+                return voting_service.finished_voting()
+        dispatcher.utter_message(template="utter_out_of_context")
 
 
 class ActionGetConversationInfo(Action):
