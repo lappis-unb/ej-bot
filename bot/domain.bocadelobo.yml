@@ -162,7 +162,7 @@ responses:
   utter_explain_ask_phone_number:
     - text: Eu juro que não vou mandar spam. É só uma forma de eu poder ligar você a sua opinião
   utter_phone_number_is_optional:
-    - text: Ah e se você não quiser não tem problema, eu mantenho a sua identidade secreta 🤫
+    - text: Ah e se você não quiser não tem problema, basta dizer não, eu mantenho a sua identidade secreta 🤫
   utter_send_phone_number:
     - text: Já pode mandar seu telefone com DDD aqui
   utter_invalid_phone_number:
