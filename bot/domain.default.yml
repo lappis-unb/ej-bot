@@ -142,6 +142,11 @@ responses:
         No momento, eu estava querendo saber a sua opinião a respeito do seguinte assunto:
 
         {conversation_text}.
+
+        As suas opiniões estarão protegidas comigo conforme os termos de uso da EJ. Clique no link para ler.
+
+        https://www.ejparticipe.org/usage/
+
   utter_ask_user_particpate:
     - text: Topa um bate-papo comigo?
   utter_agreed_participation:
