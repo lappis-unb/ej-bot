@@ -154,7 +154,7 @@ responses:
 
         https://www.ejparticipe.org/usage/
 
-  utter_ask_user_particpate:
+  utter_invite_user_to_participate:
     - text: Topa um bate-papo comigo?
   utter_agreed_participation:
     - text: Oba! 😊

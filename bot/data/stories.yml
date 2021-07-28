@@ -7,8 +7,15 @@ stories:
       - action: action_set_channel_info
       - action: action_get_conversation_info
       - action: utter_show_topic_of_discussion
-      - action: utter_ask_user_particpate
+      - action: utter_invite_user_to_participate
       - checkpoint: check_start_interaction
+
+  - story: User responds an unknow intent when starting interaction
+    steps:
+      - checkpoint: check_start_interaction
+      - intent: out_of_context
+      - action: utter_out_of_context
+      - action: utter_invite_user_to_participate
 
   - story: Explains user participation after they agreed and get current channel info
     steps:
@@ -86,7 +93,7 @@ stories:
       - intent: participate_on_telegram
       - action: action_get_conversation_info
       - action: utter_show_topic_of_discussion
-      - action: utter_ask_user_particpate
+      - action: utter_invite_user_to_participate
 
   - story: Start conversation in telegram as another channels
     steps:
@@ -98,7 +105,7 @@ stories:
       - intent: participate_on_telegram
       - action: action_get_conversation_info
       - action: utter_show_topic_of_discussion
-      - action: utter_ask_user_particpate
+      - action: utter_invite_user_to_participate
 
   - story: Start conversation from telegram without payload
     # When someone starts a conversation with the bot on telegram
@@ -124,7 +131,7 @@ stories:
         - current_channel_info: 'telegram'
       - action: action_get_conversation_info
       - action: utter_show_topic_of_discussion
-      - action: utter_ask_user_particpate
+      - action: utter_invite_user_to_participate
       - intent: agree
       - action: utter_agreed_participation
       - action: utter_ask_phone_number
