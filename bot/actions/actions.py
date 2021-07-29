@@ -15,6 +15,7 @@ from rasa_sdk.types import DomainDict
 
 from .ej_connector import API, EJCommunicationError
 from .utils import *
+from .helpers import VotingHelper, ConversationHelper
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +77,6 @@ class ActionSetupConversation(Action):
             ),
             SlotSet("comment_text", first_comment["content"]),
             SlotSet("current_comment_id", first_comment["id"]),
-            SlotSet("change_comment", False),
             SlotSet("ej_user_token", user.token),
         ]
 
@@ -88,13 +88,17 @@ class ActionFollowUpForm(Action):
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionFollowUpForm called")
         vote = tracker.get_slot("vote")
-        voting_service = VotingService(vote, "")
 
-        if voting_service.stop_participation():
+        if ConversationHelper.stop_participation(vote):
             dispatcher.utter_message(template="utter_thanks_participation")
             dispatcher.utter_message(template="utter_stopped")
 
-        if voting_service.changes_current_participation_link():
+        if ConversationHelper.pause_to_ask_phone_number(vote):
+            return [
+                SlotSet("vote", None),
+                FollowupAction("utter_ask_phone_number_again"),
+            ]
+        if ConversationHelper.is_vote_on_new_conversation(vote):
             return [
                 SlotSet("vote", None),
                 FollowupAction("action_get_conversation_info"),
@@ -129,50 +133,28 @@ class ActionAskVote(Action):
 
         conversation_id = tracker.get_slot("conversation_id")
         token = tracker.get_slot("ej_user_token")
+        conversation_helper = ConversationHelper(conversation_id, token)
         try:
-            statistics = API.get_user_conversation_statistics(conversation_id, token)
+            statistics = conversation_helper.get_participant_statistics()
+            total_comments = conversation_helper.get_total_comments(statistics)
+            voted_comments = conversation_helper.get_voted_comments(statistics)
+            comment = conversation_helper.get_next_comment()
         except EJCommunicationError:
-            dispatcher.utter_message(template="utter_ej_communication_error")
-            dispatcher.utter_message(template="utter_error_try_again_later")
-            return [FollowupAction("action_session_start")]
-        total_comments = statistics["missing_votes"] + statistics["votes"]
-        number_voted_comments = statistics["votes"]
+            return ConversationHelper.dispatch_errors(dispatcher, FollowupAction)
 
-        if tracker.get_slot("change_comment"):
-            try:
-                new_comment = API.get_next_comment(conversation_id, token)
-            except EJCommunicationError:
-                dispatcher.utter_message(template="utter_ej_communication_error")
-                dispatcher.utter_message(template="utter_error_try_again_later")
-                return [FollowupAction("action_session_start")]
-            comment_content = new_comment["content"]
-            message = f"{comment_content} \n O que você acha disso ({number_voted_comments}/{total_comments})?"
-            if "metadata" in tracker.latest_message:
-                metadata = tracker.latest_message["metadata"]
-            else:
-                metadata = {}
-            message = define_vote_utter(metadata, message)
-            dispatcher.utter_message(**message)
+        comment_title = conversation_helper.get_comment_title(
+            comment, voted_comments, total_comments
+        )
+        metadata = tracker.latest_message.get("metadata")
+        message = get_comment_utter(metadata, comment_title)
+        dispatcher.utter_message(**message)
 
-            conversation_id = tracker.get_slot("conversation_id")
-            token = tracker.get_slot("ej_user_token")
-            return [
-                SlotSet("number_voted_comments", number_voted_comments),
-                SlotSet("comment_text", new_comment["content"]),
-                SlotSet("number_comments", total_comments),
-                SlotSet("current_comment_id", new_comment["id"]),
-            ]
-        else:
-            comment_content = tracker.get_slot("comment_text")
-            message = f"'{comment_content}' \n O que você acha disso ({number_voted_comments}/{total_comments})?"
-            if "metadata" in tracker.latest_message:
-                metadata = tracker.latest_message["metadata"]
-            else:
-                metadata = {}
-            message = define_vote_utter(metadata, message)
-            dispatcher.utter_message(**message)
-
-            return [SlotSet("change_comment", True)]
+        return [
+            SlotSet("number_voted_comments", voted_comments),
+            SlotSet("comment_text", comment_title),
+            SlotSet("number_comments", total_comments),
+            SlotSet("current_comment_id", comment.get("id")),
+        ]
 
 
 class ValidateVoteForm(FormValidationAction):
@@ -212,27 +194,34 @@ class ValidateVoteForm(FormValidationAction):
         logger.debug("form validator ValidateVoteForm called")
         token = tracker.get_slot("ej_user_token")
         conversation_id = tracker.get_slot("conversation_id")
-        voting_service = VotingService(slot_value, token)
-        conversation_service = ConversationService(conversation_id, token)
+        voting_helper = VotingHelper(slot_value, token)
+        conversation_helper = ConversationHelper(conversation_id, token)
 
-        if voting_service.stop_participation():
-            return VotingService.stop_voting()
+        # TODO: Check if already asked twice the phone number
+        statistics = conversation_helper.get_participant_statistics()
+        if conversation_helper.ask_phone_number_again(
+            tracker.get_slot("regex_phone_number"), statistics
+        ):
+            return VotingHelper.pause_voting()
+
+        if ConversationHelper.stop_participation(slot_value):
+            return VotingHelper.stop_voting()
 
         current_intent = tracker.latest_message.get("intent").get("name")
-        if VotingService.intent_starts_new_conversation(current_intent):
-            return VotingService.new_participation_link()
+        if ConversationHelper.intent_starts_new_conversation(current_intent):
+            return ConversationHelper.starts_conversation_from_another_link()
 
-        if voting_service.vote_is_valid():
+        if voting_helper.vote_is_valid():
             comment_id = tracker.get_slot("current_comment_id")
-            vote = voting_service.new_vote(comment_id)
+            vote = voting_helper.new_vote(comment_id)
             if vote["created"]:
                 dispatcher.utter_message(template="utter_vote_received")
-            if conversation_service.user_have_comments_to_vote():
-                return VotingService.continue_voting()
+            if conversation_helper.user_have_comments_to_vote():
+                return VotingHelper.continue_voting()
             else:
                 dispatcher.utter_message(template="utter_voted_all_comments")
                 dispatcher.utter_message(template="utter_thanks_participation")
-                return voting_service.finished_voting()
+                return voting_helper.finished_voting()
         dispatcher.utter_message(template="utter_out_of_context")
 
 

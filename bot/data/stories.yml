@@ -28,6 +28,15 @@ stories:
       - action: utter_send_phone_number
       - checkpoint: check_explain_participation
 
+  - story: User don't want to participate sad path
+    steps:
+      - checkpoint: check_start_interaction
+      - intent: disagree
+      - action: utter_disagreed_participation
+      - action: utter_stopped_after_disagreed
+      - action: utter_finish
+      - action: action_session_start
+
   - story: User provides invalid phone number
     steps:
       - intent: invalid_phone_number
@@ -61,15 +70,6 @@ stories:
       - active_loop: null
       - action: action_follow_up_form
       - action: utter_next_conversation
-      - action: utter_finish
-      - action: action_session_start
-
-  - story: User don't want to participate sad path
-    steps:
-      - checkpoint: check_start_interaction
-      - intent: disagree
-      - action: utter_disagreed_participation
-      - action: utter_stopped_after_disagreed
       - action: utter_finish
       - action: action_session_start
 
@@ -118,6 +118,25 @@ stories:
       - slot_was_set:
         - current_channel_info: 'telegram'
       - action: utter_welcome
+
+  - story: Ask phone number in the middle of voting
+    steps:
+      - action: utter_ask_phone_number_again
+      - action: utter_send_phone_number
+      - or:
+        - intent: disagree
+        - intent: phone_number
+          entities:
+            - regex_phone_number
+      - action: action_setup_conversation
+      - action: utter_stop_conversation
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - action: action_follow_up_form
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
 
   - story: Start conversation from telegram link
   # When using a link with a payload user send to bot a message

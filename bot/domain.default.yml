@@ -41,11 +41,6 @@ entities:
   - conversation_id
   - regex_phone_number
 slots:
-  change_comment:
-    type: rasa.shared.core.slots.BooleanSlot
-    initial_value: null
-    auto_fill: true
-    influence_conversation: false
   comment_text:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
@@ -103,6 +98,7 @@ slots:
       - pular
       - parar
       - novo link de participação
+      - pausar
   current_channel_info:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
@@ -159,6 +155,11 @@ responses:
     - text: Se você não quiser mais conversar comigo ou quiser terminar a conversa é so me falar! (é só escrever PARAR)
   utter_ask_phone_number:
     - text: Você poderia me passar seu telefone com DDD?
+  utter_ask_phone_number_again:
+    - text: >
+        Que incrivel, fico feliz que você esteja engajado na nossa conversa.
+        Notei que você quis participar no modo anônimo, mas se me informar seu número, conseguiremos mais força no combate á desinformação.
+        Caso queira me passar seu telefone, basta digitar, caso não queira, basta dizer não, que continuamos nossa conversa sem que você seja identificado.
   utter_explain_ask_phone_number:
     - text: Eu juro que não vou mandar spam. É só uma forma de eu poder ligar você a sua opinião
   utter_phone_number_is_optional:
@@ -167,8 +168,6 @@ responses:
     - text: Já pode mandar seu telefone com DDD aqui
   utter_invalid_phone_number:
     - text: Hmmm acho que você escreveu alguma coisa errada 😕
-  utter_ask_phone_number_again:
-    - text: Pode enviar seu telefone novamente, por favor?
   utter_got_phone_number:
     - text: Já anotei aqui o seu telefone, obrigada 😉
   utter_user_want_anonymous:
