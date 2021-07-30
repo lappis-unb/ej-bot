@@ -115,4 +115,4 @@ class ConversationHelper:
         if voted_comments == 0:
             return False
         participation_tax = total_comments / voted_comments
-        return participation_tax <= 2 and participant_phone_number == None
+        return participation_tax == 2 and participant_phone_number == None

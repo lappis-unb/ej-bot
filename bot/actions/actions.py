@@ -197,7 +197,6 @@ class ValidateVoteForm(FormValidationAction):
         voting_helper = VotingHelper(slot_value, token)
         conversation_helper = ConversationHelper(conversation_id, token)
 
-        # TODO: Check if already asked twice the phone number
         statistics = conversation_helper.get_participant_statistics()
         if conversation_helper.ask_phone_number_again(
             tracker.get_slot("regex_phone_number"), statistics
