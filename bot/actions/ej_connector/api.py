@@ -2,19 +2,11 @@ import os
 import requests
 import json
 from .user import User
+import logging
+from .constants import *
 
-HEADERS = {
-    "Content-Type": "application/json",
-}
-VOTE_CHOICES = {"Pular": 0, "Concordar": 1, "Discordar": -1}
-HOST = os.getenv("EJ_HOST")
-API_URL = f"{HOST}/api/v1"
-CONVERSATIONS_URL = (
-    f"{API_URL}/conversations/?is_promoted=true&participation_source=bot"
-)
-REGISTRATION_URL = f"{HOST}/rest-auth/registration/"
-VOTES_URL = f"{API_URL}/votes/"
-COMMENTS_URL = f"{API_URL}/comments/"
+
+logger = logging.getLogger(__name__)
 
 
 def conversation_url(conversation_id):
@@ -38,7 +30,7 @@ def user_pending_comments_route(conversation_id):
 
 
 def auth_headers(token):
-    headers = HEADERS
+    headers = HEADERS.copy()
     headers["Authorization"] = f"Token {token}"
     return headers
 
@@ -46,6 +38,8 @@ def auth_headers(token):
 class API:
     @staticmethod
     def get_conversation(conversation_id):
+        logger.debug("GET_CONVERSATION")
+        logger.debug(HEADERS)
         try:
             response = requests.get(conversation_url(conversation_id), headers=HEADERS)
             conversation = response.json()
@@ -57,6 +51,8 @@ class API:
 
     @staticmethod
     def get_conversations():
+        logger.debug("GET_CONVERSATIONS")
+        logger.debug(HEADERS)
         try:
             response = requests.get(CONVERSATIONS_URL, headers=HEADERS)
             conversation = response.json()
@@ -65,20 +61,6 @@ class API:
             return conversation
         except:
             raise EJCommunicationError
-
-    @staticmethod
-    def get_or_create_user(sender_id, name="Participante anônimo", phone_number=""):
-        user = User(sender_id, name, phone_number)
-        try:
-            response = requests.post(
-                REGISTRATION_URL,
-                data=user.serialize(),
-                headers=HEADERS,
-            )
-            user.token = response.json()["key"]
-        except:
-            raise EJCommunicationError
-        return user
 
     @staticmethod
     def get_next_comment(conversation_id, token):
@@ -94,6 +76,9 @@ class API:
 
     @staticmethod
     def get_user_conversation_statistics(conversation_id, token):
+        logger.debug("GET_CONVERSATIONS")
+        logger.debug(HEADERS)
+        logger.debug(auth_headers(token))
         try:
             url = user_statistics_url(conversation_id)
             response = requests.get(url, headers=auth_headers(token))
@@ -149,9 +134,3 @@ class API:
         except:
             raise EJCommunicationError
         return response
-
-
-class EJCommunicationError(Exception):
-    """Raised when request from EJ doesnt supply waited response"""
-
-    pass

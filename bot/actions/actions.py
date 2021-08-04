@@ -14,7 +14,10 @@ from rasa_sdk.events import SlotSet, FollowupAction, EventType
 from rasa_sdk.types import DomainDict
 
 from .ej_connector import API, EJCommunicationError
+from .ej_connector.user import User
 from .utils import *
+from .ej_connector.helpers import VotingHelper, EngageFactory
+from .ej_connector.conversation import ConversationController
 
 logger = logging.getLogger(__name__)
 
@@ -44,39 +47,57 @@ class ActionSetupConversation(Action):
         logger.debug("action ActionSetupConversation called")
         user_phone_number = tracker.get_slot("regex_phone_number")
         conversation_id = tracker.get_slot("conversation_id")
+        last_intent = tracker.latest_message["intent"].get("name")
+        user = User(tracker.sender_id, phone_number=user_phone_number)
+        self.response = []
         try:
-            last_intent = tracker.latest_message["intent"].get("name")
-            user_info = authenticate_user(
-                user_phone_number, last_intent, tracker.sender_id
-            )
-            user = user_info["user"]
-            dispatcher.utter_message(template=user_info["utter_name"])
-
-            statistics = API.get_user_conversation_statistics(
+            user.authenticate(last_intent)
+            self.dispatch_user_authentication(user, dispatcher)
+            conversation_controller = ConversationController(
                 conversation_id, user.token
             )
-            first_comment = API.get_next_comment(conversation_id, user.token)
+            if not conversation_controller.user_have_comments_to_vote():
+                return self.dispatch_user_vote_on_all_comments(dispatcher)
+            self.set_response_to_participation(conversation_controller, user)
+            self.dispatch_explain_participation(
+                tracker.get_slot("current_channel_info"), dispatcher
+            )
         except EJCommunicationError:
-            dispatcher.utter_message(template="utter_ej_communication_error")
-            dispatcher.utter_message(template="utter_error_try_again_later")
-            return [FollowupAction("action_session_start")]
+            return self.dispatch_communication_error_with_ej(dispatcher)
 
-        if tracker.get_slot("current_channel_info") == "rocket_livechat":
+        return self.response
+
+    def dispatch_user_authentication(self, user, dispatcher):
+        dispatcher.utter_message(template=user.authenticate_utter)
+
+    def dispatch_user_vote_on_all_comments(self, dispatcher):
+        dispatcher.utter_message(template="utter_voted_all_comments")
+        dispatcher.utter_message(template="utter_thanks_participation")
+        # vote_form stop loop if vote slot is not None
+        return [SlotSet("vote", "concordar")]
+
+    def dispatch_communication_error_with_ej(self, dispatcher):
+        dispatcher.utter_message(template="utter_ej_communication_error")
+        dispatcher.utter_message(template="utter_error_try_again_later")
+        return [FollowupAction("action_session_start")]
+
+    def dispatch_explain_participation(self, channel_info_slot, dispatcher):
+        if channel_info_slot == "rocket_livechat":
             # explain how user can vote according to current channel
             dispatcher.utter_message(template="utter_explain_no_button_participation")
         else:
             dispatcher.utter_message(template="utter_explain_button_participation")
 
-        statistics = API.get_user_conversation_statistics(conversation_id, user.token)
-        first_comment = API.get_next_comment(conversation_id, user.token)
-        return [
+    def set_response_to_participation(self, conversation_controller, user):
+        statistics = conversation_controller.api.get_participant_statistics()
+        first_comment = conversation_controller.api.get_next_comment()
+        self.response = [
             SlotSet("number_voted_comments", statistics["votes"]),
             SlotSet(
                 "number_comments", statistics["missing_votes"] + statistics["votes"]
             ),
             SlotSet("comment_text", first_comment["content"]),
             SlotSet("current_comment_id", first_comment["id"]),
-            SlotSet("change_comment", False),
             SlotSet("ej_user_token", user.token),
         ]
 
@@ -88,22 +109,39 @@ class ActionFollowUpForm(Action):
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionFollowUpForm called")
         vote = tracker.get_slot("vote")
-        voting_service = VotingService(vote, "")
+        self.response = []
 
-        if voting_service.stop_participation():
+        self.dispatch_if_stop_participation(dispatcher, vote)
+        self.set_response_to_ask_phone_number_again(vote)
+        self.set_response_to_starts_new_conversation(vote)
+        self.set_response_to_continue_conversation()
+        return self.response
+
+    def dispatch_if_stop_participation(self, dispatcher, vote):
+        if ConversationController.stop_participation(vote):
             dispatcher.utter_message(template="utter_thanks_participation")
             dispatcher.utter_message(template="utter_stopped")
 
-        if voting_service.changes_current_participation_link():
-            return [
+    def set_response_to_ask_phone_number_again(self, vote):
+        if ConversationController.pause_to_ask_phone_number(vote):
+            self.response = [
+                SlotSet("vote", None),
+                FollowupAction("utter_ask_phone_number_again"),
+            ]
+
+    def set_response_to_starts_new_conversation(self, vote):
+        if ConversationController.is_vote_on_new_conversation(vote):
+            self.response = [
                 SlotSet("vote", None),
                 FollowupAction("action_get_conversation_info"),
             ]
 
-        return [
-            SlotSet("vote", None),
-            SlotSet("conversation_id", None),
-        ]
+    def set_response_to_continue_conversation(self):
+        if not self.response:
+            self.response = [
+                SlotSet("vote", None),
+                SlotSet("conversation_id", None),
+            ]
 
 
 class ActionAskVote(Action):
@@ -129,50 +167,45 @@ class ActionAskVote(Action):
 
         conversation_id = tracker.get_slot("conversation_id")
         token = tracker.get_slot("ej_user_token")
+        conversation_controller = ConversationController(conversation_id, token)
+        self.response = []
+        if not conversation_controller.user_have_comments_to_vote():
+            return self.dispatch_user_vote_on_all_comments(dispatcher)
         try:
-            statistics = API.get_user_conversation_statistics(conversation_id, token)
+            metadata = tracker.latest_message.get("metadata")
+            self.set_response_to_next_comment(
+                dispatcher, metadata, conversation_controller
+            )
         except EJCommunicationError:
-            dispatcher.utter_message(template="utter_ej_communication_error")
-            dispatcher.utter_message(template="utter_error_try_again_later")
-            return [FollowupAction("action_session_start")]
-        total_comments = statistics["missing_votes"] + statistics["votes"]
-        number_voted_comments = statistics["votes"]
+            return ConversationController.dispatch_errors(dispatcher, FollowupAction)
 
-        if tracker.get_slot("change_comment"):
-            try:
-                new_comment = API.get_next_comment(conversation_id, token)
-            except EJCommunicationError:
-                dispatcher.utter_message(template="utter_ej_communication_error")
-                dispatcher.utter_message(template="utter_error_try_again_later")
-                return [FollowupAction("action_session_start")]
-            comment_content = new_comment["content"]
-            message = f"{comment_content} \n O que você acha disso ({number_voted_comments}/{total_comments})?"
-            if "metadata" in tracker.latest_message:
-                metadata = tracker.latest_message["metadata"]
-            else:
-                metadata = {}
-            message = define_vote_utter(metadata, message)
-            dispatcher.utter_message(**message)
+        return self.response
 
-            conversation_id = tracker.get_slot("conversation_id")
-            token = tracker.get_slot("ej_user_token")
-            return [
-                SlotSet("number_voted_comments", number_voted_comments),
-                SlotSet("comment_text", new_comment["content"]),
-                SlotSet("number_comments", total_comments),
-                SlotSet("current_comment_id", new_comment["id"]),
-            ]
-        else:
-            comment_content = tracker.get_slot("comment_text")
-            message = f"'{comment_content}' \n O que você acha disso ({number_voted_comments}/{total_comments})?"
-            if "metadata" in tracker.latest_message:
-                metadata = tracker.latest_message["metadata"]
-            else:
-                metadata = {}
-            message = define_vote_utter(metadata, message)
-            dispatcher.utter_message(**message)
+    def set_response_to_next_comment(
+        self, dispatcher, metadata, conversation_controller
+    ):
+        statistics = conversation_controller.api.get_participant_statistics()
+        total_comments = conversation_controller.api.get_total_comments(statistics)
+        voted_comments = conversation_controller.api.get_voted_comments(statistics)
+        comment = conversation_controller.api.get_next_comment()
+        comment_title = conversation_controller.api.get_comment_title(
+            comment, voted_comments, total_comments
+        )
+        message = get_comment_utter(metadata, comment_title)
+        dispatcher.utter_message(**message)
 
-            return [SlotSet("change_comment", True)]
+        self.response = [
+            SlotSet("number_voted_comments", voted_comments),
+            SlotSet("comment_text", comment_title),
+            SlotSet("number_comments", total_comments),
+            SlotSet("current_comment_id", comment.get("id")),
+        ]
+
+    def dispatch_user_vote_on_all_comments(self, dispatcher):
+        dispatcher.utter_message(template="utter_voted_all_comments")
+        dispatcher.utter_message(template="utter_thanks_participation")
+        # vote_form stop loop if vote slot is not None
+        return [SlotSet("vote", "concordar")]
 
 
 class ValidateVoteForm(FormValidationAction):
@@ -211,31 +244,51 @@ class ValidateVoteForm(FormValidationAction):
         """Validate vote value."""
         logger.debug("form validator ValidateVoteForm called")
         token = tracker.get_slot("ej_user_token")
+        bot_name = tracker.get_slot("bot_telegram_username")
         conversation_id = tracker.get_slot("conversation_id")
-        voting_service = VotingService(slot_value, token)
-        conversation_service = ConversationService(conversation_id, token)
+        voting_helper = VotingHelper(slot_value, token)
+        conversation_controller = ConversationController(conversation_id, token)
+        statistics = conversation_controller.api.get_participant_statistics()
 
-        if voting_service.stop_participation():
-            return VotingService.stop_voting()
-
-        current_intent = tracker.latest_message.get("intent").get("name")
-        if VotingService.intent_starts_new_conversation(current_intent):
-            return VotingService.new_participation_link()
-
-        if voting_service.vote_is_valid():
+        if voting_helper.vote_is_valid():
             comment_id = tracker.get_slot("current_comment_id")
-            vote = voting_service.new_vote(comment_id)
+            vote = voting_helper.new_vote(comment_id)
             if vote["created"]:
                 dispatcher.utter_message(template="utter_vote_received")
-            if conversation_service.user_have_comments_to_vote():
-                return VotingService.continue_voting()
+
+        if ConversationController.stop_participation(slot_value):
+            return VotingHelper.stop_voting()
+
+        telegram_engagement_group = tracker.get_slot("telegram_engagement_group")
+        if conversation_controller.time_to_invite_to_engage(
+            statistics, bot_name, telegram_engagement_group
+        ):
+            dispatcher.utter_message(
+                template="utter_invite_user_to_join_group",
+                telegram_engagement_group=EngageFactory.bot_has_engage_link(bot_name),
+            )
+
+        if conversation_controller.time_to_ask_phone_number_again(
+            tracker.get_slot("regex_phone_number"), statistics
+        ):
+            return VotingHelper.pause_voting_to_ask_phone_number()
+
+        current_intent = tracker.latest_message.get("intent").get("name")
+        if ConversationController.intent_starts_new_conversation(current_intent):
+            return ConversationController.starts_conversation_from_another_link()
+
+        if voting_helper.vote_is_valid():
+            if conversation_controller.user_have_comments_to_vote():
+                return VotingHelper.continue_voting()
             else:
                 dispatcher.utter_message(template="utter_voted_all_comments")
                 dispatcher.utter_message(template="utter_thanks_participation")
-                return voting_service.finished_voting()
+                return voting_helper.finished_voting()
+
         dispatcher.utter_message(template="utter_out_of_context")
 
 
+# TODO: Rename to ActionGetConversation
 class ActionGetConversationInfo(Action):
     """
     When in socketio channel:

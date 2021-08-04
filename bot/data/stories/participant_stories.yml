@@ -1,0 +1,104 @@
+version: "2.0"
+
+stories:
+  - story: participant join conversation on telegram
+  # When using a link with a payload user send to bot a message
+  # start [payload]. We use it to set conversation_id
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
+      - action: utter_invite_user_to_participate
+      - intent: agree
+      - action: utter_agreed_participation
+      - action: utter_ask_phone_number
+      - action: utter_explain_ask_phone_number
+      - action: utter_phone_number_is_optional
+      - action: utter_send_phone_number
+      - or:
+        - intent: disagree
+        - intent: phone_number
+          entities:
+            - regex_phone_number
+      - checkpoint: starts_voting
+
+  - story: participant don't wants to join conversation on telegram
+  # When using a link with a payload user send to bot a message
+  # start [payload]. We use it to set conversation_id
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
+      - action: utter_invite_user_to_participate
+      - intent: disagree
+      - action: utter_disagreed_participation
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
+
+  - story: invite participant again, after a out of context intent
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
+      - action: utter_invite_user_to_participate
+      - intent: out_of_context
+      - action: utter_out_of_context
+      - action: utter_invite_user_to_participate
+
+  - story: starts voting form
+    steps:
+      - checkpoint: starts_voting
+      - action: action_setup_conversation
+      - action: utter_stop_conversation
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - action: action_follow_up_form
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
+
+  - story: User provides invalid phone number
+    steps:
+      - action: utter_send_phone_number
+      - intent: invalid_phone_number
+      - action: utter_invalid_phone_number
+      - action: utter_ask_phone_number
+      - intent: phone_number
+        entities:
+          - regex_phone_number
+      - checkpoint: starts_voting
+
+  - story: Ask phone number in the middle of voting
+    steps:
+      - action: utter_ask_phone_number_again
+      - action: utter_send_phone_number
+      - or:
+        - intent: disagree
+        - intent: phone_number
+          entities:
+            - regex_phone_number
+      - checkpoint: starts_voting
+
+  - story: Goodbye happy path
+    steps:
+      - action: utter_thanks_participation
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start

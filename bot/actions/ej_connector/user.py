@@ -1,25 +1,51 @@
 import os
 import json
-import jwt
+import logging
+import requests
+from .constants import *
+
+logger = logging.getLogger(__name__)
 
 
 class User(object):
-    def __init__(self, rasa_id, name="", phone_number=""):
+    """
+    For telegram channel, tracker_sender_id is the unique ID from the user talking with the bot.
+    """
+
+    def __init__(self, tracker_sender_id, name="Participante anônimo", phone_number=""):
         self.name = name
         self.display_name = ""
-        secret = os.getenv("JWT_SECRET")
-        encoded_id = jwt.encode({"rasa_id": rasa_id}, secret, algorithm="HS256")
-        self.stats = {}
-
-        if phone_number:
-            self.phone_number = phone_number
-            self.email = f"{phone_number}-rasa@mail.com"
-            self.password = f"{encoded_id}-rasa"
-            self.password_confirm = f"{encoded_id}-rasa"
-        else:
-            self.email = f"{encoded_id}-rasa@mail.com"
-            self.password = f"{encoded_id}-rasa"
-            self.password_confirm = f"{encoded_id}-rasa"
+        self.phone_number = phone_number
+        self.tracker_sender_id = tracker_sender_id
+        self.email = f"{tracker_sender_id}-rasa@mail.com"
+        self.password = f"{tracker_sender_id}-rasa"
+        self.password_confirm = f"{tracker_sender_id}-rasa"
 
     def serialize(self):
         return json.dumps(self.__dict__)
+
+    def authenticate(self, last_intent):
+        """
+        Differentiate user type of login (using phone number or anonymous)
+        providing the current flow for conversation
+        """
+        if self.phone_number and last_intent == "phone_number":
+            utter_name = "utter_got_phone_number"
+        else:
+            utter_name = "utter_user_want_anonymous"
+
+        self.get_or_create_user()
+        self.authenticate_utter = utter_name
+
+    def get_or_create_user(self):
+        logger.debug("CREATING NEW USER")
+        logger.debug(self.serialize())
+        try:
+            response = requests.post(
+                REGISTRATION_URL,
+                data=self.serialize(),
+                headers=HEADERS,
+            )
+            self.token = response.json()["key"]
+        except:
+            raise EJCommunicationError

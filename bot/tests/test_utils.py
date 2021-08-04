@@ -1,69 +1,73 @@
-from actions.utils import VotingService, ConversationService, define_vote_utter
-import mock
+from actions.ej_connector.helpers import VotingHelper
+from actions.ej_connector.conversation import ConversationController
+from actions.utils import *
+import unittest.mock as mock
 
 
 def test_vote_values_list():
     values = ["Concordar", "Discordar", "Pular", "1", "-1", "0"]
-    assert values == VotingService.VALID_VOTE_VALUES
+    assert values == VotingHelper.VALID_VOTE_VALUES
 
 
 def test_stop_participation():
-    voting_service = VotingService("parar", "")
-    assert voting_service.stop_participation() == True
+    assert ConversationController.stop_participation("parar") == True
 
 
 def test_vote_is_valid():
-    voting_service = VotingService("Concordar", "")
-    assert voting_service.vote_is_valid() == True
+    voting_helper = VotingHelper("Concordar", "")
+    assert voting_helper.vote_is_valid() == True
 
 
-def test_is_invalid():
-    voting_service = VotingService("xpto", "")
-    assert voting_service.vote_is_valid() == False
+def test_vote_is_invalid():
+    voting_helper = VotingHelper("xpto", "")
+    assert voting_helper.vote_is_valid() == False
 
 
 def test_user_clicked_new_participation_link():
     assert (
-        VotingService.intent_starts_new_conversation("start_with_conversation_id")
+        ConversationController.intent_starts_new_conversation(
+            "start_with_conversation_id"
+        )
         == True
     )
 
 
 def test_continue_voting():
-    assert VotingService.continue_voting() == {"vote": None}
+    assert VotingHelper.continue_voting() == {"vote": None}
 
 
 def test_stop_voting():
-    assert VotingService.stop_voting() == {"vote": "parar"}
+    assert VotingHelper.stop_voting() == {"vote": "parar"}
 
 
 def test_finished_voting():
-    voting_service = VotingService("Discordar", "")
-    assert voting_service.finished_voting() == {"vote": "discordar"}
+    voting_helper = VotingHelper("Discordar", "")
+    assert voting_helper.finished_voting() == {"vote": "discordar"}
 
 
 def test_user_have_comments_to_vote():
-    conversation_service = ConversationService("1234", "")
-    conversation_service._set_statistics = mock.MagicMock()
-    conversation_service.statistics = {"missing_votes": 5}
-    assert conversation_service.user_have_comments_to_vote() == True
+    conversation_controller = ConversationController("1234", "")
+    conversation_controller.api.get_participant_statistics = mock.MagicMock(
+        return_value={"missing_votes": 5}
+    )
+    assert conversation_controller.user_have_comments_to_vote() == True
 
 
 def test_define_vote_livechat():
     metadata = {"agent": "livechat"}
     message = "vote message"
-    returned_value = define_vote_utter(metadata, message)
+    utter = get_comment_utter(metadata, message)
 
-    assert not "buttons" in returned_value
-    assert "text" in returned_value
-    assert message == returned_value["text"]
+    assert not "buttons" in utter
+    assert "text" in utter
+    assert message == utter["text"]
 
 
 def test_define_vote_channel_not_livechat():
     metadata = {"other_keys": " notlivechat"}
     message = "vote message"
-    returned_value = define_vote_utter(metadata, message)
+    utter = get_comment_utter(metadata, message)
 
-    assert "buttons" in returned_value
-    assert "text" in returned_value
-    assert message == returned_value["text"]
+    assert "buttons" in utter
+    assert "text" in utter
+    assert message == utter["text"]

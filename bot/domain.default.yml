@@ -41,12 +41,12 @@ entities:
   - conversation_id
   - regex_phone_number
 slots:
-  change_comment:
-    type: rasa.shared.core.slots.BooleanSlot
+  comment_text:
+    type: rasa.shared.core.slots.TextSlot
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  comment_text:
+  telegram_engagement_group:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
     auto_fill: true
@@ -103,6 +103,8 @@ slots:
       - pular
       - parar
       - novo link de participação
+      - pausar para pedir telefone
+      - pausar para engajar
   current_channel_info:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
@@ -139,10 +141,17 @@ responses:
     - text: Você pode participar de uma de nossas consultas pelo nosso site, site de parceiros ou até por aqui! Me manda um "oi" se quiser participar 😉
   utter_show_topic_of_discussion:
     - text: >
-        No momento, eu estava querendo saber a sua opinião a respeito do seguinte assunto:
+        Oie, eu sou a Duda, a assistente virtual da plataforma EJ.
+        Eu gosto muito de ouvir o que as pessoas pensam sobre alguns assuntos.
+        No momento, eu queria muito saber a sua opinião sobre o seguinte tema:
 
         {conversation_text}.
-  utter_ask_user_particpate:
+
+        As suas opiniões estarão protegidas comigo conforme os termos de uso da EJ. Clique no link para ler.
+
+        https://www.ejparticipe.org/usage/
+
+  utter_invite_user_to_participate:
     - text: Topa um bate-papo comigo?
   utter_agreed_participation:
     - text: Ah maravilha 😄
@@ -154,6 +163,11 @@ responses:
     - text: Se você não quiser mais conversar comigo ou quiser terminar a conversa é so me falar! (é só escrever PARAR)
   utter_ask_phone_number:
     - text: Você poderia me passar seu telefone com DDD?
+  utter_ask_phone_number_again:
+    - text: >
+        Que incrivel, fico feliz que você esteja engajado na nossa conversa.
+        Notei que você quis participar no modo anônimo, mas se me informar seu número, conseguiremos mais força no combate á desinformação.
+        Caso queira me passar seu telefone, basta digitar, caso não queira, basta dizer não, que continuamos nossa conversa sem que você seja identificado.
   utter_explain_ask_phone_number:
     - text: Eu juro que não vou mandar spam. É só uma forma de eu poder ligar você a sua opinião
   utter_phone_number_is_optional:
@@ -162,8 +176,6 @@ responses:
     - text: Já pode mandar seu telefone com DDD aqui
   utter_invalid_phone_number:
     - text: Hmmm acho que você escreveu alguma coisa errada 😕
-  utter_ask_phone_number_again:
-    - text: Pode enviar seu telefone novamente, por favor?
   utter_got_phone_number:
     - text: Já anotei aqui o seu telefone, obrigada 😉
   utter_user_want_anonymous:
@@ -240,6 +252,15 @@ responses:
         Para participar basta clicar no link t.me/{bot_telegram_username}?start={conversation_id}.
   utter_no_selected_conversation:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
+
+  utter_invite_user_to_join_group:
+    - text: >
+        Pausa rápida para um convite: Estou gostando bastante de te ouvir, e gostaria de saber se você tem interesse de fazer parte da nossa comunidade. Lá publicamos conteúdos personalizados sobre os assuntos que estamos conversando, e você poderá interagir com outras pessoas. Para aceitar o convite basta clicar no link, e você será direcionado para o nosso grupo no Telegram:
+
+        {telegram_engagement_group}
+
+        Voltando a nossa conversa.
+
 actions:
   - action_ask_vote
   - action_follow_up_form
