@@ -41,11 +41,6 @@ entities:
   - conversation_id
   - regex_phone_number
 slots:
-  change_comment:
-    type: rasa.shared.core.slots.BooleanSlot
-    initial_value: null
-    auto_fill: true
-    influence_conversation: false
   comment_text:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
@@ -102,6 +97,8 @@ slots:
       - discordar
       - pular
       - parar
+      - novo link de participação
+      - pausar
   current_channel_info:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
@@ -149,7 +146,12 @@ responses:
         No momento, eu estava querendo saber a sua opinião a respeito do seguinte assunto:
 
         {conversation_text}.
-  utter_ask_user_particpate:
+
+        As suas opiniões estarão protegidas comigo conforme os termos de uso da EJ. Clique no link para ler.
+
+        https://www.ejparticipe.org/usage/
+
+  utter_invite_user_to_participate:
     - text: Topa um bate-papo comigo?
   utter_agreed_participation:
     - text: Oba! 😊
@@ -168,7 +170,10 @@ responses:
   utter_invalid_phone_number:
     - text: Hmmm acho que você escreveu alguma coisa errada 😕
   utter_ask_phone_number_again:
-    - text: Pode enviar seu telefone novamente, por favor?
+    - text: >
+        Que incrivel, fico feliz que você esteja engajado na nossa conversa.
+        Notei que você quis participar no modo anônimo, mas se me informar seu número, conseguiremos mais força no combate á desinformação.
+        Caso queira me passar seu telefone, basta digitar, caso não queira, basta dizer não, que continuamos nossa conversa sem que você seja identificado.
   utter_got_phone_number:
     - text: Já anotei aqui o seu telefone, obrigada 😉
   utter_user_want_anonymous:
@@ -259,6 +264,13 @@ responses:
         Para participar, escolha uma coleta clicando no link: t.me/{bot_telegram_username}?start={conversation_id}.
   utter_no_selected_conversation:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
+  utter_invite_user_to_join_group:
+    - text: >
+        Pausa rápida para um convite: Estou gostando bastante de te ouvir, e gostaria de saber se você tem interesse de fazer parte da nossa comunidade. Lá publicamos conteúdos personalizados sobre os assuntos que estamos conversando, e você poderá interagir com outras pessoas. Para aceitar o convite basta clicar no link, e você será direcionado para o nosso grupo no Telegram:
+
+        {telegram_engagement_group}
+
+        Voltando a nossa conversa.
 actions:
   - action_ask_vote
   - action_follow_up_form

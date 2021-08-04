@@ -67,6 +67,7 @@ nlu:
       - pode ser
       - bora
       - Concordar
+      - vamos
       
   - intent: disagree
     examples: |
@@ -137,7 +138,6 @@ nlu:
       - telefone
       - 111111111111111111
       - ldhuahsduashd
-      - opa
       - 6161
       - 0000000000000000000000000
       - 0000000000
@@ -180,3 +180,10 @@ nlu:
       - quanto é 4+2?
       - quanto é 3 + 2?
       - ahn
+      - opa
+      - ops
+      - fala
+      - blabla
+      - xpto
+      - ihuul
+      - uhuul

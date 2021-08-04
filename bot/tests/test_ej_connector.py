@@ -4,6 +4,8 @@ from unittest.mock import Mock, patch
 import os
 import json
 
+from actions.ej_connector.conversation import ConversationController
+
 from actions.ej_connector import API, User
 from actions.ej_connector.api import (
     conversation_url,
@@ -30,37 +32,34 @@ def mock_settings_env_vars():
 class APIClassTest(unittest.TestCase):
     """tests actions.ej_connector.api API class"""
 
-    @patch("actions.ej_connector.api.requests.post")
+    @patch("actions.ej_connector.user.requests.post")
     def test_create_user_in_ej_with_rasa_id(self, mock_post):
         response_value = {"key": "key_value"}
         mock_post.return_value = Mock(ok=True)
         mock_post.return_value.json.return_value = response_value
-        response = API.get_or_create_user(SENDER_ID)
-        assert response.token == response_value["key"]
+        user = User("1234", "David", "61999999999")
+        user.authenticate("phone_number")
+        assert user.token == response_value["key"]
+        assert user.phone_number == "61999999999"
+        assert user.name == "David"
 
-    @patch("actions.ej_connector.api.requests.post")
-    def test_create_user_in_ej_with_phone_number(self, mock_post):
-        response_value = {"key": "key_value"}
-        mock_post.return_value = Mock(ok=True)
-        mock_post.return_value.json.return_value = response_value
-        response = API.get_or_create_user(SENDER_ID, PHONE_NUMBER, PHONE_NUMBER)
-        assert response.token == response_value["key"]
-
-    @patch("actions.ej_connector.api.requests.post")
+    @patch("actions.ej_connector.user.requests.post")
     def test_create_user_returns_invalid_response(self, mock_post):
         response_value = {"error": "key_value"}
         mock_post.return_value = Mock(ok=True)
         mock_post.return_value.json.return_value = response_value
         with pytest.raises(EJCommunicationError):
-            API.get_or_create_user(SENDER_ID, PHONE_NUMBER, PHONE_NUMBER)
+            user = User("1234", "David", "61999999999")
+            user.authenticate("phone_number")
 
-    @patch("actions.ej_connector.api.requests.post")
+    @patch("actions.ej_connector.user.requests.post")
     def test_create_user_returns_forbidden_response(self, mock_post):
         mock_post.return_value = Mock(status=401), "forbidden"
         with pytest.raises(EJCommunicationError):
-            API.get_or_create_user(SENDER_ID, PHONE_NUMBER, PHONE_NUMBER)
+            user = User("1234", "David", "61999999999")
+            user.authenticate("phone_number")
 
-    @patch("actions.ej_connector.api.requests.get")
+    @patch("actions.ej_connector.user.requests.get")
     def test_get_conversations(self, mock_get):
         response_value = {
             "text": "This is the conversation title",
@@ -121,7 +120,8 @@ class APIClassTest(unittest.TestCase):
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = response_value
-        response = API.get_next_comment(CONVERSATION_ID, TOKEN)
+        conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+        response = conversation_controller.api.get_next_comment()
         assert response["content"] == response_value["content"]
         assert response["id"] == "1"
 
@@ -133,13 +133,15 @@ class APIClassTest(unittest.TestCase):
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = response_value
         with pytest.raises(EJCommunicationError):
-            API.get_next_comment(CONVERSATION_ID, TOKEN)
+            conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+            conversation_controller.api.get_next_comment()
 
     @patch("actions.ej_connector.api.requests.get")
     def test_get_random_comment_in_ej_forbidden_response(self, mock_get):
         mock_get.return_value = Mock(status=401), "forbidden"
         with pytest.raises(EJCommunicationError):
-            API.get_next_comment(CONVERSATION_ID, TOKEN)
+            conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+            conversation_controller.api.get_next_comment()
 
     @patch("actions.ej_connector.api.requests.get")
     def test_get_user_conversation_statistics(self, mock_get):
@@ -149,8 +151,8 @@ class APIClassTest(unittest.TestCase):
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = statistics_mock
-        response = API.get_user_conversation_statistics(CONVERSATION_ID, TOKEN)
-
+        conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+        response = conversation_controller.api.get_participant_statistics()
         assert response["votes"] == statistics_mock["votes"]
         assert response["missing_votes"] == statistics_mock["missing_votes"]
 
@@ -158,7 +160,8 @@ class APIClassTest(unittest.TestCase):
     def test_get_user_conversation_statistics_error_status(self, mock_get):
         mock_get.return_value = Mock(status=404), "not found"
         with pytest.raises(EJCommunicationError):
-            API.get_user_conversation_statistics(CONVERSATION_ID, TOKEN)
+            conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+            response = conversation_controller.api.get_participant_statistics()
 
     @patch("actions.ej_connector.api.requests.post")
     def test_send_user_vote(self, mock_post):
@@ -230,8 +233,7 @@ class UserClassTest(unittest.TestCase):
         assert "-rasa@mail.com" in user.email
         assert "-rasa" in user.password
         assert "-rasa" in user.password_confirm
-        assert user.stats == {}
-        assert user.name == ""
+        assert user.name == "Participante anônimo"
         assert user.display_name == ""
 
     def test_user_init_with_phone_number(self):
@@ -240,8 +242,7 @@ class UserClassTest(unittest.TestCase):
         assert "-rasa@mail.com" in user.email
         assert "-rasa" in user.password
         assert "-rasa" in user.password_confirm
-        assert user.stats == {}
-        assert user.name == ""
+        assert user.name == "Participante anônimo"
         assert user.display_name == ""
 
     def test_user_serializer_with_rasa(self):

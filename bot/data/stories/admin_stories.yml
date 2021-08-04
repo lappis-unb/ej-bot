@@ -1,0 +1,37 @@
+version: "2.0"
+
+stories:
+  - story: Generate group interaction in telegram
+    steps:
+      - intent: start
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: utter_welcome
+      - intent: display_conversations
+      - action: action_get_conversations
+      - intent: start_group_interaction
+      - action: action_set_conversation_slots
+      - action: utter_send_telegram_generated_url
+
+  - story: Participate on default conversation after generated link
+    steps:
+      - intent: start_group_interaction
+      - action: utter_send_telegram_generated_url
+      - intent: participate_on_telegram
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
+      - action: utter_invite_user_to_participate
+
+  - story: Start conversation from telegram without payload
+    # When someone starts a conversation with the bot on telegram
+    # it always sends a "start" message
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id: null
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: utter_welcome
+
