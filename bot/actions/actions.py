@@ -50,8 +50,7 @@ class ActionSetupConversation(Action):
         user_phone_number = tracker.get_slot("regex_phone_number")
         conversation_id = tracker.get_slot("conversation_id")
         last_intent = tracker.latest_message["intent"].get("name")
-        user = User(remove_special(tracker.sender_id),
-                    phone_number=user_phone_number)
+        user = User(remove_special(tracker.sender_id), phone_number=user_phone_number)
         self.response = []
         try:
             user.authenticate(last_intent)
@@ -87,11 +86,9 @@ class ActionSetupConversation(Action):
     def dispatch_explain_participation(self, channel_info_slot, dispatcher):
         if channel_info_slot == "rocket_livechat":
             # explain how user can vote according to current channel
-            dispatcher.utter_message(
-                template="utter_explain_no_button_participation")
+            dispatcher.utter_message(template="utter_explain_no_button_participation")
         else:
-            dispatcher.utter_message(
-                template="utter_explain_button_participation")
+            dispatcher.utter_message(template="utter_explain_button_participation")
 
     def set_response_to_participation(self, conversation_controller, user):
         statistics = conversation_controller.api.get_participant_statistics()
@@ -99,8 +96,7 @@ class ActionSetupConversation(Action):
         self.response = [
             SlotSet("number_voted_comments", statistics["votes"]),
             SlotSet(
-                "number_comments", statistics["missing_votes"] +
-                statistics["votes"]
+                "number_comments", statistics["missing_votes"] + statistics["votes"]
             ),
             SlotSet("comment_text", first_comment["content"]),
             SlotSet("current_comment_id", first_comment["id"]),
@@ -174,8 +170,7 @@ class ActionAskVote(Action):
         conversation_id = tracker.get_slot("conversation_id")
         token = tracker.get_slot("ej_user_token")
         channel = tracker.get_latest_input_channel()
-        conversation_controller = ConversationController(
-            conversation_id, token)
+        conversation_controller = ConversationController(conversation_id, token)
         self.response = []
         if not conversation_controller.user_have_comments_to_vote():
             return self.dispatch_user_vote_on_all_comments(dispatcher)
@@ -193,18 +188,17 @@ class ActionAskVote(Action):
         self, dispatcher, metadata, conversation_controller, channel
     ):
         statistics = conversation_controller.api.get_participant_statistics()
-        total_comments = conversation_controller.api.get_total_comments(
-            statistics)
-        voted_comments = conversation_controller.api.get_voted_comments(
-            statistics)
+        total_comments = conversation_controller.api.get_total_comments(statistics)
+        voted_comments = conversation_controller.api.get_voted_comments(statistics)
         comment = conversation_controller.api.get_next_comment()
         comment_title = conversation_controller.api.get_comment_title(
             comment, voted_comments, total_comments
         )
 
-        if (channel == "twilio"):
+        if channel == "twilio":
             dispatcher.utter_message(
-                comment_title + "\n\n1. Concordar\n-1. Discordar\n0. Pular")
+                comment_title + "\n\n1. Concordar\n-1. Discordar\n0. Pular"
+            )
 
         else:
             message = get_comment_utter(metadata, comment_title)
@@ -263,8 +257,7 @@ class ValidateVoteForm(FormValidationAction):
         bot_name = tracker.get_slot("bot_telegram_username")
         conversation_id = tracker.get_slot("conversation_id")
         voting_helper = VotingHelper(slot_value, token)
-        conversation_controller = ConversationController(
-            conversation_id, token)
+        conversation_controller = ConversationController(conversation_id, token)
         statistics = conversation_controller.api.get_participant_statistics()
 
         if voting_helper.vote_is_valid():
@@ -276,15 +269,13 @@ class ValidateVoteForm(FormValidationAction):
         if ConversationController.stop_participation(slot_value):
             return VotingHelper.stop_voting()
 
-        telegram_engagement_group = tracker.get_slot(
-            "telegram_engagement_group")
+        telegram_engagement_group = tracker.get_slot("telegram_engagement_group")
         if conversation_controller.time_to_invite_to_engage(
             statistics, bot_name, telegram_engagement_group
         ):
             dispatcher.utter_message(
                 template="utter_invite_user_to_join_group",
-                telegram_engagement_group=EngageFactory.bot_has_engage_link(
-                    bot_name),
+                telegram_engagement_group=EngageFactory.bot_has_engage_link(bot_name),
             )
 
         if conversation_controller.time_to_ask_phone_number_again(
@@ -329,23 +320,17 @@ class ActionGetConversationInfo(Action):
             try:
                 conversation_info = API.get_conversation_info_by_url(bot_url)
             except EJCommunicationError:
-                dispatcher.utter_message(
-                    template="utter_ej_communication_error")
-                dispatcher.utter_message(
-                    template="utter_error_try_again_later")
+                dispatcher.utter_message(template="utter_ej_communication_error")
+                dispatcher.utter_message(template="utter_error_try_again_later")
                 return [FollowupAction("action_session_start")]
             if conversation_info:
                 # TODO: If a domain has more than one conversation, need to think how to deal with it
-                conversation_text = conversation_info.get(
-                    "conversation").get("text")
-                conversation_id = conversation_info.get(
-                    "conversation").get("id")
+                conversation_text = conversation_info.get("conversation").get("text")
+                conversation_id = conversation_info.get("conversation").get("id")
 
             else:
-                dispatcher.utter_message(
-                    template="utter_ej_connection_doesnt_exist")
-                dispatcher.utter_message(
-                    template="utter_error_try_again_later")
+                dispatcher.utter_message(template="utter_ej_connection_doesnt_exist")
+                dispatcher.utter_message(template="utter_error_try_again_later")
                 return [FollowupAction("action_session_start")]
         else:
             conversation_id = tracker.get_slot("conversation_id")
@@ -353,8 +338,7 @@ class ActionGetConversationInfo(Action):
                 conversation = API.get_conversation(conversation_id)
                 conversation_text = conversation.get("text")
             else:
-                dispatcher.utter_message(
-                    template="utter_no_selected_conversation")
+                dispatcher.utter_message(template="utter_no_selected_conversation")
                 return [FollowupAction("action_session_start")]
 
         return [
@@ -389,7 +373,7 @@ class ActionSetChannelInfo(Action):
             bot_whatsapp_number = os.getenv("BOT_WHATSAPP")
             return [
                 SlotSet("current_channel_info", channel),
-                SlotSet("bot_whatsapp_number", bot_whatsapp_number)
+                SlotSet("bot_whatsapp_number", bot_whatsapp_number),
             ]
         if tracker.get_latest_input_channel() == "telegram":
             bot_telegram_username = os.getenv("TELEGRAM_BOT_NAME")
@@ -439,19 +423,19 @@ class ActionGetConversationList(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionGetConversations called")
-        if tracker.get_latest_input_channel() == "telegram" or tracker.get_latest_input_channel() == "twilio":
+        if (
+            tracker.get_latest_input_channel() == "telegram"
+            or tracker.get_latest_input_channel() == "twilio"
+        ):
             try:
                 conversations = API.get_conversations()
                 if conversations["count"] == 0:
                     dispatcher.utter_message(template="utter_no_conversations")
                 else:
-                    dispatcher.utter_message(
-                        template="utter_show_conversations")
-                    dispatcher.utter_message(
-                        template="utter_explain_id_conversation")
+                    dispatcher.utter_message(template="utter_show_conversations")
+                    dispatcher.utter_message(template="utter_explain_id_conversation")
                     ids = [result["id"] for result in conversations["results"]]
-                    texts = [result["text"]
-                             for result in conversations["results"]]
+                    texts = [result["text"] for result in conversations["results"]]
                     result = "\n".join(
                         f"Identificador da conversa - {str(ids[i])}\nTítulo da conversa - {text}\n  "
                         for i, text in enumerate(texts)
@@ -459,10 +443,8 @@ class ActionGetConversationList(Action):
 
                     dispatcher.utter_message(text=result)
             except EJCommunicationError:
-                dispatcher.utter_message(
-                    template="utter_ej_communication_error")
-                dispatcher.utter_message(
-                    template="utter_error_try_again_later")
+                dispatcher.utter_message(template="utter_ej_communication_error")
+                dispatcher.utter_message(template="utter_error_try_again_later")
                 return [FollowupAction("action_session_start")]
 
         return []
