@@ -19,3 +19,9 @@ def get_buttons_utter(comment_title):
 def get_livechat_utter(comment_title):
     # channel is livechat, can't render buttons
     return {"text": comment_title}
+
+
+def remove_special(line):
+    for char in ":+":
+        line = line.replace(char, "")
+    return line
