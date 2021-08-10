@@ -6,7 +6,20 @@ stories:
       - intent: start
       - action: action_set_channel_info
       - slot_was_set:
-        - current_channel_info: 'telegram'
+          - current_channel_info: "telegram"
+      - action: utter_welcome
+      - intent: display_conversations
+      - action: action_get_conversations
+      - intent: start_group_interaction
+      - action: action_set_conversation_slots
+      - action: utter_send_telegram_generated_url
+
+  - story: Generate group interaction in whatsapp
+    steps:
+      - intent: start
+      - action: action_set_channel_info
+      - slot_was_set:
+          - current_channel_info: "twilio"
       - action: utter_welcome
       - intent: display_conversations
       - action: action_get_conversations
@@ -29,9 +42,20 @@ stories:
     steps:
       - intent: start_with_conversation_id
       - slot_was_set:
-        - conversation_id: null
+          - conversation_id: null
       - action: action_set_channel_info
       - slot_was_set:
-        - current_channel_info: 'telegram'
+          - current_channel_info: "telegram"
       - action: utter_welcome
 
+  - story: Start conversation from whatsapp without payload
+    # When someone starts a conversation with the bot on telegram
+    # it always sends a "start" message
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+          - conversation_id: null
+      - action: action_set_channel_info
+      - slot_was_set:
+          - current_channel_info: "twilio"
+      - action: utter_welcome
