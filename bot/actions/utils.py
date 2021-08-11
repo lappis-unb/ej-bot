@@ -1,4 +1,4 @@
-from .ej_connector import API
+# from .ej_connector import API
 
 
 def get_comment_utter(metadata, comment_title):
