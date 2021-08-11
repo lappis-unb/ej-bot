@@ -117,26 +117,38 @@ slots:
 responses:
   utter_welcome:
     - text: >
-        Olá lobinhos e lobinhas! 🐺 
+        Olá lobinhos e lobinhas! 🐺
     - channel: telegram
       text: >
-          Olá lobinhos e lobinhas! 🐺
+        Olá lobinhos e lobinhas! 🐺
 
-          Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
+        Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
 
-          Comigo você pode fazer coletas de opinião ou participar de uma. 
+        Comigo você pode fazer coletas de opinião ou participar de uma. 
 
-          Os seguintes comandos estão disponíveis:
+        Os seguintes comandos estão disponíveis:
 
-          /listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+        /listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
 
-          /selecionarconversa [id]: Gera o link de participação, que pode ser enviado para grupos, canais ou diretamente para um contato. Em [id] indique o número da conversa na EJ; 
+        /selecionarconversa [id]: Gera o link de participação, que pode ser enviado para grupos, canais ou diretamente para um contato. Em [id] indique o número da conversa na EJ; 
 
-          /participar: Participar de uma coleta pré-selecionada. 
+        /participar: Participar de uma coleta pré-selecionada. 
 
-          /help: Menu de ajuda; 
+        /help: Menu de ajuda;
+    - channel: twilio
+      text: >
+        Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
+        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
+
+        listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+
+        selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
+
+        participar: Utilize esse comando para participar de uma coleta pré-selecionada.
+
+        help: Menu de ajuda
   utter_introduce_ej:
-    - text: > 
+    - text: >
         Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
         A Plataforma Ej realiza consultas de opinião com foco em Estado e Organizações.
   utter_explain_how_to_participate:
@@ -156,7 +168,7 @@ responses:
   utter_agreed_participation:
     - text: Oba! 😊
   utter_disagreed_participation:
-    - text: Poxa, que pena! ☹️ 
+    - text: Poxa, que pena! ☹️
   utter_stop_conversation:
     - text: Se você não quiser mais conversar comigo ou quiser terminar a conversa é só digitar “Parar”
   utter_ask_phone_number:
@@ -179,15 +191,15 @@ responses:
   utter_user_want_anonymous:
     - text: Beleza, vamos prosseguir!
   utter_vote_received:
-    - text: ✏️ Anotado! 
-    - text: ✏️ Entendo, registrado. 
-    - text: ✏️ Anotei aqui. 
+    - text: ✏️ Anotado!
+    - text: ✏️ Entendo, registrado.
+    - text: ✏️ Anotei aqui.
   utter_out_of_context:
     - text: Desculpe, não sei se entendi 😕
   utter_sent_comment:
     - text: Certo, já anotei seu comentário, muito obrigada pela sua contribuição!!
   utter_send_comment_error:
-    - text: > 
+    - text: >
         Ops, não sei o que aconteceu 😬
         Eu não consegui salvar seu comentário
   utter_ask_send_comment_again:
@@ -215,14 +227,23 @@ responses:
   utter_help:
     - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
     - channel: telegram
-      text: > 
-          💡 A lista de comandos disponíveis atualmente é:
+      text: >
+        💡 A lista de comandos disponíveis atualmente é:
 
-          /listarconversas - Lista as conversas públicas disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
- 
-          /selecionarconversa [id] - Gera o link de participação, que pode ser enviado para grupos, canais ou diretamente para um contato. Em [id] indique o número da conversa na EJ;
-        
-          /participar - Participe de uma coleta pré-selecionada.
+        /listarconversas - Lista as conversas públicas disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+
+        /selecionarconversa [id] - Gera o link de participação, que pode ser enviado para grupos, canais ou diretamente para um contato. Em [id] indique o número da conversa na EJ;
+
+        /participar - Participe de uma coleta pré-selecionada.
+    - channel: twilio
+      text: >
+        listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+
+        selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
+
+        participar: Utilize esse comando para participar de uma coleta pré-selecionada.
+
+        help: Menu de ajuda
   utter_show_conversations:
     - text: >
         Essa é a lista das conversas públicas disponíveis para participação.
@@ -233,7 +254,7 @@ responses:
     - text: >
         Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
   utter_explain_no_button_participation:
-    - text: > 
+    - text: >
         Digite o número correspondente ou clique no botão:
 
          1 - Concordar com um comentário
@@ -242,7 +263,11 @@ responses:
 
          0 - Pular um comentário
   utter_explain_button_participation:
-    - text: > 
+    - channel: twilio
+      text:
+        Para concordar com um comentário digite 1, para discordar de um comentário digite -1.
+        Caso queira pular um comentário, digite 0.
+    - text: >
         Digite o número correspondente ou clique no botão:
 
          1 - Concordar com um comentário
@@ -251,10 +276,18 @@ responses:
 
          0 - Pular um comentário
   utter_send_telegram_generated_url:
+    - channel: twilio
+      text: >
+        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 
+
+        {conversation_text}.
+
+        Para participar basta clicar no link https://web.whatsapp.com/send?phone={bot_whatsapp_number}&text=start+{conversation_id}
+
     - channel: telegram
-      text: > 
+      text: >
         Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. 
- 
+
         Gostaríamos da sua participação na seguinte discussão: 
 
         {conversation_text}.

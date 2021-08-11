@@ -138,6 +138,8 @@ responses:
         selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
 
         participar: Utilize esse comando para participar de uma coleta pré-selecionada.
+
+        help: Menu de ajuda
     - channel: telegram
       text: >
         Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
@@ -148,6 +150,8 @@ responses:
         /selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
 
         /participar: Utilize esse comando para participar de uma coleta pré-selecionada.
+
+        /help: Menu de ajuda;
   utter_introduce_ej:
     - text: >
         Eu sou a assistente virtual da plataforma EJ. 
@@ -244,8 +248,11 @@ responses:
     - channel: telegram
       text: >
         A lista de comandos disponíveis atualmente é: 
+
         /listarconversas - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
+
         /selecionarconversa [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
+
         /participar - Participe de uma coleta pré-selecionada.
   utter_show_conversations:
     - text: >

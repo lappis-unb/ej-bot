@@ -170,6 +170,7 @@ class ActionAskVote(Action):
         conversation_id = tracker.get_slot("conversation_id")
         token = tracker.get_slot("ej_user_token")
         channel = tracker.get_latest_input_channel()
+
         conversation_controller = ConversationController(conversation_id, token)
         self.response = []
         if not conversation_controller.user_have_comments_to_vote():
