@@ -11,9 +11,19 @@ from rasa.core.channels.channel import UserMessage
 from rasa.shared.constants import INTENT_MESSAGE_PREFIX
 from rasa.shared.core.constants import USER_INTENT_RESTART
 
+import re
+
 logger = logging.getLogger(__name__)
 from typing import Text
 from rasa.core.channels import RocketChatInput
+
+AVAILABLE_COMMANDS = [
+    "listarconversas",
+    "selecionarconversa",
+    "help",
+    "participar",
+    "start",
+]
 
 
 class RocketChatInputChannel(RocketChatInput):
@@ -46,6 +56,15 @@ class TelegramInputChannel(TelegramInput):
     @staticmethod
     def _is_edited_message(message: Update) -> bool:
         return message.edited_message is not None
+
+    @staticmethod
+    def _is_command_valid(text) -> bool:
+        command_is_valid = False
+        for command in AVAILABLE_COMMANDS:
+            regex = f".*{command}.*"
+            if re.search(regex, text):
+                command_is_valid = True
+        return command_is_valid
 
     def blueprint(
         self, on_new_message: Callable[[UserMessage], Awaitable[Any]]
@@ -92,6 +111,9 @@ class TelegramInputChannel(TelegramInput):
                         text = msg.text.replace("/bot", "")
                         if msg.text[0] == "/":
                             text = msg.text[1:]
+                            if not self._is_command_valid(text):
+                                logger.debug("UNAVAILABLE COMMAND")
+                                return response.text("success")
                         logger.debug(text)
                     elif self._is_location(msg):
                         text = '{{"lng":{0}, "lat":{1}}}'.format(
