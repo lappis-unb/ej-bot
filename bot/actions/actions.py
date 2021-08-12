@@ -288,7 +288,14 @@ class ValidateVoteForm(FormValidationAction):
         if ConversationController.intent_starts_new_conversation(current_intent):
             return ConversationController.starts_conversation_from_another_link()
 
-        if voting_helper.vote_is_valid():
+        if voting_helper.user_enters_a_new_comment():
+            try:
+                voting_helper.send_new_comment(conversation_id)
+                dispatcher.utter_message(template="utter_sent_comment")
+            except Exception:
+                dispatcher.utter_message(template="utter_send_comment_error")
+
+        if voting_helper.vote_is_valid() or voting_helper.user_enters_a_new_comment():
             if conversation_controller.user_have_comments_to_vote():
                 return VotingHelper.continue_voting()
             else:
