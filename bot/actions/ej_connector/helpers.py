@@ -15,6 +15,13 @@ class VotingHelper:
     def new_vote(self, comment_id):
         return API.send_comment_vote(comment_id, self.vote_slot_value, self.token)
 
+    def user_enters_a_new_comment(self):
+        slot_value = str(self.vote_slot_value)
+        return slot_value not in VotingHelper.VALID_VOTE_VALUES and slot_value[2] != "/"
+
+    def send_new_comment(self, conversation_id):
+        return API.send_new_comment(conversation_id, self.vote_slot_value, self.token)
+
     @staticmethod
     def continue_voting():
         """
