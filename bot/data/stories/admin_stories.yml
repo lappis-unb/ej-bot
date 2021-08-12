@@ -14,9 +14,16 @@ stories:
       - action: action_set_conversation_slots
       - action: utter_send_telegram_generated_url
 
+  - story: Generate group interaction in telegram without display conversations
+    steps:
+      - intent: start_group_interaction
+      - action: action_set_conversation_slots
+      - action: utter_send_telegram_generated_url
+
   - story: Participate on default conversation after generated link
     steps:
       - intent: start_group_interaction
+      - action: action_set_conversation_slots
       - action: utter_send_telegram_generated_url
       - intent: participate_on_telegram
       - action: action_get_conversation_info
