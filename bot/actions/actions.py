@@ -46,16 +46,13 @@ class ActionSetupConversation(Action):
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionSetupConversation called")
         user_phone_number = tracker.get_slot("regex_phone_number")
-        conversation_id = tracker.get_slot("conversation_id")
         last_intent = tracker.latest_message["intent"].get("name")
         user = User(tracker.sender_id, phone_number=user_phone_number)
         self.response = []
         try:
             user.authenticate(last_intent)
             self.dispatch_user_authentication(user, dispatcher)
-            conversation_controller = ConversationController(
-                conversation_id, user.token
-            )
+            conversation_controller = ConversationController(tracker, user.token)
             if not conversation_controller.user_have_comments_to_vote():
                 return self.dispatch_user_vote_on_all_comments(dispatcher)
             self.set_response_to_participation(conversation_controller, user)
@@ -118,7 +115,7 @@ class ActionFollowUpForm(Action):
         return self.response
 
     def dispatch_if_stop_participation(self, dispatcher, vote):
-        if ConversationController.stop_participation(vote):
+        if ConversationController.user_wants_to_stop_participation(vote):
             dispatcher.utter_message(template="utter_thanks_participation")
             dispatcher.utter_message(template="utter_stopped")
 
@@ -165,9 +162,7 @@ class ActionAskVote(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
-        conversation_id = tracker.get_slot("conversation_id")
-        token = tracker.get_slot("ej_user_token")
-        conversation_controller = ConversationController(conversation_id, token)
+        conversation_controller = ConversationController(tracker)
         self.response = []
         if not conversation_controller.user_have_comments_to_vote():
             return self.dispatch_user_vote_on_all_comments(dispatcher)
@@ -243,23 +238,50 @@ class ValidateVoteForm(FormValidationAction):
     ) -> Dict[Text, Any]:
         """Validate vote value."""
         logger.debug("form validator ValidateVoteForm called")
-        token = tracker.get_slot("ej_user_token")
-        bot_name = tracker.get_slot("bot_telegram_username")
-        conversation_id = tracker.get_slot("conversation_id")
-        voting_helper = VotingHelper(slot_value, token)
-        conversation_controller = ConversationController(conversation_id, token)
-        statistics = conversation_controller.api.get_participant_statistics()
+
+        # dispatcher.utter_message(text=channel)
+        if ConversationController.user_wants_to_stop_participation(slot_value):
+            return VotingHelper.stop_voting()
+
+        voting_helper = VotingHelper(slot_value, tracker)
+        conversation_controller = ConversationController(tracker)
+        self.dispatch_save_participant_vote(tracker, dispatcher, voting_helper)
+        self.dispatch_invite_to_join_group(tracker, dispatcher, conversation_controller)
+
+        if conversation_controller.time_to_ask_phone_number_again():
+            return VotingHelper.pause_voting_to_ask_phone_number()
+
+        if conversation_controller.intent_starts_new_conversation():
+            return ConversationController.starts_conversation_from_another_link()
 
         if voting_helper.vote_is_valid():
-            comment_id = tracker.get_slot("current_comment_id")
-            vote = voting_helper.new_vote(comment_id)
+            return self.dispatch_show_next_comment(
+                dispatcher, conversation_controller, voting_helper
+            )
+        dispatcher.utter_message(template="utter_out_of_context")
+
+    def dispatch_save_participant_vote(self, tracker, dispatcher, voting_helper):
+        if voting_helper.vote_is_valid():
+            vote = voting_helper.new_vote(tracker.get_slot("current_comment_id"))
             if vote["created"]:
                 dispatcher.utter_message(template="utter_vote_received")
 
-        if ConversationController.stop_participation(slot_value):
-            return VotingHelper.stop_voting()
+    def dispatch_show_next_comment(
+        self, dispatcher, conversation_controller, voting_helper
+    ):
+        if conversation_controller.user_have_comments_to_vote():
+            return VotingHelper.continue_voting()
+        else:
+            dispatcher.utter_message(template="utter_voted_all_comments")
+            dispatcher.utter_message(template="utter_thanks_participation")
+            return voting_helper.finished_voting()
 
+    def dispatch_invite_to_join_group(
+        self, tracker, dispatcher, conversation_controller
+    ):
+        bot_name = tracker.get_slot("bot_telegram_username")
         telegram_engagement_group = tracker.get_slot("telegram_engagement_group")
+        statistics = conversation_controller.api.get_participant_statistics()
         if conversation_controller.time_to_invite_to_engage(
             statistics, bot_name, telegram_engagement_group
         ):
@@ -267,32 +289,6 @@ class ValidateVoteForm(FormValidationAction):
                 template="utter_invite_user_to_join_group",
                 telegram_engagement_group=EngageFactory.bot_has_engage_link(bot_name),
             )
-
-        if conversation_controller.time_to_ask_phone_number_again(
-            tracker.get_slot("regex_phone_number"), statistics
-        ):
-            return VotingHelper.pause_voting_to_ask_phone_number()
-
-        current_intent = tracker.latest_message.get("intent").get("name")
-        if ConversationController.intent_starts_new_conversation(current_intent):
-            return ConversationController.starts_conversation_from_another_link()
-
-        if voting_helper.user_enters_a_new_comment():
-            try:
-                voting_helper.send_new_comment(conversation_id)
-                dispatcher.utter_message(template="utter_sent_comment")
-            except Exception:
-                dispatcher.utter_message(template="utter_send_comment_error")
-
-        if voting_helper.vote_is_valid() or voting_helper.user_enters_a_new_comment():
-            if conversation_controller.user_have_comments_to_vote():
-                return VotingHelper.continue_voting()
-            else:
-                dispatcher.utter_message(template="utter_voted_all_comments")
-                dispatcher.utter_message(template="utter_thanks_participation")
-                return voting_helper.finished_voting()
-
-        dispatcher.utter_message(template="utter_out_of_context")
 
 
 # TODO: Rename to ActionGetConversation

@@ -1,12 +1,18 @@
 from .api import API
 from .helpers import EngageFactory
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class ConversationController:
-    def __init__(self, conversation_id, token):
-        self.conversation_id = conversation_id
-        self.token = token
-        self.api = ConversationAPI(conversation_id, token)
+    def __init__(self, tracker, token=None):
+        self.conversation_id = tracker.get_slot("conversation_id")
+        self.token = tracker.get_slot("ej_user_token") or token
+        self.tracker = tracker
+        self.api = ConversationAPI(self.conversation_id, self.token)
+        self.statistics = self.api.get_participant_statistics()
 
     def user_have_comments_to_vote(self):
         statistics = self.api.get_participant_statistics()
@@ -26,16 +32,18 @@ class ConversationController:
         """
         return {"vote": "novo link de participação"}
 
-    @staticmethod
-    def intent_starts_new_conversation(current_intent):
-        return current_intent == "start_with_conversation_id"
+    def intent_starts_new_conversation(self):
+        return (
+            self.tracker.latest_message.get("intent").get("name")
+            == "start_with_conversation_id"
+        )
 
     @staticmethod
     def is_vote_on_new_conversation(vote_slot_value):
         return vote_slot_value == "novo link de participação"
 
     @staticmethod
-    def stop_participation(vote_slot_value):
+    def user_wants_to_stop_participation(vote_slot_value):
         return str(vote_slot_value).upper() == "PARAR"
 
     @staticmethod
@@ -52,9 +60,10 @@ class ConversationController:
         dispatcher.utter_message(template="utter_error_try_again_later")
         return [FollowupAction("action_session_start")]
 
-    def time_to_ask_phone_number_again(self, participant_phone_number, statistics):
-        total_comments = self.api.get_total_comments(statistics)
-        voted_comments = self.api.get_voted_comments(statistics)
+    def time_to_ask_phone_number_again(self):
+        participant_phone_number = self.tracker.get_slot("regex_phone_number")
+        total_comments = self.api.get_total_comments(self.statistics)
+        voted_comments = self.api.get_voted_comments(self.statistics)
         if voted_comments == 0:
             return False
         participation_tax = total_comments / voted_comments
