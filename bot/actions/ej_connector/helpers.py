@@ -5,15 +5,18 @@ class VotingHelper:
 
     VALID_VOTE_VALUES = ["Concordar", "Discordar", "Pular", "1", "-1", "0"]
 
-    def __init__(self, vote_slot_value, token):
+    def __init__(self, vote_slot_value, tracker):
         self.vote_slot_value = vote_slot_value
-        self.token = token
+        self.channel = tracker.get_latest_input_channel()
+        self.token = tracker.get_slot("ej_user_token")
 
     def vote_is_valid(self):
         return str(self.vote_slot_value) in VotingHelper.VALID_VOTE_VALUES
 
     def new_vote(self, comment_id):
-        return API.send_comment_vote(comment_id, self.vote_slot_value, self.token)
+        return API.send_comment_vote(
+            comment_id, self.vote_slot_value, self.channel, self.token
+        )
 
     def user_enters_a_new_comment(self):
         slot_value = str(self.vote_slot_value)
