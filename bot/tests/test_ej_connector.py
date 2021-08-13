@@ -29,6 +29,18 @@ def mock_settings_env_vars():
         yield
 
 
+class MockedTracker:
+    def __init__(self):
+        self.latest_message = {"intent": {"name": ""}}
+
+    def get_slot(self, slot_value):
+        slots = {"conversation_id": CONVERSATION_ID, "ej_user_token": TOKEN}
+        return slots.get(slot_value)
+
+    def get_latest_input_channel(self):
+        return "telegram"
+
+
 class APIClassTest(unittest.TestCase):
     """tests actions.ej_connector.api API class"""
 
@@ -120,7 +132,8 @@ class APIClassTest(unittest.TestCase):
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = response_value
-        conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+        mocked_tracker = MockedTracker()
+        conversation_controller = ConversationController(mocked_tracker)
         response = conversation_controller.api.get_next_comment()
         assert response["content"] == response_value["content"]
         assert response["id"] == "1"
@@ -133,14 +146,16 @@ class APIClassTest(unittest.TestCase):
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = response_value
         with pytest.raises(EJCommunicationError):
-            conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+            mocked_tracker = MockedTracker()
+            conversation_controller = ConversationController(mocked_tracker)
             conversation_controller.api.get_next_comment()
 
     @patch("actions.ej_connector.api.requests.get")
     def test_get_random_comment_in_ej_forbidden_response(self, mock_get):
         mock_get.return_value = Mock(status=401), "forbidden"
         with pytest.raises(EJCommunicationError):
-            conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+            mocked_tracker = MockedTracker()
+            conversation_controller = ConversationController(mocked_tracker)
             conversation_controller.api.get_next_comment()
 
     @patch("actions.ej_connector.api.requests.get")
@@ -151,7 +166,8 @@ class APIClassTest(unittest.TestCase):
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = statistics_mock
-        conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
+        mocked_tracker = MockedTracker()
+        conversation_controller = ConversationController(mocked_tracker)
         response = conversation_controller.api.get_participant_statistics()
         assert response["votes"] == statistics_mock["votes"]
         assert response["missing_votes"] == statistics_mock["missing_votes"]
@@ -160,8 +176,9 @@ class APIClassTest(unittest.TestCase):
     def test_get_user_conversation_statistics_error_status(self, mock_get):
         mock_get.return_value = Mock(status=404), "not found"
         with pytest.raises(EJCommunicationError):
-            conversation_controller = ConversationController(CONVERSATION_ID, TOKEN)
-            response = conversation_controller.api.get_participant_statistics()
+            mocked_tracker = MockedTracker()
+            conversation_controller = ConversationController(mocked_tracker)
+            conversation_controller.api.get_participant_statistics()
 
     @patch("actions.ej_connector.api.requests.post")
     def test_send_user_vote(self, mock_post):
@@ -169,14 +186,14 @@ class APIClassTest(unittest.TestCase):
         mock_post.return_value = Mock(ok=True)
         mock_post.return_value.json.return_value = vote_response_mock
 
-        response = API.send_comment_vote(CONVERSATION_ID, "Pular", TOKEN)
+        response = API.send_comment_vote(CONVERSATION_ID, "Pular", "telegram", TOKEN)
         assert response["created"]
 
     @patch("actions.ej_connector.api.requests.post")
     def test_send_user_vote_error_status(self, mock_post):
         mock_post.return_value = Mock(status=401), "forbidden"
         with pytest.raises(EJCommunicationError):
-            API.send_comment_vote(CONVERSATION_ID, "Pular", TOKEN)
+            API.send_comment_vote(CONVERSATION_ID, "Pular", "telegram", TOKEN)
 
     @patch("actions.ej_connector.api.requests.post")
     def test_send_user_comment(self, mock_post):

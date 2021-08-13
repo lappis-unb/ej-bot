@@ -76,9 +76,6 @@ class API:
 
     @staticmethod
     def get_user_conversation_statistics(conversation_id, token):
-        logger.debug("GET_CONVERSATIONS")
-        logger.debug(HEADERS)
-        logger.debug(auth_headers(token))
         try:
             url = user_statistics_url(conversation_id)
             response = requests.get(url, headers=auth_headers(token))
@@ -88,7 +85,7 @@ class API:
         return response
 
     @staticmethod
-    def send_comment_vote(comment_id, choice, token):
+    def send_comment_vote(comment_id, choice, channel, token):
         if choice in VOTE_CHOICES:
             choice = VOTE_CHOICES[choice]
 
@@ -96,6 +93,7 @@ class API:
             {
                 "comment": comment_id,
                 "choice": choice,
+                "channel": channel,
             }
         )
         try:
