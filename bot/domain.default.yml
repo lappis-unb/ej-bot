@@ -138,8 +138,11 @@ responses:
         selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
 
         participar: Utilize esse comando para participar de uma coleta pré-selecionada.
+<<<<<<< HEAD
 
         help: Menu de ajuda
+=======
+>>>>>>> 29597ae (Solve merge conflict)
     - channel: telegram
       text: >
         Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
