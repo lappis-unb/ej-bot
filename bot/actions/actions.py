@@ -246,7 +246,9 @@ class ValidateVoteForm(FormValidationAction):
         voting_helper = VotingHelper(slot_value, tracker)
         conversation_controller = ConversationController(tracker)
         self.dispatch_save_participant_vote(tracker, dispatcher, voting_helper)
-        self.dispatch_save_participant_comment(dispatcher, voting_helper, conversation_controller)
+        self.dispatch_save_participant_comment(
+            dispatcher, voting_helper, conversation_controller
+        )
         self.dispatch_invite_to_join_group(tracker, dispatcher, conversation_controller)
 
         if conversation_controller.time_to_ask_phone_number_again():
@@ -261,14 +263,16 @@ class ValidateVoteForm(FormValidationAction):
             )
         dispatcher.utter_message(template="utter_out_of_context")
 
-    def dispatch_save_participant_comment(self, dispatcher, voting_helper, conversation_controller):
+    def dispatch_save_participant_comment(
+        self, dispatcher, voting_helper, conversation_controller
+    ):
         if voting_helper.user_enters_a_new_comment():
             try:
                 voting_helper.send_new_comment(conversation_controller.conversation_id)
                 dispatcher.utter_message(template="utter_sent_comment")
             except Exception:
                 dispatcher.utter_message(template="utter_send_comment_error")
- 
+
     def dispatch_save_participant_vote(self, tracker, dispatcher, voting_helper):
         if voting_helper.vote_is_valid():
             vote = voting_helper.new_vote(tracker.get_slot("current_comment_id"))
