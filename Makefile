@@ -45,8 +45,8 @@ run-shell: run-duck ## Run bot in shell, sucessful when shows "Bot loaded. Type 
 run-api: run-duck
 	docker-compose up bot
 
-run-x: run-duck ## Run bot in rasa x mode locally, hosted in localhost:5002 
-	docker-compose run --name rasax --rm --service-ports x make x
+rasa-x: run-duck ## Run bot in rasa x mode locally, hosted in localhost:5002 
+	domain=$(if $(findstring bocadelobo, $(domain)),domain.bocadelobo.yml,domain.default.yml) docker-compose up rasa-x
 
 run-webchat: ## Run bot in web mode, hosted in localhost:8001
 	docker-compose up webchat

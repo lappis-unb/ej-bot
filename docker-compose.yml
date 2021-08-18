@@ -63,7 +63,7 @@ services:
     networks:
       - bot-network
 
-  # ================================= Duckling  ==================================
+  # ================================= Duckling ================================
   # Duckling HTTP extractor for entities such as email, date, amounts...
   duckling:
     container_name: duck
@@ -71,6 +71,20 @@ services:
     ports:
       - 6800:8000
     networks:
+      - bot-network
+  
+  # ================================= Rasa X ==================================
+  # Rasa X container server
+  rasa-x:
+    <<: *bot-common-build
+    <<: *bot-common
+    container_name: rasa-x
+    ports:
+      - 5002:5002
+    volumes:
+      - ./bot:/bot
+    entrypoint: "make rasa-x domain=${domain}"
+    networks: 
       - bot-network
 
 networks:

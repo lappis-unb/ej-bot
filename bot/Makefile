@@ -9,8 +9,9 @@ install:
 	pip install -r ../x-requirements.txt
 
 # RASA X
-x:
-	rasa x
+rasa-x:
+	pip3 install rasa-x --extra-index-url https://pypi.rasa.com/simple
+	rasa x --domain $(domain) --no-prompt
 
 # NLU
 train-nlu:
