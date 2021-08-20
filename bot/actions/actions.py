@@ -321,9 +321,11 @@ class ActionGetConversationInfo(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionGetConversationInfo called")
-        #socketio_rasax = tracker.get_latest_input_channel() == "rasa" and tracker.get_slot("url")
+        socketio_rasax = (
+            tracker.get_latest_input_channel() == "rasa" and tracker.get_slot("url")
+        )
 
-        if tracker.get_latest_input_channel() == "socketio": #or socketio_rasax:
+        if tracker.get_latest_input_channel() == "socketio" or socketio_rasax:
             bot_url = tracker.get_slot("url")
             try:
                 conversation_info = API.get_conversation_info_by_url(bot_url)
@@ -372,13 +374,7 @@ class ActionSetChannelInfo(Action):
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionSetChannelInfo called")
         channel = tracker.get_latest_input_channel()
-        
-        #socketio_rasax = tracker.get_latest_input_channel() == "rasa" and tracker.get_slot("url")
-        #if socketio_rasax:
-        #    channel = "socketio"
 
-        #else:
-        #    logger.debug("Não foi chamada pelo webchat") #start_with_conversation_id
         if tracker.get_latest_input_channel() == "rocketchat":
             if "agent" in tracker.latest_message["metadata"]:
                 channel = "rocket_livechat"

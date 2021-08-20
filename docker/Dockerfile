@@ -7,6 +7,7 @@ RUN python -m pip install --upgrade pip
 
 COPY ./docker/ /tmp
 RUN pip install -r /tmp/development-requirements.txt
+RUN python -m pip install rasa-x --extra-index-url https://pypi.rasa.com/simple
 WORKDIR /bot
 # RUN find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
 #RUN python -c "import nltk; nltk.download('stopwords');"

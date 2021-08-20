@@ -19,9 +19,6 @@ build:
 build-bot:
 	docker-compose build bot
 
-build-x:
-	docker-compose build rasa-x
-
 build-coach:
 	docker-compose build coach
 
