@@ -10,8 +10,8 @@ install:
 
 # RASA X
 rasa-x:
-	pip3 install rasa-x --extra-index-url https://pypi.rasa.com/simple
-	rasa x --domain $(domain) --no-prompt
+#pip3 install rasa-x --extra-index-url https://pypi.rasa.com/simple
+	rasa x --domain $(domain) --no-prompt --enable-api
 
 # NLU
 train-nlu:
