@@ -375,7 +375,9 @@ class ActionSetChannelInfo(Action):
         logger.debug("action ActionSetChannelInfo called")
         channel = tracker.get_latest_input_channel()
 
-        telegram_rasax = tracker.get_latest_input_channel() == "rasa" and not tracker.get_slot("url")
+        telegram_rasax = (
+            tracker.get_latest_input_channel() == "rasa" and not tracker.get_slot("url")
+        )
 
         if tracker.get_latest_input_channel() == "rocketchat":
             if "agent" in tracker.latest_message["metadata"]:
@@ -386,9 +388,11 @@ class ActionSetChannelInfo(Action):
                 SlotSet("current_channel_info", channel),
                 SlotSet("bot_telegram_username", bot_telegram_username),
             ]
-        
+
         if telegram_rasax:
-            return [SlotSet("current_channel_info", channel),]
+            return [
+                SlotSet("current_channel_info", channel),
+            ]
 
         return [
             FollowupAction("action_get_conversation_info"),
@@ -432,7 +436,9 @@ class ActionGetConversationList(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionGetConversations called")
-        telegram_rasax = tracker.get_latest_input_channel() == "rasa" and not tracker.get_slot("url")
+        telegram_rasax = (
+            tracker.get_latest_input_channel() == "rasa" and not tracker.get_slot("url")
+        )
 
         if tracker.get_latest_input_channel() == "telegram" or telegram_rasax:
             try:
