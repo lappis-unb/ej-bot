@@ -262,8 +262,8 @@ Para testar se seu bot do Telegram irá se conectar na EJ, basta subir a api do 
 Existem 3 bots diferentes da duda, cada um de um ambiente diferente. São eles:
 
 - duda_local_bot: ambiente de desenvolvimento local, que deve apontar para a instância local do desenvolvedor, criada via ngrok;
-- DudaEjDevBot: ambiente de homologação, que aponta para a instância https://rasaserver.pencillabs.com.br/;
-- DudaEjBot: ambiente de produção, que aponta para a instância https://rasaserverprod.pencillabs.com.br/.
+- DudaEjDevBot: ambiente de homologação, que aponta para a instância https://rasadefaultdev.pencillabs.com.br/;
+- DudaEjBot: ambiente de produção, que aponta para a instância https://rasadefault.pencillabs.com.br/.
 
 ## Interações em grupo
 
