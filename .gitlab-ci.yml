@@ -2,7 +2,6 @@ image:
   name: rasa/rasa:2.8.0
   entrypoint: [""]
 
-
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
@@ -50,6 +49,8 @@ default_domain:
     - python3 -m pytest
 
 deploy_to_dev:
+  image: 
+    name: debian:stable
   stage: deploy
   before_script:
     - apt update && apt install -y bash git
