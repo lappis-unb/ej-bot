@@ -1,6 +1,10 @@
-image: 
+image:
   name: rasa/rasa:2.8.0
   entrypoint: [""]
+
+services:
+  - name: "rasa/duckling"
+    alias: "duck"
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -20,7 +24,7 @@ check_style_with_black:
   script:
     - black --check .
 
-bocadelobo_domain:
+test_bocadelobo_domain:
   before_script:
     - export PATH=/app/bin/:/app/:$PATH
     - export PYTHONPATH=/app/:$PYTHONPATH
@@ -30,11 +34,10 @@ bocadelobo_domain:
     RASA_DUCKLING_HTTP_URL: "http://duck:8000"
   script:
     - cd bot && rasa train --domain domain.bocadelobo.yml
-    - rasa test nlu --nlu ./data/nlu.yml --cross-validation
+    - rasa test --out results/ --fail-on-prediction-errors --nlu data/nlu.yml --cross-validation
     - rasa test core --fail-on-prediction-errors --out results/results-core-test
-    - python3 -m pytest
 
-default_domain:
+test_default_domain:
   before_script:
     - export PATH=/app/bin/:/app/:$PATH
     - export PYTHONPATH=/app/:$PYTHONPATH
@@ -44,8 +47,17 @@ default_domain:
     RASA_DUCKLING_HTTP_URL: "http://duck:8000"
   script:
     - cd bot && rasa train --domain domain.default.yml
-    - rasa test nlu --nlu ./data/nlu.yml --cross-validation
+    - rasa test --out results/ --fail-on-prediction-errors --nlu data/nlu.yml --cross-validation
     - rasa test core --fail-on-prediction-errors --out results/results-core-test
+
+test_actions:
+  before_script:
+    - export PATH=/app/bin/:/app/:$PATH
+    - export PYTHONPATH=/app/:$PYTHONPATH
+    - pip install -r ./docker/development-requirements.txt -t /app
+  stage: test
+  script:
+    - cd bot 
     - python3 -m pytest
 
 deploy_to_dev:

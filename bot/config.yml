@@ -3,16 +3,13 @@ language : "pt"
 pipeline:
   - name: WhitespaceTokenizer
   - name: RegexFeaturizer
+    "case_sensitive": False
+    "use_word_boundaries": True  
   - name: LexicalSyntacticFeaturizer
   - name: CountVectorsFeaturizer
     analyzer: "char_wb"
     min_ngram: 1
     max_ngram: 4
-  - name: RegexEntityExtractor
-    case_sensitive: False
-    use_lookup_tables: False
-    use_regexes: True
-    "use_word_boundaries": True
   - name: DIETClassifier
     epochs: 100
   - name: EntitySynonymMapper
@@ -20,7 +17,7 @@ pipeline:
   - name: "DucklingEntityExtractor"
     url: ${RASA_DUCKLING_HTTP_URL}
     locale: BR
-    dimensions: ["url", "phone-number"]
+    dimensions: ["url"]
 policies:
   - name: RulePolicy
   - name: MemoizationPolicy

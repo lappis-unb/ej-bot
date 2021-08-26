@@ -15,8 +15,6 @@ intents:
       use_entities: true
   - phone_number:
       use_entities: true
-  - invalid_phone_number:
-      use_entities: true
   - out_of_context:
       use_entities: true
   - stop:

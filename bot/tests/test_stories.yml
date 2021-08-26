@@ -2,83 +2,77 @@
 #### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
 
 stories:
-- story: Greet user
+- story: participant join conversation on telegram
   steps:
   - user: |
-      oi
-    intent: start
+      start [56](conversation_id)
+    intent: start_with_conversation_id
   - action: action_set_channel_info
   - action: action_get_conversation_info
   - action: utter_show_topic_of_discussion
-  - action: utter_ask_user_particpate
+  - action: utter_invite_user_to_participate
 
-- story: User utters out of context 
+    # - story: User utters out of context 
+    #   steps:
+    #   - user: |
+    #       asdfgasd
+    #     intent: out_of_context
+    #   - action: utter_out_of_context
+
+- story: participant don't wants to join conversation on telegram
   steps:
   - user: |
-      asdfgasd
-    intent: out_of_context
-  - action: utter_out_of_context
-
-- story: User don't want to participate sad path
-  steps:
-  - user: |
-      olá
-    intent: start
+      start [56](conversation_id)
+    intent: start_with_conversation_id
   - action: action_set_channel_info
   - action: action_get_conversation_info
   - action: utter_show_topic_of_discussion
-  - action: utter_ask_user_particpate
+  - action: utter_invite_user_to_participate
   - user: |
       não
     intent: disagree
   - action: utter_disagreed_participation
-  - action: utter_stopped_after_disagreed
+  - action: utter_next_conversation
   - action: utter_finish
   - action: action_session_start
 
-#- story: User agree to use phone number
-#  steps:
-#  - user: |
-#      oi
-#    intent: start
-# - action: action_set_channel_info
-# - action: action_get_conversation_info
-# - action: utter_show_topic_of_discussion
-# - action: utter_ask_user_particpate
-# - user: |
-#     sim
-#   intent: agree
-# - action: utter_agreed_participation
-# - action: utter_ask_phone_number
-# - action: utter_explain_ask_phone_number
-# - action: utter_phone_number_is_optional
-# - action: utter_send_phone_number
-# - user: |
-#     [61995213456](phone-number)
-#   intent: phone_number
-# - slot_was_set:
-#   - phone-number: "61995213456"
-# - action: action_setup_conversation
-# - action: utter_stop_conversation
-# - action: vote_form
-# - active_loop: vote_form
-# - active_loop: null
-# - action: action_follow_up_form
-# - action: utter_thanks_participation
-# - action: utter_goodbye
-# - action: utter_next_conversation
-# - action: utter_finish
-# - action: action_session_start
+- story: User agree to use phone number
+  steps:
+  - user: |
+      start [56](conversation_id)
+    intent: start_with_conversation_id
+  - action: action_set_channel_info
+  - action: action_get_conversation_info
+  - action: utter_show_topic_of_discussion
+  - action: utter_invite_user_to_participate
+  - user: |
+      sim
+    intent: agree
+  - action: utter_agreed_participation
+  - action: utter_ask_phone_number
+  - action: utter_explain_ask_phone_number
+  - action: utter_phone_number_is_optional
+  - action: utter_send_phone_number
+  - user: |
+      [61981178174](regex_phone_number)
+    intent: phone_number
+    entities:
+      - regex_phone_number
+  # action_unlikely_intent is necessary because the test does not works well with the story checkpoint
+  - action: action_setup_conversation
+  - action: utter_stop_conversation
+  - action: vote_form
+  - active_loop: vote_form
 
 - story: User want to participate without phone number
   steps:
   - user: |
-      oi
-    intent: start
+      start [56](conversation_id)
+    intent: start_with_conversation_id
   - action: action_set_channel_info
   - action: action_get_conversation_info
   - action: utter_show_topic_of_discussion
-  - action: utter_ask_user_particpate
+  - action: utter_invite_user_to_participate
   - user: |
       sim
     intent: agree
@@ -103,12 +97,12 @@ stories:
 - story: User provide invalid phone number
   steps:
   - user: |
-      olá
-    intent: start
+      start [56](conversation_id)
+    intent: start_with_conversation_id
   - action: action_set_channel_info
   - action: action_get_conversation_info
   - action: utter_show_topic_of_discussion
-  - action: utter_ask_user_particpate
+  - action: utter_invite_user_to_participate
   - user: |
       sim
     intent: agree
@@ -119,9 +113,11 @@ stories:
   - action: utter_send_phone_number
   - user: |
       aaaaaa
-    intent: invalid_phone_number
+    intent: phone_number
+  - slot_was_set:
+    - regex_phone_number: null 
   - action: utter_invalid_phone_number
-  - action: utter_ask_phone_number_again
+  - action: utter_ask_phone_number
 
 - story: Start interaction with bot via webchat
   steps:
