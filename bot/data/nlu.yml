@@ -98,6 +98,7 @@ nlu:
     examples: |
       - ^\(?\d{2}\)?[\s-]?[\s9]?\d{4}-?\d{4}$
 
+  # https://rasa.com/docs/rasa/components/#regexentityextractor
   - intent: phone_number
     examples: |
       - [61992852776](regex_phone_number)
@@ -107,9 +108,25 @@ nlu:
       - [1140028922](regex_phone_number)
       - [8933789902](regex_phone_number)
       - [61992337635](regex_phone_number)
-      - [87986211267](regex_phone_number)
+      - [1140028922](regex_phone_number)
       - [33998312511](regex_phone_number)
-      - [11999654232](regex_phone_number)
+      - [11999654232](regex_phone_number) 
+      - [61992852776](regex_phone_number)
+      - 123
+      - 111111
+      - asdhja
+      - aaaaaa
+      - telefone
+      - 0000000000
+      - adahsudsahdu
+      - nao interessa
+      - 68numero
+      - 54554354343543453535353534
+      - rsrsrs
+      - kkkk
+      - hahaha
+      - xyzblafuuuu
+
 
   - intent: stop
     examples: |
@@ -128,26 +145,6 @@ nlu:
       - cansei de responder
       - não quero mais responder
   
-  - intent: invalid_phone_number
-    examples: |
-      - 123
-      - 00000
-      - 111111
-      - asdhja
-      - aaaaaa
-      - telefone
-      - 111111111111111111
-      - ldhuahsduashd
-      - 6161
-      - 0000000000000000000000000
-      - 0000000000
-      - 01213231223123123213213
-      - rsrasdashduasd
-      - adahsudsahdu
-      - nao interessa
-      - 68numero
-      - 54554354343543453535353534
-
   - intent: url
     examples: |
       - https://cidadedemocratica.org.br

@@ -20,11 +20,34 @@ stories:
       - action: utter_explain_ask_phone_number
       - action: utter_phone_number_is_optional
       - action: utter_send_phone_number
-      - or:
-        - intent: disagree
-        - intent: phone_number
-          entities:
-            - regex_phone_number
+
+  - story: participant provides phone number
+    steps:
+      - action: utter_send_phone_number
+      - intent: phone_number
+        entities:
+          - regex_phone_number
+      - slot_was_set:
+        - regex_phone_number
+      - checkpoint: starts_voting
+
+  - story: participant provides invalid phone number
+    steps:
+      - action: utter_send_phone_number
+      - intent: phone_number
+      - slot_was_set:
+        - regex_phone_number: null
+      - action: utter_invalid_phone_number
+      - action: utter_ask_phone_number
+      - intent: phone_number
+        entities:
+          - regex_phone_number
+      - checkpoint: starts_voting
+
+  - story: participant dont want to inform phone number
+    steps:
+      - action: utter_send_phone_number
+      - intent: disagree
       - checkpoint: starts_voting
 
   - story: participant don't wants to join conversation on telegram
@@ -74,26 +97,15 @@ stories:
       - action: utter_finish
       - action: action_session_start
 
-  - story: User provides invalid phone number
-    steps:
-      - action: utter_send_phone_number
-      - intent: invalid_phone_number
-      - action: utter_invalid_phone_number
-      - action: utter_ask_phone_number
-      - intent: phone_number
-        entities:
-          - regex_phone_number
-      - checkpoint: starts_voting
-
   - story: Ask phone number in the middle of voting
     steps:
       - action: utter_ask_phone_number_again
       - action: utter_send_phone_number
-      - or:
-        - intent: disagree
-        - intent: phone_number
-          entities:
-            - regex_phone_number
+      - intent: phone_number
+        entities:
+          - regex_phone_number
+      - slot_was_set:
+        - regex_phone_number
       - checkpoint: starts_voting
 
   - story: Goodbye happy path

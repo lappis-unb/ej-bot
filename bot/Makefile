@@ -22,20 +22,21 @@ train:
 
 # TESTS
 test:
-	rasa test --out results/ --fail-on-prediction-errors
+	rasa test --out results/ --fail-on-prediction-errors --nlu data/nlu.yml --cross-validation
 
 test-actions:
 	python -m pytest
 
 test-nlu:
-	rasa test nlu --nlu data/nlu.yml --cross-validation
+	rasa test nlu --nlu data/nlu.yml --cross-validation --domain $(domain)
 
 test-core:
 	rasa test core --fail-on-prediction-errors --out results/results-core-test
 
 # VALIDACAO
 validate:
-	rasa data validate -vv
+	rasa data validate -vv --domain $(domain) --data data/ -vv
+
 
 # MENSAGEIROS
 shell:
