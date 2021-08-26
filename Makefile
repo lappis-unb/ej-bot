@@ -69,7 +69,7 @@ test-actions: ## Run tests in bot/tests/ that  are in files of type .py (python 
 
 test-nlu:
 	docker-compose up -d bot
-	docker-compose exec bot make test-nlu
+	domain=$(if $(findstring bocadelobo, $(domain)),domain.bocadelobo.yml,domain.default.yml) docker-compose exec bot make test-nlu
 
 test-core:
 	docker-compose up -d bot
@@ -77,7 +77,8 @@ test-core:
 
 
 validate:
-	docker-compose run  --name bot --rm bot rasa data validate --domain $(if $(findstring bocadelobo, $(domain)),domain.$(domain).yml,domain.default.yml) --data data/ -vv
+	docker-compose up -d bot
+	domain=$(if $(findstring bocadelobo, $(domain)),domain.bocadelobo.yml,domain.default.yml) docker-compose exec bot make validate
 
 visualize:
 	docker-compose run --name coach --rm  -v $(current_dir)/bot:/coach coach rasa visualize --domain $(if $(findstring bocadelobo, $(domain)),domain.$(domain).yml,domain.default.yml) --stories data/stories.md --config config.yml --nlu data/nlu.md --out ./graph.html -vv

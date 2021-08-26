@@ -15,7 +15,7 @@ class User(object):
     def __init__(self, tracker_sender_id, name="Participante anônimo", phone_number=""):
         self.name = name
         self.display_name = ""
-        self.phone_number = phone_number
+        self.phone_number = self.parse_phone_number(phone_number)
         self.tracker_sender_id = tracker_sender_id
         self.email = f"{tracker_sender_id}-rasa@mail.com"
         self.password = f"{tracker_sender_id}-rasa"
@@ -49,3 +49,6 @@ class User(object):
             self.token = response.json()["key"]
         except:
             raise EJCommunicationError
+
+    def parse_phone_number(self, phone_number):
+        return phone_number.replace("(", "").replace(")", "").replace("-", "")
