@@ -321,11 +321,11 @@ class ActionGetConversationInfo(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionGetConversationInfo called")
-        socketio_rasax = (
-            tracker.get_latest_input_channel() == "rasa" and tracker.get_slot("url")
-        )
 
-        if tracker.get_latest_input_channel() == "socketio" or socketio_rasax:
+        if (
+            tracker.get_latest_input_channel() == "socketio"
+            or is_socketio_rasax_channel(tracker)
+        ):
             bot_url = tracker.get_slot("url")
             try:
                 conversation_info = API.get_conversation_info_by_url(bot_url)
@@ -375,10 +375,6 @@ class ActionSetChannelInfo(Action):
         logger.debug("action ActionSetChannelInfo called")
         channel = tracker.get_latest_input_channel()
 
-        telegram_rasax = (
-            tracker.get_latest_input_channel() == "rasa" and not tracker.get_slot("url")
-        )
-
         if tracker.get_latest_input_channel() == "rocketchat":
             if "agent" in tracker.latest_message["metadata"]:
                 channel = "rocket_livechat"
@@ -389,7 +385,7 @@ class ActionSetChannelInfo(Action):
                 SlotSet("bot_telegram_username", bot_telegram_username),
             ]
 
-        if telegram_rasax:
+        if is_telegram_rasax_channel(tracker):
             return [
                 SlotSet("current_channel_info", channel),
             ]
@@ -436,11 +432,10 @@ class ActionGetConversationList(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionGetConversations called")
-        telegram_rasax = (
-            tracker.get_latest_input_channel() == "rasa" and not tracker.get_slot("url")
-        )
-
-        if tracker.get_latest_input_channel() == "telegram" or telegram_rasax:
+        if (
+            tracker.get_latest_input_channel() == "telegram"
+            or is_telegram_rasax_channel(tracker)
+        ):
             try:
                 conversations = API.get_conversations()
                 if conversations["count"] == 0:
