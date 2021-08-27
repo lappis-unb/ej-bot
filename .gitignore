@@ -12,3 +12,5 @@ models
 results/
 train_test_split
 .env
+./bot/auth
+./bot/logs
