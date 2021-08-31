@@ -265,6 +265,9 @@ responses:
         {telegram_engagement_group}
 
         Voltando a nossa conversa.
+  utter_advise_participant_to_join_again:
+    - text: >
+        Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nosso conversa.
 
 actions:
   - action_ask_vote

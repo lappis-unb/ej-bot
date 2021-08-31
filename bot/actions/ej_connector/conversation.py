@@ -14,6 +14,10 @@ class ConversationController:
         self.api = ConversationAPI(self.conversation_id, self.token)
         self.statistics = self.api.get_participant_statistics()
 
+    @staticmethod
+    def is_valid(tracker):
+        return tracker.get_slot("conversation_id") != None
+
     def user_have_comments_to_vote(self):
         statistics = self.api.get_participant_statistics()
         return statistics["missing_votes"] > 0
