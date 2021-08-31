@@ -31,6 +31,14 @@ stories:
         - regex_phone_number
       - checkpoint: starts_voting
 
+  - story: participant joins a invalid conversation
+    steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id: null
+      - action: utter_advise_participant_to_join_again
+      - action: action_session_start
+
   - story: participant provides invalid phone number
     steps:
       - action: utter_send_phone_number
@@ -87,6 +95,8 @@ stories:
   - story: starts voting form
     steps:
       - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
       - action: action_setup_conversation
       - action: utter_stop_conversation
       - action: vote_form

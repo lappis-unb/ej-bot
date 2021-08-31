@@ -22,21 +22,17 @@ from .ej_connector.conversation import ConversationController
 logger = logging.getLogger(__name__)
 
 
-#
-#
 class ActionSetupConversation(Action):
     """
     Logs user in EJ and get their conversation statistic according to their account
     If user provides an phone number, it will be used to generate login token. If not,
     rasa conversation id will be used instead
-
     returns the following slots, filled:
         - user_token: generated when logging in EJ
         - number_comments: total number of comments in current conversation
         - number_voted_comments: number of comments that were already voted by current user
         - current_comment_id: id of the comment that will be displayed
         - comment_text: text content of the comment that will be displayed
-
     if any problem occurs during connection with EJ, conversation will be restarted
     """
 
@@ -45,23 +41,23 @@ class ActionSetupConversation(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionSetupConversation called")
-        user_phone_number = tracker.get_slot("regex_phone_number")
-        last_intent = tracker.latest_message["intent"].get("name")
-        user = User(tracker.sender_id, phone_number=user_phone_number)
         self.response = []
-        try:
-            user.authenticate(last_intent)
-            self.dispatch_user_authentication(user, dispatcher)
-            conversation_controller = ConversationController(tracker, user.token)
-            if not conversation_controller.user_have_comments_to_vote():
-                return self.dispatch_user_vote_on_all_comments(dispatcher)
-            self.set_response_to_participation(conversation_controller, user)
-            self.dispatch_explain_participation(
-                tracker.get_slot("current_channel_info"), dispatcher
-            )
-        except EJCommunicationError:
-            return self.dispatch_communication_error_with_ej(dispatcher)
-
+        if ConversationController.is_valid(tracker):
+            try:
+                user_phone_number = tracker.get_slot("regex_phone_number")
+                user = User(tracker.sender_id, phone_number=user_phone_number)
+                last_intent = tracker.latest_message["intent"].get("name")
+                user.authenticate(last_intent)
+                conversation_controller = ConversationController(tracker, user.token)
+                self.dispatch_user_authentication(user, dispatcher)
+                if not conversation_controller.user_have_comments_to_vote():
+                    return self.dispatch_user_vote_on_all_comments(dispatcher)
+                self.set_response_to_participation(conversation_controller, user)
+                self.dispatch_explain_participation(
+                    tracker.get_slot("current_channel_info"), dispatcher
+                )
+            except EJCommunicationError:
+                return self.dispatch_communication_error_with_ej(dispatcher)
         return self.response
 
     def dispatch_user_authentication(self, user, dispatcher):
@@ -168,7 +164,7 @@ class ActionAskVote(Action):
             return self.dispatch_user_vote_on_all_comments(dispatcher)
         try:
             metadata = tracker.latest_message.get("metadata")
-            self.set_response_to_next_comment(
+            self.set_response_to_ask_comment(
                 dispatcher, metadata, conversation_controller
             )
         except EJCommunicationError:
@@ -176,7 +172,7 @@ class ActionAskVote(Action):
 
         return self.response
 
-    def set_response_to_next_comment(
+    def set_response_to_ask_comment(
         self, dispatcher, metadata, conversation_controller
     ):
         statistics = conversation_controller.api.get_participant_statistics()
@@ -242,7 +238,6 @@ class ValidateVoteForm(FormValidationAction):
         # dispatcher.utter_message(text=channel)
         if ConversationController.user_wants_to_stop_participation(slot_value):
             return VotingHelper.stop_voting()
-
         voting_helper = VotingHelper(slot_value, tracker)
         conversation_controller = ConversationController(tracker)
         self.dispatch_save_participant_vote(tracker, dispatcher, voting_helper)
@@ -250,13 +245,10 @@ class ValidateVoteForm(FormValidationAction):
             dispatcher, voting_helper, conversation_controller
         )
         self.dispatch_invite_to_join_group(tracker, dispatcher, conversation_controller)
-
         if conversation_controller.time_to_ask_phone_number_again():
             return VotingHelper.pause_voting_to_ask_phone_number()
-
         if conversation_controller.intent_starts_new_conversation():
             return ConversationController.starts_conversation_from_another_link()
-
         if voting_helper.vote_is_valid() or voting_helper.user_enters_a_new_comment():
             return self.dispatch_show_next_comment(
                 dispatcher, conversation_controller, voting_helper
@@ -310,7 +302,6 @@ class ActionGetConversationInfo(Action):
     When in socketio channel:
         Send request to EJ with current URL where the bot is hosted
         Get conversation ID and Title in return
-
     When in other channels:
         Get already set slot conversation id and send it to EJ
         to get corresponding conversation title
@@ -333,7 +324,6 @@ class ActionGetConversationInfo(Action):
                 # TODO: If a domain has more than one conversation, need to think how to deal with it
                 conversation_text = conversation_info.get("conversation").get("text")
                 conversation_id = conversation_info.get("conversation").get("id")
-
             else:
                 dispatcher.utter_message(template="utter_ej_connection_doesnt_exist")
                 dispatcher.utter_message(template="utter_error_try_again_later")
@@ -346,7 +336,6 @@ class ActionGetConversationInfo(Action):
             else:
                 dispatcher.utter_message(template="utter_no_selected_conversation")
                 return [FollowupAction("action_session_start")]
-
         return [
             SlotSet("conversation_text", conversation_text),
             SlotSet("conversation_id", conversation_id),
@@ -359,7 +348,6 @@ class ActionSetChannelInfo(Action):
     but it cannot read nuances such as:
         - Being on a private or group chat on telegram or rocketchat
         - Being on rocketchat livechat or any other kind of chat
-
     This kind of data is set on message metadata, and we access it to
     set current channel with more detail
     """
@@ -370,7 +358,6 @@ class ActionSetChannelInfo(Action):
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionSetChannelInfo called")
         channel = tracker.get_latest_input_channel()
-
         if tracker.get_latest_input_channel() == "rocketchat":
             if "agent" in tracker.latest_message["metadata"]:
                 channel = "rocket_livechat"
@@ -436,11 +423,9 @@ class ActionGetConversationList(Action):
                         f"Identificador da conversa - {str(ids[i])}\nTítulo da conversa - {text}\n  "
                         for i, text in enumerate(texts)
                     )
-
                     dispatcher.utter_message(text=result)
             except EJCommunicationError:
                 dispatcher.utter_message(template="utter_ej_communication_error")
                 dispatcher.utter_message(template="utter_error_try_again_later")
                 return [FollowupAction("action_session_start")]
-
         return []

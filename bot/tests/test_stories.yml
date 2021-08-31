@@ -58,7 +58,6 @@ stories:
     intent: phone_number
     entities:
       - regex_phone_number
-  # action_unlikely_intent is necessary because the test does not works well with the story checkpoint
   - action: action_setup_conversation
   - action: utter_stop_conversation
   - action: vote_form
@@ -94,7 +93,7 @@ stories:
   - action: utter_finish
   - action: action_session_start
 
-- story: User provide invalid phone number
+- story: User provide invalid phone number with value aaaaaa 
   steps:
   - user: |
       start [56](conversation_id)
@@ -128,10 +127,36 @@ stories:
   - action: utter_introduce_ej
   - action: utter_explain_how_to_participate
 
-
 - story: User wants help
   steps:
   - user: |
       ajuda
     intent: help
   - action: utter_help
+
+- story: conversation_id slot is not valid
+  steps:
+  - user: |
+      start [56](conversation_id)
+    intent: start_with_conversation_id
+  - action: action_set_channel_info
+  - action: action_get_conversation_info
+  - action: utter_show_topic_of_discussion
+  - action: utter_invite_user_to_participate
+  - user: |
+      sim
+    intent: agree
+  - action: utter_agreed_participation
+  - action: utter_ask_phone_number
+  - action: utter_explain_ask_phone_number
+  - action: utter_phone_number_is_optional
+  - action: utter_send_phone_number
+  - user: |
+      [61981178174](regex_phone_number)
+    intent: phone_number
+    entities:
+      - regex_phone_number
+  - slot_was_set:
+    - conversation_id: null
+  - action: utter_advise_participant_to_join_again
+  - action: action_session_start
