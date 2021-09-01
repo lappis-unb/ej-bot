@@ -232,22 +232,22 @@ responses:
         Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
   utter_explain_no_button_participation:
     - text: > 
-        Digite o número correspondente ou clique no botão:
+        Clique diretamente nos botões a cada frase ou se preferir:
 
-         1 - Concordar com um comentário
+        - Digite 1 para concordar
 
-        -1 - Discordar de um comentário
+        - Digite -1 para discordar
 
-         0 - Pular um comentário
+        - Ou digite 0 para pular um comentário
   utter_explain_button_participation:
     - text: > 
-        Digite o número correspondente ou clique no botão:
+        Clique diretamente nos botões a cada frase ou se preferir:
 
-         1 - Concordar com um comentário
+        - Digite 1 para concordar
 
-        -1 - Discordar de um comentário
+        - Digite -1 para discordar
 
-         0 - Pular um comentário
+        - Ou digite 0 para pular um comentário
   utter_send_telegram_generated_url:
     - channel: telegram
       text: > 
