@@ -240,13 +240,22 @@ responses:
 
   utter_explain_no_button_participation:
     - text: >
-        Para concordar com um comentário, digite 1. 
-        Para discordar de um comentário, digite -1. 
-        Caso queira pular um comentário, digite 0.
+        Clique diretamente nos botões a cada frase ou se preferir:
+
+        - Digite 1 para concordar
+
+        - Digite -1 para discordar
+
+        - Ou digite 0 para pular um comentário
   utter_explain_button_participation:
     - text: >
-        Para concordar com um comentário, digite 1 ou clique no botão Concordar, para discordar de um comentário, digite -1 ou clique no botão Discordar. 
-        Caso queira pular um comentário, digite 0 ou clique no botão Pular.
+        Clique diretamente nos botões a cada frase ou se preferir:
+
+        - Digite 1 para concordar
+
+        - Digite -1 para discordar
+
+        - Ou digite 0 para pular um comentário
   utter_send_telegram_generated_url:
     - channel: telegram
       text: >
