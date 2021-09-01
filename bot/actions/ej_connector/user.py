@@ -51,4 +51,6 @@ class User(object):
             raise EJCommunicationError
 
     def parse_phone_number(self, phone_number):
-        return phone_number.replace("(", "").replace(")", "").replace("-", "")
+        if(phone_number):
+            return phone_number.replace("(", "").replace(")", "").replace("-", "")
+        return ""
