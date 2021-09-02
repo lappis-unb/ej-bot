@@ -19,6 +19,8 @@ class VotingHelper:
         )
 
     def user_enters_a_new_comment(self):
+        if self.vote_slot_value == None:
+            return
         slot_value = str(self.vote_slot_value)
         return slot_value not in VotingHelper.VALID_VOTE_VALUES and slot_value[2] != "/"
 

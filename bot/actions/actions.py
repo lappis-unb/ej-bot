@@ -50,8 +50,6 @@ class ActionSetupConversation(Action):
                 user.authenticate(last_intent)
                 conversation_controller = ConversationController(tracker, user.token)
                 self.dispatch_user_authentication(user, dispatcher)
-                if not conversation_controller.user_have_comments_to_vote():
-                    return self.dispatch_user_vote_on_all_comments(dispatcher)
                 self.set_response_to_participation(conversation_controller, user)
                 self.dispatch_explain_participation(
                     tracker.get_slot("current_channel_info"), dispatcher
@@ -107,7 +105,7 @@ class ActionFollowUpForm(Action):
         self.dispatch_if_stop_participation(dispatcher, vote)
         self.set_response_to_ask_phone_number_again(vote)
         self.set_response_to_starts_new_conversation(vote)
-        self.set_response_to_continue_conversation()
+        self.set_response_to_continue_conversation(vote)
         return self.response
 
     def dispatch_if_stop_participation(self, dispatcher, vote):
@@ -129,8 +127,8 @@ class ActionFollowUpForm(Action):
                 FollowupAction("action_get_conversation_info"),
             ]
 
-    def set_response_to_continue_conversation(self):
-        if not self.response:
+    def set_response_to_continue_conversation(self, vote):
+        if not self.response and vote == None:
             self.response = [
                 SlotSet("vote", None),
                 SlotSet("conversation_id", None),
