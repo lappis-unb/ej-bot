@@ -14,6 +14,8 @@ rules:
   - rule: Set conversation id for webchat
     steps:
       - intent: url
+      - slot_was_set:
+        - url
       - action: utter_welcome
       - action: utter_introduce_ej
       - action: utter_explain_how_to_participate
