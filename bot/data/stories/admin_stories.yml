@@ -34,9 +34,11 @@ stories:
     # When someone starts a conversation with the bot on telegram
     # it always sends a "start" message
     steps:
-      - intent: start_with_conversation_id
+      - intent: start
       - slot_was_set:
         - conversation_id: null
+      - slot_was_set:
+        - regex_phone_number: null
       - action: action_set_channel_info
       - slot_was_set:
         - current_channel_info: 'telegram'

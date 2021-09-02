@@ -21,7 +21,7 @@ stories:
       - action: utter_phone_number_is_optional
       - action: utter_send_phone_number
 
-  - story: participant provides phone number
+  - story: participant provides valid phone number
     steps:
       - action: utter_send_phone_number
       - intent: phone_number
@@ -37,7 +37,7 @@ stories:
       - slot_was_set:
         - conversation_id: null
       - action: utter_advise_participant_to_join_again
-      - action: action_session_start
+      - action: action_restart
 
   - story: participant provides invalid phone number
     steps:
@@ -105,7 +105,7 @@ stories:
       - action: action_follow_up_form
       - action: utter_next_conversation
       - action: utter_finish
-      - action: action_session_start
+      - action: action_restart
 
   - story: Ask phone number in the middle of voting
     steps:
