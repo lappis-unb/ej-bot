@@ -61,12 +61,6 @@ class ActionSetupConversation(Action):
     def dispatch_user_authentication(self, user, dispatcher):
         dispatcher.utter_message(template=user.authenticate_utter)
 
-    def dispatch_user_vote_on_all_comments(self, dispatcher):
-        dispatcher.utter_message(template="utter_voted_all_comments")
-        dispatcher.utter_message(template="utter_thanks_participation")
-        # vote_form stop loop if vote slot is not None
-        return [SlotSet("vote", "concordar")]
-
     def dispatch_communication_error_with_ej(self, dispatcher):
         dispatcher.utter_message(template="utter_ej_communication_error")
         dispatcher.utter_message(template="utter_error_try_again_later")

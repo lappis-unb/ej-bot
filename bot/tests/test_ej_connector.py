@@ -145,10 +145,10 @@ class APIClassTest(unittest.TestCase):
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = response_value
-        with pytest.raises(EJCommunicationError):
-            mocked_tracker = MockedTracker()
-            conversation_controller = ConversationController(mocked_tracker)
-            conversation_controller.api.get_next_comment()
+        mocked_tracker = MockedTracker()
+        conversation_controller = ConversationController(mocked_tracker)
+        comment = conversation_controller.api.get_next_comment()
+        assert comment["content"] == ""
 
     @patch("actions.ej_connector.api.requests.get")
     def test_get_random_comment_in_ej_forbidden_response(self, mock_get):

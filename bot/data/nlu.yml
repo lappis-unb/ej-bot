@@ -112,6 +112,11 @@ nlu:
       - [33998312511](regex_phone_number)
       - [11999654232](regex_phone_number) 
       - [61992852776](regex_phone_number)
+      - [61 992852776](regex_phone_number)
+      - [11 999654232](regex_phone_number) 
+      - [33 998312511](regex_phone_number)
+      - [(11) 994028900](regex_phone_number)
+      - [(62) 991287365](regex_phone_number)
       - 123
       - 111111
       - asdhja

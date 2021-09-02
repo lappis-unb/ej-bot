@@ -68,13 +68,12 @@ class API:
         try:
             response = requests.get(url, headers=auth_headers(token))
             comment = response.json()
+            comment_url_as_list = comment["links"]["self"].split("/")
+            comment["id"] = comment_url_as_list[len(comment_url_as_list) - 2]
+            return comment
         except Exception as e:
             logger.debug(e)
             return {"content": "", "id": ""}
-
-        comment_url_as_list = comment["links"]["self"].split("/")
-        comment["id"] = comment_url_as_list[len(comment_url_as_list) - 2]
-        return comment
 
     @staticmethod
     def get_user_conversation_statistics(conversation_id, token):
