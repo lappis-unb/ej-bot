@@ -169,16 +169,16 @@ class ActionAskVote(Action):
     ):
         statistics = conversation_controller.api.get_participant_statistics()
         total_comments = conversation_controller.api.get_total_comments(statistics)
-        voted_comments = conversation_controller.api.get_voted_comments(statistics)
+        current_comment = conversation_controller.api.get_current_comment(statistics)
         comment = conversation_controller.api.get_next_comment()
         comment_title = conversation_controller.api.get_comment_title(
-            comment, voted_comments, total_comments
+            comment, current_comment, total_comments
         )
         message = get_comment_utter(metadata, comment_title)
         dispatcher.utter_message(**message)
 
         self.response = [
-            SlotSet("number_voted_comments", voted_comments),
+            SlotSet("number_voted_comments", current_comment),
             SlotSet("comment_text", comment_title),
             SlotSet("number_comments", total_comments),
             SlotSet("current_comment_id", comment.get("id")),
