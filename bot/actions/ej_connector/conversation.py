@@ -67,18 +67,18 @@ class ConversationController:
     def time_to_ask_phone_number_again(self):
         participant_phone_number = self.tracker.get_slot("regex_phone_number")
         total_comments = self.api.get_total_comments(self.statistics)
-        voted_comments = self.api.get_voted_comments(self.statistics)
-        if voted_comments == 0:
+        missing_comments = self.api.get_current_comment(self.statistics)
+        if missing_comments == 0:
             return False
-        participation_tax = total_comments / voted_comments
+        participation_tax = total_comments / missing_comments
         return participation_tax == 2 and participant_phone_number == None
 
     def time_to_invite_to_engage(self, statistics, bot_name, telegram_engagement_group):
-        voted_comments = self.api.get_voted_comments(statistics)
-        if voted_comments == 0:
+        missing_comments = self.api.get_current_comment(statistics)
+        if missing_comments == 0:
             return False
         engage_link = EngageFactory.bot_has_engage_link(bot_name)
-        return engage_link and voted_comments == 3 and not telegram_engagement_group
+        return engage_link and missing_comments == 3 and not telegram_engagement_group
 
 
 class ConversationAPI:
@@ -93,10 +93,10 @@ class ConversationAPI:
         return API.get_next_comment(self.conversation_id, self.token)
 
     def get_total_comments(self, statistics):
-        return statistics["missing_votes"] + statistics["votes"]
+        return statistics["total_comments"]
 
-    def get_voted_comments(self, statistics):
-        return statistics["votes"]
+    def get_current_comment(self, statistics):
+        return statistics["comments"]
 
-    def get_comment_title(self, comment, voted_comments, total_comments):
-        return f"{comment['content']} \n O que você acha disso ({voted_comments}/{total_comments})?"
+    def get_comment_title(self, comment_content, current_comment, total_comments):
+        return f"{comment_content['content']} \n O que você acha disso ({current_comment}/{total_comments})?"
