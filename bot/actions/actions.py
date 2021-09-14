@@ -67,11 +67,14 @@ class ActionSetupConversation(Action):
         return [FollowupAction("action_session_start")]
 
     def dispatch_explain_participation(self, channel_info_slot, dispatcher):
-        if channel_info_slot == "rocket_livechat":
-            # explain how user can vote according to current channel
-            dispatcher.utter_message(template="utter_explain_no_button_participation")
-        else:
-            dispatcher.utter_message(template="utter_explain_button_participation")
+        """
+        Explain how user can vote according to current channel.
+        Currently, webchat and telegram supports buttons, unlike whatsapp.
+        """
+        current_channel = ConversationController.supported_channels_explain_utter[
+            channel_info_slot
+        ]
+        dispatcher.utter_message(template=current_channel)
 
     def set_response_to_participation(self, conversation_controller, user):
         statistics = conversation_controller.api.get_participant_statistics()
