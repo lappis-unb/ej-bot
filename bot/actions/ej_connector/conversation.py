@@ -7,6 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 class ConversationController:
+    supported_channels_explain_utter = {
+        "twilio": "utter_explain_no_button_participation",
+        "telegram": "utter_explain_button_participation",
+        "socketio": "utter_explain_button_participation",
+    }
+
     def __init__(self, tracker, token=None):
         self.conversation_id = tracker.get_slot("conversation_id")
         self.token = tracker.get_slot("ej_user_token") or token

@@ -237,10 +237,9 @@ responses:
   utter_no_conversations:
     - text: >
         Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
-
   utter_explain_no_button_participation:
-    - text: >
-        Clique diretamente nos botões a cada frase ou se preferir:
+    - text: > 
+        Para começar, basta ler os comentários e logo depois:
 
         - Digite 1 para concordar
 
@@ -248,14 +247,8 @@ responses:
 
         - Ou digite 0 para pular um comentário
   utter_explain_button_participation:
-    - text: >
-        Clique diretamente nos botões a cada frase ou se preferir:
-
-        - Digite 1 para concordar
-
-        - Digite -1 para discordar
-
-        - Ou digite 0 para pular um comentário
+    - text: > 
+        Clique nos botões a seguir para concordar, discordar ou pular comentários 😊
   utter_send_telegram_generated_url:
     - channel: telegram
       text: >
@@ -276,7 +269,7 @@ responses:
         Voltando a nossa conversa.
   utter_advise_participant_to_join_again:
     - text: >
-        Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nosso conversa.
+        Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.
 
 actions:
   - action_ask_vote
