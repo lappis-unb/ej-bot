@@ -1,3 +1,4 @@
+from requests.models import requote_uri
 from .api import API
 
 
@@ -22,10 +23,15 @@ class VotingHelper:
         if self.vote_slot_value == None:
             return
         slot_value = str(self.vote_slot_value)
-        return slot_value not in VotingHelper.VALID_VOTE_VALUES and slot_value[2] != "/"
+        return slot_value not in VotingHelper.VALID_VOTE_VALUES
 
     def send_new_comment(self, conversation_id):
-        return API.send_new_comment(conversation_id, self.vote_slot_value, self.token)
+        if len(str(self.vote_slot_value)) > 3:
+            return API.send_new_comment(
+                conversation_id, self.vote_slot_value, self.token
+            )
+        else:
+            raise Exception
 
     @staticmethod
     def continue_voting():
