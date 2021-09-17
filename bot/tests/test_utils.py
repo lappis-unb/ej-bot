@@ -61,17 +61,46 @@ class UtilsTest(unittest.TestCase):
     def test_define_vote_livechat(self):
         metadata = {"agent": "livechat"}
         message = "vote message"
-        utter = get_comment_utter(metadata, message)
+        channel = "livechat"
+        utter = get_comment_utter(metadata, message, channel)
 
         assert not "buttons" in utter
         assert "text" in utter
         assert message == utter["text"]
 
-    def test_define_vote_channel_not_livechat(self):
+    def test_define_vote_channel_telegram(self):
         metadata = {"other_keys": " notlivechat"}
         message = "vote message"
-        utter = get_comment_utter(metadata, message)
+        channel = "telegram"
+        utter = get_comment_utter(metadata, message, channel)
 
         assert "buttons" in utter
         assert "text" in utter
         assert message == utter["text"]
+
+    def test_define_vote_channel_whatsapp(self):
+        metadata = {"other_keys": " notlivechat"}
+        message = "vote message"
+        channel = "twilio"
+        utter = get_comment_utter(metadata, message, channel)
+
+        assert "Concordar" in utter
+        assert "Discordar" in utter
+        assert "Pular" in utter
+        assert message in utter
+
+    def test_remove_special(self):
+        assert ":" not in remove_special("sdf:adsf")
+        assert "+" not in remove_special("sdf+adsf")
+        assert "+" not in remove_special("sdf+:adsf")
+        assert ":" not in remove_special("sdf+:adsf")
+
+    def test_number_from_wpp(self):
+        example_num = "whatsapp:+14155888888"
+        to_be_removed = "whatsapp:+"
+        found = False
+        formated_num = number_from_wpp(example_num)
+        for r in to_be_removed:
+            if r in formated_num:
+                found = True
+                assert found == False

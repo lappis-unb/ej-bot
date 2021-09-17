@@ -2,7 +2,7 @@
 #### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
 
 stories:
-- story: participant join conversation on telegram
+- story: participant join conversation on telegram or whatsapp
   steps:
   - user: |
       start [56](conversation_id)
@@ -19,7 +19,7 @@ stories:
     #     intent: out_of_context
     #   - action: utter_out_of_context
 
-- story: participant don't wants to join conversation on telegram
+- story: participant don't wants to join conversation on telegram or whatsapp
   steps:
   - user: |
       start [56](conversation_id)

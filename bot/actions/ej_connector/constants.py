@@ -12,6 +12,7 @@ CONVERSATIONS_URL = (
 REGISTRATION_URL = f"{HOST}/rest-auth/registration/"
 VOTES_URL = f"{API_URL}/votes/"
 COMMENTS_URL = f"{API_URL}/comments/"
+MENSSAGE_CHANNELS = {"telegram": "telegram", "whatsapp": "twilio"}
 
 
 class EJCommunicationError(Exception):

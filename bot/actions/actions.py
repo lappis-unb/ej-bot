@@ -3,6 +3,7 @@
 #
 # See this gu"id"e on how to implement these action:
 # https://rasa.com/docs/rasa/custom-actions
+
 import os
 import logging
 from typing import Text, List, Any, Dict
@@ -13,8 +14,10 @@ from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet, FollowupAction, EventType
 from rasa_sdk.types import DomainDict
 
+
 from .ej_connector import API, EJCommunicationError
 from .ej_connector.user import User
+from .ej_connector.constants import MENSSAGE_CHANNELS
 from .utils import *
 from .ej_connector.helpers import VotingHelper, EngageFactory
 from .ej_connector.conversation import ConversationController
@@ -67,14 +70,11 @@ class ActionSetupConversation(Action):
         return [FollowupAction("action_session_start")]
 
     def dispatch_explain_participation(self, channel_info_slot, dispatcher):
-        """
-        Explain how user can vote according to current channel.
-        Currently, webchat and telegram supports buttons, unlike whatsapp.
-        """
-        current_channel = ConversationController.supported_channels_explain_utter[
-            channel_info_slot
-        ]
-        dispatcher.utter_message(template=current_channel)
+        if channel_info_slot == "rocket_livechat" or channel_info_slot == "twilio":
+            # explain how user can vote according to current channel
+            dispatcher.utter_message(template="utter_explain_no_button_participation")
+        else:
+            dispatcher.utter_message(template="utter_explain_button_participation")
 
     def set_response_to_participation(self, conversation_controller, user):
         statistics = conversation_controller.api.get_participant_statistics()
@@ -155,20 +155,21 @@ class ActionAskVote(Action):
 
         conversation_controller = ConversationController(tracker)
         self.response = []
+        channel = tracker.get_latest_input_channel()
         if not conversation_controller.user_have_comments_to_vote():
             return self.dispatch_user_vote_on_all_comments(dispatcher)
         try:
             metadata = tracker.latest_message.get("metadata")
-            self.set_response_to_ask_comment(
-                dispatcher, metadata, conversation_controller
+            self.set_response_to_next_comment(
+                dispatcher, metadata, conversation_controller, channel
             )
         except EJCommunicationError:
             return ConversationController.dispatch_errors(dispatcher, FollowupAction)
 
         return self.response
 
-    def set_response_to_ask_comment(
-        self, dispatcher, metadata, conversation_controller
+    def set_response_to_next_comment(
+        self, dispatcher, metadata, conversation_controller, channel
     ):
         statistics = conversation_controller.api.get_participant_statistics()
         total_comments = conversation_controller.api.get_total_comments(statistics)
@@ -177,8 +178,14 @@ class ActionAskVote(Action):
         comment_title = conversation_controller.api.get_comment_title(
             comment, current_comment, total_comments
         )
-        message = get_comment_utter(metadata, comment_title)
-        dispatcher.utter_message(**message)
+
+        message = get_comment_utter(metadata, comment_title, channel)
+
+        if type(message) is str:
+            # No Button channel
+            dispatcher.utter_message(message)
+        else:
+            dispatcher.utter_message(**message)
 
         self.response = [
             SlotSet("number_voted_comments", current_comment),
@@ -362,6 +369,14 @@ class ActionSetChannelInfo(Action):
                 SlotSet("current_channel_info", channel),
                 SlotSet("bot_telegram_username", bot_telegram_username),
             ]
+        if tracker.get_latest_input_channel() == "twilio":
+            bot_whatsapp_number = os.getenv("TWILIO_WHATSAPP")
+
+            return [
+                SlotSet("current_channel_info", channel),
+                SlotSet("bot_whatsapp_number", number_from_wpp(bot_whatsapp_number)),
+            ]
+
         return [
             FollowupAction("action_get_conversation_info"),
             SlotSet("current_channel_info", channel),
@@ -404,7 +419,8 @@ class ActionGetConversationList(Action):
 
     def run(self, dispatcher, tracker, domain):
         logger.debug("action ActionGetConversations called")
-        if tracker.get_latest_input_channel() == "telegram":
+        if tracker.get_latest_input_channel() in MENSSAGE_CHANNELS.values():
+
             try:
                 conversations = API.get_conversations()
                 if conversations["count"] == 0:
