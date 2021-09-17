@@ -3,6 +3,7 @@ import json
 import logging
 import requests
 from .constants import *
+from ..utils import remove_special
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +18,9 @@ class User(object):
         self.display_name = ""
         self.phone_number = self.parse_phone_number(phone_number)
         self.tracker_sender_id = tracker_sender_id
-        self.email = f"{tracker_sender_id}-rasa@mail.com"
-        self.password = f"{tracker_sender_id}-rasa"
-        self.password_confirm = f"{tracker_sender_id}-rasa"
+        self.email = f"{remove_special(tracker_sender_id)}-rasa@mail.com"
+        self.password = f"{remove_special(tracker_sender_id)}-rasa"
+        self.password_confirm = f"{remove_special(tracker_sender_id)}-rasa"
 
     def serialize(self):
         return json.dumps(self.__dict__)
