@@ -184,15 +184,15 @@ responses:
     - text: Você poderia me passar seu telefone com DDD?
   utter_ask_phone_number_again:
     - text: >
-        Que incrivel, fico feliz que você esteja engajado na nossa conversa.
-        Notei que você quis participar no modo anônimo, mas se me informar seu número, conseguiremos mais força no combate á desinformação.
+        Fico feliz que você esteja engajado na nossa conversa 😊. 
+        Gostaria de pedir o seu número de telefone, assim conseguiremos mais força no combate à desinformação.
         Caso queira me passar seu telefone, basta digitar, caso não queira, basta dizer não, que continuamos nossa conversa sem que você seja identificado.
   utter_explain_ask_phone_number:
     - text: Eu juro que não vou mandar spam. É só uma forma de eu poder ligar você a sua opinião
   utter_phone_number_is_optional:
     - text: Ah e se você não quiser não tem problema, basta dizer não, eu mantenho a sua identidade secreta 🤫
   utter_send_phone_number:
-    - text: Já pode mandar seu telefone com DDD aqui
+    - text: Já pode digitar seu telefone com DDD aqui
   utter_invalid_phone_number:
     - text: Hmmm acho que você escreveu alguma coisa errada 😕
   utter_got_phone_number:

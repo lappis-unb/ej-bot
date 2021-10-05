@@ -16,10 +16,7 @@ stories:
       - action: utter_invite_user_to_participate
       - intent: agree
       - action: utter_agreed_participation
-      - action: utter_ask_phone_number
-      - action: utter_explain_ask_phone_number
-      - action: utter_phone_number_is_optional
-      - action: utter_send_phone_number
+      - checkpoint: starts_voting
     
   - story: participant join conversation on whatsapp
   # When using a link with a payload user send to bot a message
@@ -36,10 +33,7 @@ stories:
       - action: utter_invite_user_to_participate
       - intent: agree
       - action: utter_agreed_participation 
-      - action: utter_ask_phone_number
-      - action: utter_explain_ask_phone_number
-      - action: utter_phone_number_is_optional
-      - action: utter_send_phone_number
+      - checkpoint: starts_voting
       # It REALLY needed to rewrite the role story for whatsapp tests
 
   - story: participant provides valid phone number
