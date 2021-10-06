@@ -144,6 +144,7 @@ stories:
 
   - story: Ask phone number in the middle of voting
     steps:
+      - checkpoint: ask_phone_number
       - action: utter_ask_phone_number_again
       - action: utter_send_phone_number
       - intent: phone_number
@@ -159,3 +160,16 @@ stories:
       - action: utter_next_conversation
       - action: utter_finish
       - action: action_session_start
+
+
+  - story: ask phone number
+    steps:
+      - action: action_check_if_user_has_phone_number
+      - slot_was_set:
+        - regex_phone_number
+      - checkpoint: starts_voting
+
+  - story: ask phone number
+    steps:
+      - action: action_check_if_user_has_phone_number
+      - checkpoint: ask_phone_number

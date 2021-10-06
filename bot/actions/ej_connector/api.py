@@ -133,3 +133,11 @@ class API:
         except:
             raise EJCommunicationError
         return response
+
+    @staticmethod
+    def get_profile(token):
+        response = requests.get(PROFILE_URL, headers=auth_headers(token))
+        print(response)
+        response = response.json()
+        print(response)
+        return response

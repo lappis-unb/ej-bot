@@ -317,6 +317,7 @@ actions:
   - action_set_channel_info
   - action_set_conversation_slots
   - action_get_conversations
+  - action_check_if_user_has_phone_number
 
 forms:
   vote_form:

@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class ActionSetupConversation(Action):
     """
     Logs user in EJ and get their conversation statistic according to their account
-    If user provides an phone number, it will be used to generate login token. If not,
+    If user provides a phone number, it will be used to generate login token. If not,
     rasa conversation id will be used instead
     returns the following slots, filled:
         - user_token: generated when logging in EJ
@@ -114,7 +114,7 @@ class ActionFollowUpForm(Action):
         if ConversationController.pause_to_ask_phone_number(vote):
             self.response = [
                 SlotSet("vote", None),
-                FollowupAction("utter_ask_phone_number_again"),
+                FollowupAction("action_check_if_user_has_phone_number"),
             ]
 
     def set_response_to_starts_new_conversation(self, vote):
@@ -199,6 +199,21 @@ class ActionAskVote(Action):
         dispatcher.utter_message(template="utter_thanks_participation")
         # vote_form stop loop if vote slot is not None
         return [SlotSet("vote", "concordar")]
+
+
+class ActionCheckPhoneNumber(Action):
+
+    def name(self) -> Text:
+        return "action_check_if_user_has_phone_number"
+
+    def run(self, dispatcher, tracker, domain):
+        logger.debug("action check phone number in profile called")
+        phone_number = API.get_profile(tracker.get_slot("ej_user_token"))
+
+        if phone_number:
+           return SlotSet("regex_phone_number", phone_number)
+        else: 
+            return [FollowupAction("utter_ask_phone_number_again")]
 
 
 class ValidateVoteForm(FormValidationAction):
