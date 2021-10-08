@@ -5,6 +5,7 @@ import os
 import json
 
 from actions.ej_connector.conversation import ConversationController
+from actions.ej_connector.constants import *
 
 from actions.ej_connector import API, User
 from actions.ej_connector.api import (
@@ -241,6 +242,20 @@ class APIClassTest(unittest.TestCase):
         with pytest.raises(EJCommunicationError):
             API.get_conversation_info_by_url(CONVERSATION_ID)
 
+    @patch("actions.ej_connector.api.requests.get")
+    def test_get_phone_number_ej_user(self, mock_get):
+        response_value = PHONE_NUMBER
+        mock_get.return_value = Mock(ok=True)
+        mock_get.return_value.json.return_value = response_value
+        response = API.get_profile(TOKEN)
+        assert response == PHONE_NUMBER
+
+    @patch("actions.ej_connector.api.requests.get")
+    def test_try_get_phone_number_ej_unavailable(self, mock_get):
+        mock_get.return_value = Mock(status=403), "forbidden"
+        with pytest.raises(EJCommunicationError):
+            API.get_profile(TOKEN)
+
 
 class UserClassTest(unittest.TestCase):
     """tests actions.ej_connector.user file"""
@@ -301,3 +316,7 @@ class EjUrlsGenerationClassTest(unittest.TestCase):
         assert (
             url == f"{API_URL}/conversations/{CONVERSATION_ID}/user-pending-comments/"
         )
+
+    def test_request_phone_number_from_ej_profile(self):
+        url = PHONE_NUMBER_URL
+        assert url == f"{API_URL}/profiles/phone-number/"
