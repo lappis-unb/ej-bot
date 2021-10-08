@@ -211,7 +211,7 @@ class ActionCheckPhoneNumber(Action):
         phone_number = API.get_profile(tracker.get_slot("ej_user_token"))
 
         if phone_number:
-           return SlotSet("regex_phone_number", phone_number)
+            return [SlotSet("regex_phone_number", phone_number), FollowupAction("vote_form")]
         else: 
             return [FollowupAction("utter_ask_phone_number_again")]
 
