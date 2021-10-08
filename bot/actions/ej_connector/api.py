@@ -136,8 +136,9 @@ class API:
 
     @staticmethod
     def get_profile(token):
-        response = requests.get(PROFILE_URL, headers=auth_headers(token))
-        print(response)
-        response = response.json()
-        print(response)
+        try:
+            response = requests.get(PHONE_NUMBER_URL, headers=auth_headers(token))
+            response = response.json()
+        except:
+            raise EJCommunicationError
         return response

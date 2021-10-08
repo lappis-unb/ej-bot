@@ -202,7 +202,6 @@ class ActionAskVote(Action):
 
 
 class ActionCheckPhoneNumber(Action):
-
     def name(self) -> Text:
         return "action_check_if_user_has_phone_number"
 
@@ -211,8 +210,11 @@ class ActionCheckPhoneNumber(Action):
         phone_number = API.get_profile(tracker.get_slot("ej_user_token"))
 
         if phone_number:
-            return [SlotSet("regex_phone_number", phone_number), FollowupAction("vote_form")]
-        else: 
+            return [
+                SlotSet("regex_phone_number", phone_number),
+                FollowupAction("vote_form"),
+            ]
+        else:
             return [FollowupAction("utter_ask_phone_number_again")]
 
 

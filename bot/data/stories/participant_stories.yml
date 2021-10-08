@@ -162,14 +162,14 @@ stories:
       - action: action_session_start
 
 
-  - story: get phone_number from already registered user
+  - story: Get phone_number from already registered user
     steps:
       - action: action_check_if_user_has_phone_number
       - slot_was_set:
         - regex_phone_number
       - checkpoint: starts_voting
 
-  - story: if phone_number is not already available, ask for it
+  - story: If phone_number is not already available, ask for it
     steps:
       - action: action_check_if_user_has_phone_number
       - checkpoint: ask_phone_number
