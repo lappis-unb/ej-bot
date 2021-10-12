@@ -101,7 +101,7 @@ stories:
     entities:
       - regex_phone_number
   - slot_was_set:
-    - regex_phone_number
+    - regex_phone_number: "61981178174"
   - slot_was_set:
     - conversation_id
   - action: action_setup_conversation
