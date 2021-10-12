@@ -161,7 +161,6 @@ stories:
       - action: utter_finish
       - action: action_session_start
 
-
   - story: Get phone_number from already registered user
     steps:
       - action: action_check_if_user_has_phone_number

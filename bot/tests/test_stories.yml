@@ -56,7 +56,7 @@ stories:
   - action: vote_form
   - active_loop: vote_form
 
-- story: User agree to use phone number during conversation
+- story: User agree to use phone number during conversation for the first time
   steps:
   - action: utter_ask_phone_number_again
   - action: utter_send_phone_number
@@ -92,6 +92,22 @@ stories:
   - action: utter_next_conversation
   - action: utter_finish
   - action: action_restart
+
+- story: User already gave their phone number and are interacting again
+  steps:
+  - user: |
+      [61981178174](regex_phone_number)
+    intent: phone_number
+    entities:
+      - regex_phone_number
+  - slot_was_set:
+    - regex_phone_number
+  - slot_was_set:
+    - conversation_id
+  - action: action_setup_conversation
+  - action: utter_stop_conversation
+  - action: vote_form
+  - active_loop: vote_form
 
 - story: User provide invalid phone number with value aaaaaa 
   steps:
