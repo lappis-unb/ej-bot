@@ -6,25 +6,33 @@ stories:
       - intent: start
       - action: action_set_channel_info
       - slot_was_set:
-        - current_channel_info: 'telegram'
+          - current_channel_info: "telegram"
       - action: utter_welcome
       - intent: display_conversations
       - action: action_get_conversations
       - intent: start_group_interaction
       - action: action_set_conversation_slots
-      - action: utter_send_telegram_generated_url
+      - action: utter_send_generated_url
 
-  - story: Generate group interaction in telegram without display conversations
+  - story: Generate group interaction on whatsapp
+    steps:
+      - intent: start
+      - action: action_set_channel_info
+      - slot_was_set:
+          - current_channel_info: "twilio"
+      - action: utter_welcome
+
+  - story: Generate group interaction in telegram or whatsapp without display conversations
     steps:
       - intent: start_group_interaction
       - action: action_set_conversation_slots
-      - action: utter_send_telegram_generated_url
+      - action: utter_send_generated_url
 
   - story: Participate on default conversation after generated link
     steps:
       - intent: start_group_interaction
       - action: action_set_conversation_slots
-      - action: utter_send_telegram_generated_url
+      - action: utter_send_generated_url
       - intent: participate_on_telegram
       - action: action_get_conversation_info
       - action: utter_show_topic_of_discussion
@@ -41,6 +49,15 @@ stories:
         - regex_phone_number: null
       - action: action_set_channel_info
       - slot_was_set:
-        - current_channel_info: 'telegram'
+          - current_channel_info: "telegram"
       - action: utter_welcome
 
+  - story: Start conversation from whatsapp without payload
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+          - conversation_id: null
+      - action: action_set_channel_info
+      - slot_was_set:
+          - current_channel_info: "twilio"
+      - action: utter_welcome

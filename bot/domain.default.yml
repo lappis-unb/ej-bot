@@ -120,9 +120,26 @@ slots:
     initial_value: null
     auto_fill: false
     influence_conversation: false
+  bot_whatsapp_number:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: false
+    influence_conversation: false  
 responses:
   utter_welcome:
     - text: Olá, Muito prazer, eu sou a Duda!
+    - channel: twilio
+      text: >
+        Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
+        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
+
+        *listarconversas*: Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando selecionarconversa.
+
+        *selecionarconversa* [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
+
+        *participar*: Utilize esse comando para participar de uma coleta pré-selecionada.
+
+        *help*: Menu de ajuda;
     - channel: telegram
       text: >
         Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
@@ -167,15 +184,15 @@ responses:
     - text: Você poderia me passar seu telefone com DDD?
   utter_ask_phone_number_again:
     - text: >
-        Que incrivel, fico feliz que você esteja engajado na nossa conversa.
-        Notei que você quis participar no modo anônimo, mas se me informar seu número, conseguiremos mais força no combate á desinformação.
+        Fico feliz que você esteja engajado na nossa conversa 😊. 
+        Gostaria de pedir o seu número de telefone, assim conseguiremos mais força no combate à desinformação.
         Caso queira me passar seu telefone, basta digitar, caso não queira, basta dizer não, que continuamos nossa conversa sem que você seja identificado.
   utter_explain_ask_phone_number:
     - text: Eu juro que não vou mandar spam. É só uma forma de eu poder ligar você a sua opinião
   utter_phone_number_is_optional:
     - text: Ah e se você não quiser não tem problema, basta dizer não, eu mantenho a sua identidade secreta 🤫
   utter_send_phone_number:
-    - text: Já pode mandar seu telefone com DDD aqui
+    - text: Já pode digitar seu telefone com DDD aqui
   utter_invalid_phone_number:
     - text: Hmmm acho que você escreveu alguma coisa errada 😕
   utter_got_phone_number:
@@ -219,6 +236,15 @@ responses:
     - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
     - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
+    - channel: twilio
+      text: >
+        A lista de comandos disponíveis atualmente é: 
+
+        *listarconversas* - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando selecionarconversa.
+
+        *selecionarconversa* [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
+
+        *participar* - Participe de uma coleta pré-selecionada.
     - channel: telegram
       text: >
         A lista de comandos disponíveis atualmente é: 
@@ -247,9 +273,20 @@ responses:
 
         - Ou digite 0 para pular um comentário
   utter_explain_button_participation:
-    - text: > 
+    - text: >
         Clique nos botões a seguir para concordar, discordar ou pular comentários 😊
-  utter_send_telegram_generated_url:
+
+  utter_send_generated_url:
+    - text: Não foi possível encontrar o canal
+    - channel: twilio
+      text: >
+        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 
+
+
+        {conversation_text}.
+
+
+        Para participar basta clicar no link https://api.whatsapp.com/send?phone={bot_whatsapp_number}&text=start+{conversation_id}
     - channel: telegram
       text: >
         Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 

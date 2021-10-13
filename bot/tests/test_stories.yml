@@ -2,7 +2,7 @@
 #### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
 
 stories:
-- story: participant join conversation on telegram
+- story: participant join conversation on telegram or whatsapp
   steps:
   - user: |
       start [56](conversation_id)
@@ -19,7 +19,7 @@ stories:
     #     intent: out_of_context
     #   - action: utter_out_of_context
 
-- story: participant don't wants to join conversation on telegram
+- story: participant don't wants to join conversation on telegram or whatsapp
   steps:
   - user: |
       start [56](conversation_id)
@@ -36,7 +36,7 @@ stories:
   - action: utter_finish
   - action: action_session_start
 
-- story: User agree to use phone number
+- story: User agree to join conversation
   steps:
   - user: |
       start [56](conversation_id)
@@ -49,9 +49,16 @@ stories:
       sim
     intent: agree
   - action: utter_agreed_participation
-  - action: utter_ask_phone_number
-  - action: utter_explain_ask_phone_number
-  - action: utter_phone_number_is_optional
+  - slot_was_set:
+    - conversation_id
+  - action: action_setup_conversation
+  - action: utter_stop_conversation
+  - action: vote_form
+  - active_loop: vote_form
+
+- story: User agree to use phone number during conversation
+  steps:
+  - action: utter_ask_phone_number_again
   - action: utter_send_phone_number
   - user: |
       [61981178174](regex_phone_number)
@@ -69,24 +76,13 @@ stories:
 
 - story: User want to participate without phone number
   steps:
-  - user: |
-      start [56](conversation_id)
-    intent: start_with_conversation_id
-  - action: action_set_channel_info
-  - action: action_get_conversation_info
-  - action: utter_show_topic_of_discussion
-  - action: utter_invite_user_to_participate
-  - user: |
-      sim
-    intent: agree
-  - action: utter_agreed_participation
-  - action: utter_ask_phone_number
-  - action: utter_explain_ask_phone_number
-  - action: utter_phone_number_is_optional
+  - action: utter_ask_phone_number_again
   - action: utter_send_phone_number
   - user: |
       não
     intent: disagree
+  - slot_was_set:
+    - conversation_id
   - action: action_setup_conversation
   - action: utter_stop_conversation
   - action: vote_form
@@ -99,20 +95,7 @@ stories:
 
 - story: User provide invalid phone number with value aaaaaa 
   steps:
-  - user: |
-      start [56](conversation_id)
-    intent: start_with_conversation_id
-  - action: action_set_channel_info
-  - action: action_get_conversation_info
-  - action: utter_show_topic_of_discussion
-  - action: utter_invite_user_to_participate
-  - user: |
-      sim
-    intent: agree
-  - action: utter_agreed_participation
-  - action: utter_ask_phone_number
-  - action: utter_explain_ask_phone_number
-  - action: utter_phone_number_is_optional
+  - action: utter_ask_phone_number_again
   - action: utter_send_phone_number
   - user: |
       aaaaaa
@@ -151,15 +134,6 @@ stories:
       sim
     intent: agree
   - action: utter_agreed_participation
-  - action: utter_ask_phone_number
-  - action: utter_explain_ask_phone_number
-  - action: utter_phone_number_is_optional
-  - action: utter_send_phone_number
-  - user: |
-      [61981178174](regex_phone_number)
-    intent: phone_number
-    entities:
-      - regex_phone_number
   - slot_was_set:
     - conversation_id: null
   - action: utter_advise_participant_to_join_again

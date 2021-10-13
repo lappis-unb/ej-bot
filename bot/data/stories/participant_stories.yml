@@ -16,10 +16,25 @@ stories:
       - action: utter_invite_user_to_participate
       - intent: agree
       - action: utter_agreed_participation
-      - action: utter_ask_phone_number
-      - action: utter_explain_ask_phone_number
-      - action: utter_phone_number_is_optional
-      - action: utter_send_phone_number
+      - checkpoint: starts_voting
+    
+  - story: participant join conversation on whatsapp
+  # When using a link with a payload user send to bot a message
+  # start [payload]. We use it to set conversation_id
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'twilio'
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
+      - action: utter_invite_user_to_participate
+      - intent: agree
+      - action: utter_agreed_participation 
+      - checkpoint: starts_voting
+      # It REALLY needed to rewrite the role story for whatsapp tests
 
   - story: participant provides valid phone number
     steps:
@@ -76,6 +91,26 @@ stories:
       - action: utter_next_conversation
       - action: utter_finish
       - action: action_session_start
+
+  - story: participant don't wants to join conversation on whatsapp
+  # When using a link with a payload user send to bot a message
+  # start [payload]. We use it to set conversation_id
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'twilio'
+      - action: action_get_conversation_info
+      - action: utter_show_topic_of_discussion
+      - action: utter_invite_user_to_participate
+      - intent: disagree
+      - action: utter_disagreed_participation
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_session_start
+      # It REALLY needed to rewrite the role story for whatsapp tests
 
   - story: invite participant again, after a out of context intent
     steps:
