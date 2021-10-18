@@ -237,7 +237,6 @@ class ValidateVoteForm(FormValidationAction):
         """Validate vote value."""
         logger.debug("form validator ValidateVoteForm called")
 
-        # dispatcher.utter_message(text=channel)
         if ConversationController.user_wants_to_stop_participation(slot_value):
             return VotingHelper.stop_voting()
         voting_helper = VotingHelper(slot_value, tracker)
@@ -251,6 +250,7 @@ class ValidateVoteForm(FormValidationAction):
             return VotingHelper.pause_voting_to_ask_phone_number()
         if conversation_controller.intent_starts_new_conversation():
             return ConversationController.starts_conversation_from_another_link()
+
         if voting_helper.vote_is_valid() or voting_helper.user_enters_a_new_comment():
             return self.dispatch_show_next_comment(
                 dispatcher, conversation_controller, voting_helper

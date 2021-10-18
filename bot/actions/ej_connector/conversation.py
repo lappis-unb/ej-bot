@@ -73,18 +73,17 @@ class ConversationController:
     def time_to_ask_phone_number_again(self):
         participant_phone_number = self.tracker.get_slot("regex_phone_number")
         total_comments = self.api.get_total_comments(self.statistics)
-        missing_comments = self.api.get_current_comment(self.statistics)
-        if missing_comments == 0:
+        current_comment = self.api.get_current_comment(self.statistics)
+        if participant_phone_number:
             return False
-        participation_tax = total_comments / missing_comments
-        return participation_tax == 2 and participant_phone_number == None
+        return (total_comments >= 4 and current_comment == 3) or (
+            total_comments < 4 and current_comment == 2
+        )
 
     def time_to_invite_to_engage(self, statistics, bot_name, telegram_engagement_group):
-        missing_comments = self.api.get_current_comment(statistics)
-        if missing_comments == 0:
-            return False
+        missing_comments = self.api.get_missing_comments(statistics)
         engage_link = EngageFactory.bot_has_engage_link(bot_name)
-        return engage_link and missing_comments == 3 and not telegram_engagement_group
+        return engage_link and (missing_comments == 0) and not telegram_engagement_group
 
 
 class ConversationAPI:
@@ -103,6 +102,9 @@ class ConversationAPI:
 
     def get_current_comment(self, statistics):
         return statistics["comments"]
+
+    def get_missing_comments(self, statistics):
+        return statistics["missing_votes"]
 
     def get_comment_title(self, comment_content, current_comment, total_comments):
         return f"{comment_content['content']} \n O que você acha disso ({current_comment}/{total_comments})?"
