@@ -310,7 +310,7 @@ responses:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_invite_user_to_join_group:
     - text: >
-        Pausa rápida para um convite: Estou gostando bastante de te ouvir, e gostaria de saber se você tem interesse de fazer parte da nossa comunidade. Lá publicamos conteúdos personalizados sobre os assuntos que estamos conversando, e você poderá interagir com outras pessoas. Para aceitar o convite basta clicar no link, e você será direcionado para o nosso grupo no Telegram:
+        Estou gostando bastante de te ouvir e gostaria de saber se você tem interesse em fazer parte da nossa comunidade. Lá, publicamos conteúdos personalizados sobre os assuntos que estamos conversando e você poderá interagir com outras pessoas. Para aceitar o convite, clique no link, e você será direcionado para o nosso grupo no Telegram:
 
         {telegram_engagement_group}
 
