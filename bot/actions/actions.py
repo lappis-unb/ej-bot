@@ -53,7 +53,10 @@ class ActionSetupConversation(Action):
                 user.authenticate(last_intent)
                 conversation_controller = ConversationController(tracker, user.token)
                 self.dispatch_user_authentication(user, dispatcher)
-                self.set_response_to_participation(conversation_controller, user)
+                profile_phone_number = self.get_profile_phone_number(tracker)
+                self.set_response_to_participation(
+                    conversation_controller, user, profile_phone_number
+                )
                 self.dispatch_explain_participation(
                     tracker.get_slot("current_channel_info"), dispatcher
                 )
@@ -76,7 +79,9 @@ class ActionSetupConversation(Action):
         else:
             dispatcher.utter_message(template="utter_explain_button_participation")
 
-    def set_response_to_participation(self, conversation_controller, user):
+    def set_response_to_participation(
+        self, conversation_controller, user, profile_phone_number
+    ):
         statistics = conversation_controller.api.get_participant_statistics()
         first_comment = conversation_controller.api.get_next_comment()
         self.response = [
@@ -87,7 +92,13 @@ class ActionSetupConversation(Action):
             SlotSet("comment_text", first_comment["content"]),
             SlotSet("current_comment_id", first_comment["id"]),
             SlotSet("ej_user_token", user.token),
+            SlotSet("regex_phone_number", profile_phone_number),
         ]
+
+    def get_profile_phone_number(self, tracker):
+        profile_phone_number = API.get_profile(tracker.get_slot("ej_user_token"))
+        if profile_phone_number:
+            return profile_phone_number
 
 
 class ActionFollowUpForm(Action):
