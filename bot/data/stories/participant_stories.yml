@@ -12,10 +12,8 @@ stories:
       - slot_was_set:
         - current_channel_info: 'telegram'
       - action: action_get_conversation_info
+      - action: utter_show_usage_terms
       - action: utter_show_topic_of_discussion
-      - action: utter_invite_user_to_participate
-      - intent: agree
-      - action: utter_agreed_participation
       - checkpoint: starts_voting
     
   - story: participant join conversation on whatsapp
@@ -29,10 +27,8 @@ stories:
       - slot_was_set:
         - current_channel_info: 'twilio'
       - action: action_get_conversation_info
+      - action: utter_show_usage_terms
       - action: utter_show_topic_of_discussion
-      - action: utter_invite_user_to_participate
-      - intent: agree
-      - action: utter_agreed_participation 
       - checkpoint: starts_voting
       # It REALLY needed to rewrite the role story for whatsapp tests
 
@@ -73,74 +69,14 @@ stories:
       - intent: disagree
       - checkpoint: starts_voting
 
-  - story: participant don't wants to join conversation on telegram
-  # When using a link with a payload user send to bot a message
-  # start [payload]. We use it to set conversation_id
-    steps:
-      - intent: start_with_conversation_id
-      - slot_was_set:
-        - conversation_id
-      - action: action_set_channel_info
-      - slot_was_set:
-        - current_channel_info: 'telegram'
-      - action: action_get_conversation_info
-      - action: utter_show_topic_of_discussion
-      - action: utter_invite_user_to_participate
-      - intent: disagree
-      - action: utter_disagreed_participation
-      - action: utter_next_conversation
-      - action: utter_finish
-      - action: action_session_start
-
-  - story: participant don't wants to join conversation on whatsapp
-  # When using a link with a payload user send to bot a message
-  # start [payload]. We use it to set conversation_id
-    steps:
-      - intent: start_with_conversation_id
-      - slot_was_set:
-        - conversation_id
-      - action: action_set_channel_info
-      - slot_was_set:
-        - current_channel_info: 'twilio'
-      - action: action_get_conversation_info
-      - action: utter_show_topic_of_discussion
-      - action: utter_invite_user_to_participate
-      - intent: disagree
-      - action: utter_disagreed_participation
-      - action: utter_next_conversation
-      - action: utter_finish
-      - action: action_session_start
-      # It REALLY needed to rewrite the role story for whatsapp tests
-
-  - story: invite participant again, after a out of context intent
-    steps:
-      - intent: start_with_conversation_id
-      - slot_was_set:
-        - conversation_id
-      - action: action_set_channel_info
-      - slot_was_set:
-        - current_channel_info: 'telegram'
-      - action: action_get_conversation_info
-      - action: utter_show_topic_of_discussion
-      - action: utter_invite_user_to_participate
-      - intent: out_of_context
-      - action: utter_out_of_context
-      - action: utter_invite_user_to_participate
-
   - story: starts voting form
     steps:
       - checkpoint: starts_voting
       - slot_was_set:
         - conversation_id
       - action: action_setup_conversation
-      - action: utter_stop_conversation
       - action: vote_form
       - active_loop: vote_form
-      - active_loop: null
-      - action: action_follow_up_form
-      - action: utter_next_conversation
-      - action: utter_finish
-      - action: action_restart
 
   - story: Ask phone number in the middle of voting
     steps:

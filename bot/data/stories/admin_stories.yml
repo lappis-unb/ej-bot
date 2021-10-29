@@ -35,8 +35,8 @@ stories:
       - action: utter_send_generated_url
       - intent: participate_on_telegram
       - action: action_get_conversation_info
+      - action: utter_show_usage_terms
       - action: utter_show_topic_of_discussion
-      - action: utter_invite_user_to_participate
 
   - story: Start conversation from telegram without payload
     # When someone starts a conversation with the bot on telegram

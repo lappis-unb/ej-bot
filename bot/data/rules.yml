@@ -23,3 +23,14 @@ rules:
     steps:
       - intent: help
       - action: utter_help
+
+  - rule: end voting form
+    condition:
+        - active_loop: vote_form
+    steps:
+      - action: vote_form
+      - active_loop: null
+      - action: action_follow_up_form
+      - action: utter_next_conversation
+      - action: utter_finish
+      - action: action_restart
