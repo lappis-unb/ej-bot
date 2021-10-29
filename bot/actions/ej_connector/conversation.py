@@ -7,10 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 class ConversationController:
-    supported_channels_explain_utter = {
+    unsupported_buttons_channels_explain_utter = {
         "twilio": "utter_explain_no_button_participation",
-        "telegram": "utter_explain_button_participation",
-        "socketio": "utter_explain_button_participation",
     }
 
     def __init__(self, tracker, token=None):

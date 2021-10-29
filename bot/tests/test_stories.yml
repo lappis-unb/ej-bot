@@ -2,57 +2,22 @@
 #### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
 
 stories:
-- story: participant join conversation on telegram or whatsapp
+- story: User joins conversation to vote
   steps:
   - user: |
       start [56](conversation_id)
     intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
   - action: action_set_channel_info
+  - slot_was_set:
+    - current_channel_info
   - action: action_get_conversation_info
+  - action: utter_show_usage_terms
   - action: utter_show_topic_of_discussion
-  - action: utter_invite_user_to_participate
-
-    # - story: User utters out of context 
-    #   steps:
-    #   - user: |
-    #       asdfgasd
-    #     intent: out_of_context
-    #   - action: utter_out_of_context
-
-- story: participant don't wants to join conversation on telegram or whatsapp
-  steps:
-  - user: |
-      start [56](conversation_id)
-    intent: start_with_conversation_id
-  - action: action_set_channel_info
-  - action: action_get_conversation_info
-  - action: utter_show_topic_of_discussion
-  - action: utter_invite_user_to_participate
-  - user: |
-      não
-    intent: disagree
-  - action: utter_disagreed_participation
-  - action: utter_next_conversation
-  - action: utter_finish
-  - action: action_session_start
-
-- story: User agree to join conversation
-  steps:
-  - user: |
-      start [56](conversation_id)
-    intent: start_with_conversation_id
-  - action: action_set_channel_info
-  - action: action_get_conversation_info
-  - action: utter_show_topic_of_discussion
-  - action: utter_invite_user_to_participate
-  - user: |
-      sim
-    intent: agree
-  - action: utter_agreed_participation
   - slot_was_set:
     - conversation_id
   - action: action_setup_conversation
-  - action: utter_stop_conversation
   - action: vote_form
   - active_loop: vote_form
 
@@ -70,9 +35,9 @@ stories:
   - slot_was_set:
     - conversation_id
   - action: action_setup_conversation
-  - action: utter_stop_conversation
   - action: vote_form
   - active_loop: vote_form
+  - action: action_listen
 
 - story: User want to participate without phone number
   steps:
@@ -84,14 +49,9 @@ stories:
   - slot_was_set:
     - conversation_id
   - action: action_setup_conversation
-  - action: utter_stop_conversation
   - action: vote_form
   - active_loop: vote_form
-  - active_loop: null
-  - action: action_follow_up_form
-  - action: utter_next_conversation
-  - action: utter_finish
-  - action: action_restart
+  - action: action_listen
 
 - story: User provide invalid phone number with value aaaaaa 
   steps:
@@ -128,12 +88,8 @@ stories:
     intent: start_with_conversation_id
   - action: action_set_channel_info
   - action: action_get_conversation_info
+  - action: utter_show_usage_terms
   - action: utter_show_topic_of_discussion
-  - action: utter_invite_user_to_participate
-  - user: |
-      sim
-    intent: agree
-  - action: utter_agreed_participation
   - slot_was_set:
     - conversation_id: null
   - action: utter_advise_participant_to_join_again

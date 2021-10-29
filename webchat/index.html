@@ -4,6 +4,7 @@
   </head>
 	<body></body>
 	<script>!(function () {
+  localStorage.removeItem("chat_session");
   let e = document.createElement("script"),
     t = document.head || document.getElementsByTagName("head")[0];
   (e.src =
@@ -17,7 +18,7 @@
           socketUrl: "http://localhost:5006?token=thisismysecret",
           profileAvatar: "img/duda.png",
           openLauncherImage: "img/talks-white.svg",
-          // add other props here
+          embedded: true
         },
         null
       );

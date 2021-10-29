@@ -28,7 +28,7 @@ test-actions:
 	python -m pytest
 
 test-nlu:
-	rasa test nlu --nlu data/nlu.yml --cross-validation --domain $(domain)
+	rasa test nlu --nlu data/nlu.yml --cross-validation
 
 test-core:
 	rasa test core --fail-on-prediction-errors --out results/results-core-test

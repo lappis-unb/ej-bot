@@ -13,6 +13,9 @@ stop: ## Runs docker-compose stop commmand
 
 ############################## BOILERPLATE ##############################
 
+attach:
+	docker exec -it bot bash
+
 build:
 	docker-compose build
 
