@@ -166,20 +166,12 @@ responses:
 
         {conversation_text}.
 
+  utter_show_usage_terms:
+    - text: >
         As suas opiniões estarão protegidas comigo conforme os termos de uso da EJ. Clique no link para ler.
 
         https://www.ejparticipe.org/usage/
 
-  utter_invite_user_to_participate:
-    - text: Topa um bate-papo comigo?
-  utter_agreed_participation:
-    - text: Ah maravilha 😄
-    - text: Eu agradeço muito!
-  utter_disagreed_participation:
-    - text: Poooxa ☹️
-    - text: Ah que pena ☹️
-  utter_stop_conversation:
-    - text: Se você não quiser mais conversar comigo ou quiser terminar a conversa é so me falar! (é só escrever PARAR)
   utter_ask_phone_number:
     - text: Você poderia me passar seu telefone com DDD?
   utter_ask_phone_number_again:
@@ -272,10 +264,6 @@ responses:
         - Digite -1 para discordar
 
         - Ou digite 0 para pular um comentário
-  utter_explain_button_participation:
-    - text: >
-        Clique nos botões a seguir para concordar, discordar ou pular comentários 😊
-
   utter_send_generated_url:
     - text: Não foi possível encontrar o canal
     - channel: twilio

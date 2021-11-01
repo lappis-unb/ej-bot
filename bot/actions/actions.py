@@ -52,8 +52,10 @@ class ActionSetupConversation(Action):
                 last_intent = tracker.latest_message["intent"].get("name")
                 user.authenticate(last_intent)
                 conversation_controller = ConversationController(tracker, user.token)
-                self.dispatch_user_authentication(user, dispatcher)
-                self.set_response_to_participation(conversation_controller, user)
+                profile_phone_number = self.get_profile_phone_number(tracker)
+                self.set_response_to_participation(
+                    conversation_controller, user, profile_phone_number
+                )
                 self.dispatch_explain_participation(
                     tracker.get_slot("current_channel_info"), dispatcher
                 )
@@ -61,22 +63,21 @@ class ActionSetupConversation(Action):
                 return self.dispatch_communication_error_with_ej(dispatcher)
         return self.response
 
-    def dispatch_user_authentication(self, user, dispatcher):
-        dispatcher.utter_message(template=user.authenticate_utter)
-
     def dispatch_communication_error_with_ej(self, dispatcher):
         dispatcher.utter_message(template="utter_ej_communication_error")
         dispatcher.utter_message(template="utter_error_try_again_later")
         return [FollowupAction("action_session_start")]
 
     def dispatch_explain_participation(self, channel_info_slot, dispatcher):
-        if channel_info_slot == "rocket_livechat" or channel_info_slot == "twilio":
-            # explain how user can vote according to current channel
+        channels_without_button = (
+            ConversationController.unsupported_buttons_channels_explain_utter
+        )
+        if channel_info_slot in channels_without_button:
             dispatcher.utter_message(template="utter_explain_no_button_participation")
-        else:
-            dispatcher.utter_message(template="utter_explain_button_participation")
 
-    def set_response_to_participation(self, conversation_controller, user):
+    def set_response_to_participation(
+        self, conversation_controller, user, profile_phone_number
+    ):
         statistics = conversation_controller.api.get_participant_statistics()
         first_comment = conversation_controller.api.get_next_comment()
         self.response = [
@@ -87,7 +88,13 @@ class ActionSetupConversation(Action):
             SlotSet("comment_text", first_comment["content"]),
             SlotSet("current_comment_id", first_comment["id"]),
             SlotSet("ej_user_token", user.token),
+            SlotSet("regex_phone_number", profile_phone_number),
         ]
+
+    def get_profile_phone_number(self, tracker):
+        profile_phone_number = API.get_profile(tracker.get_slot("ej_user_token"))
+        if profile_phone_number:
+            return profile_phone_number
 
 
 class ActionFollowUpForm(Action):
