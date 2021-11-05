@@ -11,8 +11,7 @@ intents:
       use_entities: true
   - pass:
       use_entities: true
-  - start:
-      use_entities: true
+ 
   - phone_number:
       use_entities: true
   - out_of_context:
@@ -21,17 +20,11 @@ intents:
       use_entities: true
   - welcome:
       use_entities: true
-  - start_group_interaction:
-      use_entities: true
   - url:
       use_entities: true
   - help:
       use_entities: true
   - start_with_conversation_id:
-      use_entities: true
-  - participate_on_telegram:
-      use_entities: true
-  - display_conversations:
       use_entities: true
 entities:
   - url
@@ -119,44 +112,6 @@ slots:
     influence_conversation: false
     
 responses:
-  utter_welcome:
-    - text: >
-        Olá lobinhos e lobinhas! 🐺
-    - channel: twilio
-      text: >
-        Olá lobinhos e lobinhas! 🐺
-
-        Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
-
-        Comigo você pode fazer coletas de opinião ou participar de uma. 
-
-        Os seguintes comandos estão disponíveis:
-
-        *listarconversas*: Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando selecionarconversa.
-
-        *selecionarconversa* [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
-
-        *participar*: Utilize esse comando para participar de uma coleta pré-selecionada.
-
-        *help*: Menu de ajuda;
-
-    - channel: telegram
-      text: >
-        Olá lobinhos e lobinhas! 🐺
-
-        Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
-
-        Comigo você pode fazer coletas de opinião ou participar de uma. 
-
-        Os seguintes comandos estão disponíveis:
-
-        /listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
-
-        /selecionarconversa [id]: Gera o link de participação, que pode ser enviado para grupos, canais ou diretamente para um contato. Em [id] indique o número da conversa na EJ; 
-
-        /participar: Participar de uma coleta pré-selecionada. 
-
-        /help: Menu de ajuda;
   utter_introduce_ej:
     - text: >
         Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
@@ -229,38 +184,7 @@ responses:
   utter_ej_connection_doesnt_exist:
     - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
-    - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
-    - channel: twilio
-      text: >
-        A lista de comandos disponíveis atualmente é: 
-
-        *listarconversas* - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando selecionarconversa.
-
-        *selecionarconversa* [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
-
-        *participar* - Participe de uma coleta pré-selecionada.
-
-    - channel: telegram
-      text: >
-        💡 A lista de comandos disponíveis atualmente é:
-
-        /listarconversas - Lista as conversas públicas disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
-
-        /selecionarconversa [id] - Gera o link de participação, que pode ser enviado para grupos, canais ou diretamente para um contato. Em [id] indique o número da conversa na EJ;
-
-        /participar - Participe de uma coleta pré-selecionada.
-  utter_show_conversations:
-    - text: >
-        Essa é a lista das conversas públicas disponíveis para participação.
-  utter_explain_id_conversation:
-    - text: >
-        Utilize o identificador para gerar o link de participação, com o comando /selecionarconversa 😉
-    - channel: twilio
-      text: >
-        Utilize o identificador para gerar o link de participação, com o comando *selecionarconversa* 😉    
-  utter_no_conversations:
-    - text: >
-        Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
+    - text: Olá lobinhos e lobinhas!  Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
   utter_explain_no_button_participation:
     - text: > 
         Para começar, basta ler os comentários e logo depois:
@@ -270,32 +194,10 @@ responses:
         - Digite -1 para discordar
 
         - Ou digite 0 para pular um comentário
-  utter_send_generated_url:
-    - text: Não foi possível encontrar o canal
-    - channel: twilio
-      text: >
-        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 
-
-
-        {conversation_text}.
-
-
-        🚀 Bora começar? 
-
-
-        Para participar basta clicar no link https://api.whatsapp.com/send?phone={bot_whatsapp_number}&text=start+{conversation_id}
-
-    - channel: telegram
-      text: >
-        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. 
-
-        Gostaríamos da sua participação na seguinte discussão: 
-
-        {conversation_text}.
-
-        🚀 Bora começar? 
-
-        Para participar, escolha uma coleta clicando no link: t.me/{bot_telegram_username}?start={conversation_id}.
+  utter_explain_button_participation:
+    - text: > 
+        Clique nos botões a seguir para concordar, discordar ou pular comentários 😊
+         
   utter_no_selected_conversation:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_invite_user_to_join_group:
@@ -314,9 +216,8 @@ actions:
   - validate_vote_form
   - action_setup_conversation
   - action_get_conversation_info
-  - action_set_channel_info
   - action_set_conversation_slots
-  - action_get_conversations
+  - action_set_channel_info
 
 forms:
   vote_form:

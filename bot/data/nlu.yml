@@ -1,40 +1,5 @@
 version: "2.0"
 nlu:
-  - intent: start_group_interaction
-    examples: |
-      - selecionarconversa [1](conversation_id)
-      - selecionarconversa [56](conversation_id)
-      - selecionarconversa [12](conversation_id)
-      - selecionarconversa [33](conversation_id)
-      - selecionarconversa [18](conversation_id)
-      - selecionarconversa conversa [56](conversation_id)
-      - selecionarconversa id [433](conversation_id)
-
-  - intent: display_conversations
-    examples: |
-      - mostrarlista
-      - lista
-      - listar
-      - listarconversas
-
-  - intent: start
-    examples: |
-      - começar a conversar
-      - oi
-      - olá
-      - hey
-      - Bom dia
-      - Boa tarde
-      - Boa noite
-      - Oi, tudo bem?
-      - alo
-      - ois
-      - oie
-      - prazer
-      - muito prazer
-      - eae
-      - fala duda
-
   - intent: start_with_conversation_id
     examples: |
       - start
@@ -157,16 +122,18 @@ nlu:
       - http://localhost:8001
       - http://other.com.br/
 
-  - intent: participate_on_telegram
-    examples: |
-      - participar
-
   - intent: help
     examples: |
       - ajuda
       - help
       - comandos disponíveis
       - quais comandos posso usar?
+      - oi
+      - olá
+      - participar
+      - selecionarconversa
+      - listar
+      - listarconversas
 
   - intent: out_of_context
     examples: |
