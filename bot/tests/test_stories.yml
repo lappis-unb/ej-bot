@@ -70,7 +70,6 @@ stories:
   - user: |
       [http://localhost:8000/](url)
     intent: url
-  - action: utter_welcome
   - action: utter_introduce_ej
   - action: utter_explain_how_to_participate
 

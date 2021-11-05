@@ -50,19 +50,6 @@ class API:
             raise EJCommunicationError
 
     @staticmethod
-    def get_conversations():
-        logger.debug("GET_CONVERSATIONS")
-        logger.debug(HEADERS)
-        try:
-            response = requests.get(CONVERSATIONS_URL, headers=HEADERS)
-            conversation = response.json()
-            if response.status_code == 500:
-                raise EJCommunicationError
-            return conversation
-        except:
-            raise EJCommunicationError
-
-    @staticmethod
     def get_next_comment(conversation_id, token):
         url = conversation_random_comment_url(conversation_id)
         try:
