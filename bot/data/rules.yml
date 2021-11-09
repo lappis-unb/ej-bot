@@ -16,12 +16,17 @@ rules:
       - intent: url
       - slot_was_set:
         - url
-      - action: utter_welcome
       - action: utter_introduce_ej
       - action: utter_explain_how_to_participate
+      
   - rule: Help command
     steps:
       - intent: help
+      - action: utter_help
+  
+  - rule: Show help fallback when low NLU confidence
+    steps:
+      - intent: nlu_fallback
       - action: utter_help
 
   - rule: end voting form

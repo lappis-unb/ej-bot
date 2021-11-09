@@ -18,10 +18,7 @@ from typing import Text
 from rasa.core.channels import RocketChatInput
 
 AVAILABLE_COMMANDS = [
-    "listarconversas",
-    "selecionarconversa",
     "help",
-    "participar",
     "start",
 ]
 

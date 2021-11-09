@@ -18,6 +18,8 @@ pipeline:
     url: ${RASA_DUCKLING_HTTP_URL}
     locale: BR
     dimensions: ["url"]
+  - name: FallbackClassifier
+    threshold: 0.7  
 policies:
   - name: RulePolicy
   - name: MemoizationPolicy

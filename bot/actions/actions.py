@@ -413,37 +413,3 @@ class ActionSetConversationSlots(Action):
             SlotSet("conversation_text", conversation_text),
             SlotSet("conversation_id", conversation_id),
         ]
-
-
-class ActionGetConversationList(Action):
-    """
-    This action is called when the user wants to see all the available conversations.
-    It shows the ID and the Title of the conversation.
-    """
-
-    def name(self):
-        return "action_get_conversations"
-
-    def run(self, dispatcher, tracker, domain):
-        logger.debug("action ActionGetConversations called")
-        if tracker.get_latest_input_channel() in MENSSAGE_CHANNELS.values():
-
-            try:
-                conversations = API.get_conversations()
-                if conversations["count"] == 0:
-                    dispatcher.utter_message(template="utter_no_conversations")
-                else:
-                    dispatcher.utter_message(template="utter_show_conversations")
-                    dispatcher.utter_message(template="utter_explain_id_conversation")
-                    ids = [result["id"] for result in conversations["results"]]
-                    texts = [result["text"] for result in conversations["results"]]
-                    result = "\n".join(
-                        f"Identificador da conversa - {str(ids[i])}\nTítulo da conversa - {text}\n  "
-                        for i, text in enumerate(texts)
-                    )
-                    dispatcher.utter_message(text=result)
-            except EJCommunicationError:
-                dispatcher.utter_message(template="utter_ej_communication_error")
-                dispatcher.utter_message(template="utter_error_try_again_later")
-                return [FollowupAction("action_session_start")]
-        return []

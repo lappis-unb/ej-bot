@@ -11,8 +11,6 @@ intents:
       use_entities: true
   - pass:
       use_entities: true
-  - start:
-      use_entities: true
   - phone_number:
       use_entities: true
   - invalid_phone_number:
@@ -23,17 +21,11 @@ intents:
       use_entities: true
   - welcome:
       use_entities: true
-  - start_group_interaction:
-      use_entities: true
   - url:
       use_entities: true
   - help:
       use_entities: true
   - start_with_conversation_id:
-      use_entities: true
-  - participate_on_telegram:
-      use_entities: true
-  - display_conversations:
       use_entities: true
 entities:
   - url
@@ -126,32 +118,6 @@ slots:
     auto_fill: false
     influence_conversation: false  
 responses:
-  utter_welcome:
-    - text: Olá, Muito prazer, eu sou a Duda!
-    - channel: twilio
-      text: >
-        Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
-        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
-
-        *listarconversas*: Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando selecionarconversa.
-
-        *selecionarconversa* [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
-
-        *participar*: Utilize esse comando para participar de uma coleta pré-selecionada.
-
-        *help*: Menu de ajuda;
-    - channel: telegram
-      text: >
-        Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.
-        A Empurrando Juntos, ou Platforma Ej, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Os seguintes comandos estão disponíveis:
-
-        /listarconversas - Lista as conversas públicas na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
-
-        /selecionarconversa [id]: Utilize esse comando para gerarmos uma nova coleta. [id] é o identificador da conversa na EJ;
-
-        /participar: Utilize esse comando para participar de uma coleta pré-selecionada.
-
-        /help: Menu de ajuda;
   utter_introduce_ej:
     - text: >
         Eu sou a assistente virtual da plataforma EJ. 
@@ -227,34 +193,7 @@ responses:
   utter_ej_connection_doesnt_exist:
     - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
-    - text: Esse texto de ajuda deve ser atualizado para outros contextos além do telegram.
-    - channel: twilio
-      text: >
-        A lista de comandos disponíveis atualmente é: 
-
-        *listarconversas* - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando selecionarconversa.
-
-        *selecionarconversa* [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
-
-        *participar* - Participe de uma coleta pré-selecionada.
-    - channel: telegram
-      text: >
-        A lista de comandos disponíveis atualmente é: 
-
-        /listarconversas - Lista as conversas disponíveis disponíveis na EJ. Utilize esse comando para saber qual identificador utilizar na hora de gerar o link de participação com o comando /selecionarconversa.
-
-        /selecionarconversa [id] - Escolha a conversa da EJ para gerarmos uma nova coleta;
-
-        /participar - Participe de uma coleta pré-selecionada.
-  utter_show_conversations:
-    - text: >
-        Essa é a lista das conversas disponíveis para coleta. Basta escolher o assunto e verificar qual é o seu ID.
-  utter_explain_id_conversation:
-    - text: >
-        Você pode precisar do ID para selecionar uma conversa depois 😉
-  utter_no_conversations:
-    - text: >
-        Não existem conversas disponíveis no momento, entre em contato com o time da EJ para mais informações.
+    - text: Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.  Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
   utter_explain_no_button_participation:
     - text: > 
         Para começar, basta ler os comentários e logo depois:
@@ -264,24 +203,10 @@ responses:
         - Digite -1 para discordar
 
         - Ou digite 0 para pular um comentário
-  utter_send_generated_url:
-    - text: Não foi possível encontrar o canal
-    - channel: twilio
-      text: >
-        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 
+  utter_explain_button_participation:
+    - text: >
+        Clique nos botões a seguir para concordar, discordar ou pular comentários 😊
 
-
-        {conversation_text}.
-
-
-        Para participar basta clicar no link https://api.whatsapp.com/send?phone={bot_whatsapp_number}&text=start+{conversation_id}
-    - channel: telegram
-      text: >
-        Eu sou a assistente virtual da plataforma EJ. A Empurrando Juntos, ou Platforma EJ, é uma plataforma de consultas de opinião com foco em Estado e Organizações. Gostaríamos da sua participação na seguinte discussão: 
-
-        {conversation_text}.
-
-        Para participar basta clicar no link t.me/{bot_telegram_username}?start={conversation_id}.
   utter_no_selected_conversation:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
 
@@ -304,7 +229,6 @@ actions:
   - action_get_conversation_info
   - action_set_channel_info
   - action_set_conversation_slots
-  - action_get_conversations
 
 forms:
   vote_form:
