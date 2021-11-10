@@ -116,8 +116,6 @@ responses:
     - text: >
         Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
         A Plataforma Ej realiza consultas de opinião com foco em Estado e Organizações.
-  utter_explain_how_to_participate:
-    - text: Você pode participar de uma de nossas consultas pelo nosso site, site de parceiros ou até por aqui! Me manda um "Oi" se quiser participar 😉
   utter_show_topic_of_discussion:
     - text: >
         No momento, eu estava querendo saber a sua opinião a respeito do seguinte assunto:
