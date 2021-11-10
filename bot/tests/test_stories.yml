@@ -71,7 +71,14 @@ stories:
       [http://localhost:8000/](url)
     intent: url
   - action: utter_introduce_ej
-  - action: utter_explain_how_to_participate
+  - action: action_get_conversation_info
+  - slot_was_set:
+    - conversation_id
+  - action: utter_show_usage_terms
+  - action: utter_show_topic_of_discussion
+  - action: action_setup_conversation
+  - action: vote_form
+  - active_loop: vote_form
 
 - story: User wants help
   steps:
