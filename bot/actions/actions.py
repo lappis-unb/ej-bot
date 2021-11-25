@@ -52,7 +52,7 @@ class ActionSetupConversation(Action):
                 last_intent = tracker.latest_message["intent"].get("name")
                 user.authenticate(last_intent)
                 conversation_controller = ConversationController(tracker, user.token)
-                profile_phone_number = self.get_profile_phone_number(tracker)
+                profile_phone_number = self.get_profile_phone_number(user.token)
                 self.set_response_to_participation(
                     conversation_controller, user, profile_phone_number
                 )
@@ -91,8 +91,8 @@ class ActionSetupConversation(Action):
             SlotSet("regex_phone_number", profile_phone_number),
         ]
 
-    def get_profile_phone_number(self, tracker):
-        profile_phone_number = API.get_profile(tracker.get_slot("ej_user_token"))
+    def get_profile_phone_number(self, token):
+        profile_phone_number = API.get_profile(token)
         if profile_phone_number:
             return profile_phone_number
 
