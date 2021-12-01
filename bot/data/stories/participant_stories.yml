@@ -1,6 +1,20 @@
 version: "2.0"
 
 stories:
+
+  - story: participant join conversation on webchat
+    steps:
+      - intent: url
+      - slot_was_set:
+        - url
+      - action: utter_introduce_ej
+      - action: action_get_conversation_info
+      - slot_was_set:
+        - conversation_id
+      - action: utter_show_topic_of_discussion
+      - action: action_setup_conversation
+      - checkpoint: starts_voting
+
   - story: participant join conversation on telegram
   # When using a link with a payload user send to bot a message
   # start [payload]. We use it to set conversation_id
@@ -12,7 +26,7 @@ stories:
       - slot_was_set:
         - current_channel_info: 'telegram'
       - action: action_get_conversation_info
-      - action: utter_show_usage_terms
+      - action: utter_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
     
@@ -27,7 +41,7 @@ stories:
       - slot_was_set:
         - current_channel_info: 'twilio'
       - action: action_get_conversation_info
-      - action: utter_show_usage_terms
+      - action: utter_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
       # It REALLY needed to rewrite the role story for whatsapp tests
@@ -61,12 +75,14 @@ stories:
       - intent: phone_number
         entities:
           - regex_phone_number
+      - action: utter_got_phone_number
       - checkpoint: starts_voting
 
   - story: participant dont want to inform phone number
     steps:
-      - action: utter_send_phone_number
+      - action: utter_ask_phone_number_again
       - intent: disagree
+      - action: utter_user_want_anonymous
       - checkpoint: starts_voting
 
   - story: starts voting form
@@ -80,13 +96,12 @@ stories:
 
   - story: Ask phone number in the middle of voting
     steps:
-      - action: utter_ask_phone_number_again
-      - action: utter_send_phone_number
       - intent: phone_number
         entities:
           - regex_phone_number
       - slot_was_set:
         - regex_phone_number
+      - action: utter_got_phone_number
       - checkpoint: starts_voting
 
   - story: Goodbye happy path

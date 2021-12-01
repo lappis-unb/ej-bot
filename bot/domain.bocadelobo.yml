@@ -114,20 +114,21 @@ slots:
 responses:
   utter_introduce_ej:
     - text: >
-        Eu sou a Loba, a mãe da matilha Boca de Lobo, a assistente virtual da plataforma Empurrando Juntas. 
-        A Plataforma Ej realiza consultas de opinião com foco em Estado e Organizações.
+        Olá, Eu sou a Loba, a mãe da matilha Boca de Lobo e assistente virtual da Plataforma Empurrando Juntas.
+        Meu trabalho é descobrir a opinião das pessoas sobre determinados temas e para isso eu preciso da sua ajuda. 
+        As suas opiniões serão enviadas para a nossa plataforma, conforme o nosso termo de uso https://www.ejparticipe.org/usage/.
   utter_show_topic_of_discussion:
-    - text: >
-        No momento, eu estava querendo saber a sua opinião a respeito do seguinte assunto:
+    - text: |
+        Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:
+        **{conversation_text}**
 
-        {conversation_text}.
+        Vou te mandar o que me responderam e gostaria da sua opinião:
+      channel: "socketio"
+    - text: |
+        Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:
+        {conversation_text}
 
-  utter_show_usage_terms:
-    - text: >
-        As suas opiniões estarão protegidas comigo conforme os termos de uso da EJ. Clique no link para ler.
-
-        https://www.ejparticipe.org/usage/
-        
+        Vou te mandar o que me responderam e gostaria da sua opinião:
   utter_ask_phone_number:
     - text: Você poderia me passar seu telefone com DDD?
   utter_explain_ask_phone_number:
@@ -140,11 +141,16 @@ responses:
     - text: Hmmm acho que você escreveu alguma coisa errada 😕
   utter_ask_phone_number_again:
     - text: >
-        Fico feliz que você esteja engajado na nossa conversa 😊. 
-        Gostaria de pedir o seu número de telefone, assim conseguiremos mais força no combate à desinformação.
-        Caso queira me passar seu telefone, basta digitar, caso não queira, basta dizer não, que continuamos nossa conversa sem que você seja identificado.
+        Sua opinião é muito importante para o nosso projeto e por isso eu gostaria de pedir o seu número de telefone. 
+        Com ele, conseguiremos mais força no combate à desinformação e poderemos te enviar conteúdos personalizados sobre a nossa conversa. 
+        Caso queira receber novos conteúdos, basta digitar o número com DDD que eu anoto aqui, caso não, basta dizer **não**, que continuamos nossa conversa sem que você seja identificado.
+      channel: "socketio"
+    - text: >
+        Sua opinião é muito importante para o nosso projeto e por isso eu gostaria de pedir o seu número de telefone. 
+        Com ele, conseguiremos mais força no combate à desinformação e poderemos te enviar conteúdos personalizados sobre a nossa conversa. 
+        Caso queira receber novos conteúdos, basta digitar o número que eu anoto aqui, caso não, basta dizer não, que continuamos nossa conversa sem que você seja identificado.
   utter_got_phone_number:
-    - text: Já anotei aqui o seu telefone, obrigada 😉
+    - text: Já anotei aqui o seu telefone, obrigada pela confiança 😉. Tenho mais alguns comentários que gostaria da sua opinião.
   utter_user_want_anonymous:
     - text: Beleza, vamos prosseguir!
   utter_vote_received:

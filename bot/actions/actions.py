@@ -95,6 +95,7 @@ class ActionSetupConversation(Action):
         profile_phone_number = API.get_profile(token)
         if profile_phone_number:
             return profile_phone_number
+        return None
 
 
 class ActionFollowUpForm(Action):

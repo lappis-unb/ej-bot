@@ -13,7 +13,7 @@ stories:
   - slot_was_set:
     - current_channel_info
   - action: action_get_conversation_info
-  - action: utter_show_usage_terms
+  - action: utter_introduce_ej
   - action: utter_show_topic_of_discussion
   - slot_was_set:
     - conversation_id
@@ -23,8 +23,6 @@ stories:
 
 - story: User agree to use phone number during conversation
   steps:
-  - action: utter_ask_phone_number_again
-  - action: utter_send_phone_number
   - user: |
       [61981178174](regex_phone_number)
     intent: phone_number
@@ -34,6 +32,7 @@ stories:
     - regex_phone_number
   - slot_was_set:
     - conversation_id
+  - action: utter_got_phone_number
   - action: action_setup_conversation
   - action: vote_form
   - active_loop: vote_form
@@ -41,13 +40,12 @@ stories:
 
 - story: User want to participate without phone number
   steps:
-  - action: utter_ask_phone_number_again
-  - action: utter_send_phone_number
   - user: |
       não
     intent: disagree
   - slot_was_set:
     - conversation_id
+  - action: utter_user_want_anonymous
   - action: action_setup_conversation
   - action: vote_form
   - active_loop: vote_form
@@ -55,8 +53,6 @@ stories:
 
 - story: User provide invalid phone number with value aaaaaa 
   steps:
-  - action: utter_ask_phone_number_again
-  - action: utter_send_phone_number
   - user: |
       aaaaaa
     intent: phone_number
@@ -74,11 +70,8 @@ stories:
   - action: action_get_conversation_info
   - slot_was_set:
     - conversation_id
-  - action: utter_show_usage_terms
   - action: utter_show_topic_of_discussion
-  - action: action_setup_conversation
-  - action: vote_form
-  - active_loop: vote_form
+  - checkpoint: starts_voting
 
 - story: User wants help
   steps:
@@ -94,7 +87,7 @@ stories:
     intent: start_with_conversation_id
   - action: action_set_channel_info
   - action: action_get_conversation_info
-  - action: utter_show_usage_terms
+  - action: utter_introduce_ej
   - action: utter_show_topic_of_discussion
   - slot_was_set:
     - conversation_id: null
