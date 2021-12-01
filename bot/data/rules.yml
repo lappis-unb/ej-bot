@@ -10,21 +10,6 @@ rules:
       - action: utter_finish
       - active_loop: null
       - active_loop: action_restart
-
-  - rule: Set conversation id for webchat
-    steps:
-      - intent: url
-      - slot_was_set:
-        - url
-      - action: utter_introduce_ej
-      - action: action_get_conversation_info
-      - slot_was_set:
-        - conversation_id
-      - action: utter_show_usage_terms
-      - action: utter_show_topic_of_discussion
-      - action: action_setup_conversation
-      - action: vote_form
-      - active_loop: vote_form
       
   - rule: Help command
     steps:
