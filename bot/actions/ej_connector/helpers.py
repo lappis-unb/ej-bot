@@ -4,7 +4,7 @@ from .api import API
 
 class VotingHelper:
 
-    VALID_VOTE_VALUES = ["Concordar", "Discordar", "Pular", "1", "-1", "0"]
+    VALID_VOTE_VALUES = ["Concordar", "Discordar", "Pular", "1", "0", "2"]
 
     def __init__(self, vote_slot_value, tracker):
         self.vote_slot_value = vote_slot_value
