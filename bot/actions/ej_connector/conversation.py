@@ -7,10 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class ConversationController:
-    unsupported_buttons_channels_explain_utter = {
-        "twilio": "utter_explain_no_button_participation",
-    }
-
     def __init__(self, tracker, token=None):
         self.conversation_id = tracker.get_slot("conversation_id")
         self.token = tracker.get_slot("ej_user_token") or token
@@ -104,5 +100,9 @@ class ConversationAPI:
     def get_missing_comments(self, statistics):
         return statistics["missing_votes"]
 
-    def get_comment_title(self, comment_content, current_comment, total_comments):
+    def get_comment_title(
+        self, comment_content, current_comment, total_comments, tracker
+    ):
+        if tracker.get_latest_input_channel() == "twilio":
+            return f"{'*'+comment_content['content']+'*'} \n O que você acha disso ({current_comment}/{total_comments})?"
         return f"{comment_content['content']} \n O que você acha disso ({current_comment}/{total_comments})?"

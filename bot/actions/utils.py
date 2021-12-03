@@ -20,7 +20,7 @@ def get_comment_utter(metadata, comment_title, channel):
     return get_buttons_utter(comment_title)
 
 
-WHATSAPP_VT = "\n\n1. Concordar\n-1. Discordar\n0. Pular"
+WHATSAPP_VT = "\n\n- Responda *1* para *concordar*;\n- Responda *2* para *discordar*;\n- Ou responda *0* para *pular* um comentário."
 
 
 def get_buttons_utter(comment_title):

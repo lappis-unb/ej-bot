@@ -56,9 +56,6 @@ class ActionSetupConversation(Action):
                 self.set_response_to_participation(
                     conversation_controller, user, profile_phone_number
                 )
-                self.dispatch_explain_participation(
-                    tracker.get_slot("current_channel_info"), dispatcher
-                )
             except EJCommunicationError:
                 return self.dispatch_communication_error_with_ej(dispatcher)
         return self.response
@@ -67,13 +64,6 @@ class ActionSetupConversation(Action):
         dispatcher.utter_message(template="utter_ej_communication_error")
         dispatcher.utter_message(template="utter_error_try_again_later")
         return [FollowupAction("action_session_start")]
-
-    def dispatch_explain_participation(self, channel_info_slot, dispatcher):
-        channels_without_button = (
-            ConversationController.unsupported_buttons_channels_explain_utter
-        )
-        if channel_info_slot in channels_without_button:
-            dispatcher.utter_message(template="utter_explain_no_button_participation")
 
     def set_response_to_participation(
         self, conversation_controller, user, profile_phone_number
@@ -169,7 +159,7 @@ class ActionAskVote(Action):
         try:
             metadata = tracker.latest_message.get("metadata")
             self.set_response_to_next_comment(
-                dispatcher, metadata, conversation_controller, channel
+                dispatcher, metadata, conversation_controller, channel, tracker
             )
         except EJCommunicationError:
             return ConversationController.dispatch_errors(dispatcher, FollowupAction)
@@ -177,16 +167,18 @@ class ActionAskVote(Action):
         return self.response
 
     def set_response_to_next_comment(
-        self, dispatcher, metadata, conversation_controller, channel
+        self, dispatcher, metadata, conversation_controller, channel, tracker
     ):
         statistics = conversation_controller.api.get_participant_statistics()
         total_comments = conversation_controller.api.get_total_comments(statistics)
         current_comment = conversation_controller.api.get_current_comment(statistics)
         comment = conversation_controller.api.get_next_comment()
         comment_title = conversation_controller.api.get_comment_title(
-            comment, current_comment, total_comments
+            comment,
+            current_comment,
+            total_comments,
+            tracker,
         )
-
         message = get_comment_utter(metadata, comment_title, channel)
 
         if type(message) is str:
@@ -224,7 +216,7 @@ class ValidateVoteForm(FormValidationAction):
     all comments from the conversation are already voted on.
 
     The followed logic is:
-        - If user value is one of : "Concordar", "Discordar, "Pular", 0, 1, -1
+        - If user value is one of : "Concordar", "Discordar, "Pular", 0, 1, 2
         a vote is computed
         - If user value is PARAR, it exists from the loop
         - If user value is not any of these, it is considered as a new comment, that is sent to EJ
