@@ -37,6 +37,7 @@ nlu:
   - intent: disagree
     examples: |
       - não
+      - nao
       - nunca
       - jamais
       - discordo
