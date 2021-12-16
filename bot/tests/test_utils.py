@@ -9,7 +9,7 @@ import unittest
 
 class UtilsTest(unittest.TestCase):
     def test_vote_values_list(self):
-        values = ["Concordar", "Discordar", "Pular", "1", "-1", "0"]
+        values = ["Concordar", "Discordar", "Pular", "1", "0", "2"]
         assert values == VotingHelper.VALID_VOTE_VALUES
 
     def test_stop_participation(self):
@@ -84,9 +84,9 @@ class UtilsTest(unittest.TestCase):
         channel = "twilio"
         utter = get_comment_utter(metadata, message, channel)
 
-        assert "Concordar" in utter
-        assert "Discordar" in utter
-        assert "Pular" in utter
+        assert "- Responda *1* para *concordar*" in utter
+        assert "- Responda *2* para *discordar*" in utter
+        assert "- Ou responda *0* para *pular* um comentário." in utter
         assert message in utter
 
     def test_remove_special(self):

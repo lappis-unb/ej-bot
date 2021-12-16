@@ -126,10 +126,18 @@ responses:
   utter_show_topic_of_discussion:
     - text: |
         Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:
+        *{conversation_text}*
+
+        Vou te mandar o que me responderam e gostaria da sua opinião:
+      channel: "twilio"
+
+    - text: >
+        Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:
         **{conversation_text}**
 
         Vou te mandar o que me responderam e gostaria da sua opinião:
       channel: "socketio"
+      
     - text: |
         Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:
         {conversation_text}
@@ -196,22 +204,8 @@ responses:
     - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
     - text: Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.  Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
-  utter_explain_no_button_participation:
-    - text: > 
-        Para começar, basta ler os comentários e logo depois:
-
-        - Digite 1 para concordar
-
-        - Digite -1 para discordar
-
-        - Ou digite 0 para pular um comentário
-  utter_explain_button_participation:
-    - text: >
-        Clique nos botões a seguir para concordar, discordar ou pular comentários 😊
-
   utter_no_selected_conversation:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
-
   utter_invite_user_to_join_group:
     - text: >
         Estou gostando bastante de te ouvir e gostaria de saber se você tem interesse em fazer parte da nossa comunidade. Lá, publicamos conteúdos personalizados sobre os assuntos que estamos conversando e você poderá interagir com outras pessoas. Para aceitar o convite, clique no link, e você será direcionado para o nosso grupo no Telegram:
