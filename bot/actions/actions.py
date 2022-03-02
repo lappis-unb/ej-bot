@@ -82,9 +82,9 @@ class ActionSetupConversation(Action):
         ]
 
     def get_profile_phone_number(self, token):
-        profile_phone_number = API.get_profile(token)
+        profile_phone_number = API.get_profile_phone_number(token)
         if profile_phone_number:
-            return profile_phone_number
+            return profile_phone_number.get("phone_number")
         return None
 
 
