@@ -27,6 +27,8 @@ intents:
       use_entities: true
   - start_with_conversation_id:
       use_entities: true
+  - add_new_comment:
+      use_entities: true
 entities:
   - url
   - current_channel_info
@@ -56,7 +58,7 @@ slots:
   conversation_id:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: true
+    auto_fill: false
     influence_conversation: true
   conversation_text:
     type: rasa.shared.core.slots.TextSlot
@@ -143,6 +145,10 @@ responses:
         {conversation_text}
 
         Vou te mandar o que me responderam e gostaria da sua opinião:
+  utter_ask_to_add_comment:
+    - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta? Se sim, qual?
+  utter_ask_again_to_add_comment:
+    - text: Gostaria de enviar outra opinião? Se sim, qual?
   utter_ask_phone_number:
     - text: Você poderia me passar seu telefone com DDD?
   utter_ask_phone_number_again:
@@ -176,9 +182,9 @@ responses:
   utter_sent_comment:
     - text: Certo, já anotei seu comentário, muito obrigada pela sua contribuição!!
   utter_send_comment_error:
-    - text: >
-        Hmmm não sei o que aconteceu. 
-        Eu não consegui salvar seu comentário
+    - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
+  utter_comment_fallback:
+    - text: Desculpe, não foi possível reconhecer o comentário 😕.
   utter_ask_send_comment_again:
     - text: Faz assim, tenta me mandar ele novamente mais tarde, pode ser?!
   utter_voted_all_comments:
@@ -225,6 +231,8 @@ actions:
   - action_get_conversation_info
   - action_set_channel_info
   - action_set_conversation_slots
+  - action_set_new_comment
+  - action_customized_fallback
 
 forms:
   vote_form:

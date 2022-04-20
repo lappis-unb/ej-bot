@@ -59,6 +59,10 @@ class ConversationController:
         return str(vote_slot_value).upper() == "PAUSAR PARA ENGAJAR"
 
     @staticmethod
+    def pause_to_ask_comment(vote_slot_value):
+        return str(vote_slot_value).upper() == "PAUSA PARA PEDIR COMENTARIO"
+
+    @staticmethod
     def dispatch_errors(dispatcher, FollowupAction):
         dispatcher.utter_message(template="utter_ej_communication_error")
         dispatcher.utter_message(template="utter_error_try_again_later")
@@ -78,6 +82,13 @@ class ConversationController:
         missing_comments = self.api.get_missing_comments(statistics)
         engage_link = EngageFactory.bot_has_engage_link(bot_name)
         return engage_link and (missing_comments == 0) and not telegram_engagement_group
+
+    def time_to_ask_to_add_comment(self):
+        total_comments = self.api.get_total_comments(self.statistics)
+        current_comment = self.api.get_current_comment(self.statistics)
+        return (total_comments >= 4 and current_comment == 4) or (
+            total_comments < 4 and current_comment == 2
+        )
 
 
 class ConversationAPI:
