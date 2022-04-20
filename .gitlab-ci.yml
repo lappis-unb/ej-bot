@@ -19,7 +19,7 @@ check_style_with_black:
   before_script:
     - export PATH=/app/bin/:/app/:$PATH
     - export PYTHONPATH=/app/:$PYTHONPATH
-    - pip install -t /app/ black==21.5b2
+    - pip install -t /app/ black==22.3.0
   stage: style
   script:
     - black --check .

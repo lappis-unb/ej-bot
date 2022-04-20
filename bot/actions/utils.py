@@ -35,3 +35,10 @@ def get_buttons_utter(comment_title):
 def get_livechat_utter(comment_title):
     # channel is livechat, can't render buttons
     return {"text": comment_title}
+
+
+def get_last_action(tracker):
+    for event in reversed(tracker.events):
+        if event.get("name") not in ["action_listen", None, "conversation_id"]:
+            return event.get("name")
+    return None

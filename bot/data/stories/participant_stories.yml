@@ -104,6 +104,31 @@ stories:
       - action: utter_got_phone_number
       - checkpoint: starts_voting
 
+  - story: Ask comment in the middle of voting
+    steps:
+      - intent: add_new_comment
+      - action: action_set_new_comment
+      - action: utter_ask_again_to_add_comment
+      - intent: add_new_comment
+      - action: action_set_new_comment
+      - action: utter_ask_again_to_add_comment
+      - intent: add_new_comment
+      - action: action_set_new_comment
+      - checkpoint: starts_voting
+
+  - story: participant dont want to send comment
+    steps:
+      - action: utter_ask_to_add_comment
+      - intent: disagree
+      - checkpoint: starts_voting
+
+  - story: participant dont want to send more comments
+    steps:
+      - action: utter_ask_again_to_add_comment
+      - intent: disagree
+      - checkpoint: starts_voting
+    
+
   - story: Goodbye happy path
     steps:
       - action: utter_thanks_participation
