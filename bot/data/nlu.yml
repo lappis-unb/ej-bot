@@ -138,17 +138,12 @@ nlu:
 
   - intent: out_of_context
     examples: |
-      - Queria pedir uma pizza
       - Como tá o tempo?
       - Como vc tá?
-      - você é um robô?
-      - Fala alguma coisa
       - asdfgasd
       - oque
       - que
       - 4 + 2 = ?
-      - quanto é 4+2?
-      - quanto é 3 + 2?
       - ahn
       - opa
       - ops
@@ -157,3 +152,45 @@ nlu:
       - xpto
       - ihuul
       - uhuul
+  
+  - intent: add_new_comment
+    examples: |
+      - a uva passa deve ser banida da ceia de natal
+      - como reduzir o aquecimento global
+      - opinião sobre a retirada do local do jovem de expressão
+      - conseguimos fazer enquete com o novo Bot do telegram
+      - diminuir a defesagem no ensino fundamental
+      - uma nova educação
+      - a pencillabs proporciona um bom ambiente de trabalho para os seus colaboradores
+      - Os alunos devem ter uma palavra a dizer sobre o que eles querem aprender
+      - Precisamos de mais aulas de artes e ofícios
+      - Temos que incentivar o uso da tecnologia e ensinar programação
+      - Nosso currículo deve ser aberto e focado em problemas reais
+      - As pessoas devem ter poder direto para decidir os assuntos da comunidade
+      - Precisamos de melhores sistemas de votação
+      - Precisamos proibir as empresas de financiar eleições
+      - Deve ser funcional para controlar os efeitos colaterais
+      - Tem que rodar no navegador
+      - Eu quero uma linguagem digitada estaticamente
+      - Deve ser dinâmico, mas aceita dicas de tipo
+      - Eu quero uma linguagem puramente Orientada a Objetos
+      - Queremos criar a melhor linguagem de programação
+      - Queremos opções de passeios e atividades mais voltadas às crianças pequenas
+      - O rio é limpo e bonito, mas sentimos falta de ter mais atividades para as crianças e uma estrutura melhor para pesca, natação etc
+      - Para servir ao cidadão do futuro, os serviços públicos precisam estar disponíveis em plataformas de acesso simples, rápido e fácil.
+      - Sentimos falta de mais opções de restaurantes, cafés e de gastronomia na cidade
+      - Os passeios e atrações de aventura geralmente são pacotes em grupos. Foi difícil pra quem está sozinho
+      - adicionar comentario
+      - tentar enviar esse comentario
+      - qualquer coisa
+      - enviar comentario
+      - asdgfqwe
+      - asdf 1
+      - tentar enviar comentario 2
+      - tentar enviar comentario 100
+      - 123523324
+      - Estando disponíveis na palma da mão, ou seja, no celular.
+      - Existe algo na região ?
+      - você é um robô?
+      - Fala alguma coisa
+      - esta é uma revisão 1

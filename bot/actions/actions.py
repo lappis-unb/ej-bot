@@ -19,10 +19,63 @@ from .ej_connector import API, EJCommunicationError
 from .ej_connector.user import User
 from .ej_connector.constants import MENSSAGE_CHANNELS
 from .utils import *
-from .ej_connector.helpers import VotingHelper, EngageFactory
+from .ej_connector.helpers import VotingHelper, EngageFactory, SendCommentHelper
 from .ej_connector.conversation import ConversationController
 
 logger = logging.getLogger(__name__)
+
+
+class ActionSetNewComment(Action):
+    def name(self):
+        return "action_set_new_comment"
+
+    def run(self, dispatcher, tracker, domain):
+        logger.debug("action ActionSetNewComment called")
+
+        conversation_controller = ConversationController(tracker)
+        comment_helper = SendCommentHelper(tracker)
+        self.response = []
+
+        try:
+            last_intent = tracker.latest_message["intent"].get("name")
+            if last_intent == "add_new_comment":
+                self.dispatch_save_participant_comment(
+                    dispatcher,
+                    comment_helper,
+                    conversation_controller,
+                )
+        except EJCommunicationError:
+            return self.dispatch_communication_error_with_ej(dispatcher)
+
+        return self.response
+
+    def dispatch_save_participant_comment(
+        self,
+        dispatcher,
+        comment_helper,
+        conversation_controller,
+    ):
+        try:
+            comment_helper.send_new_comment(conversation_controller.conversation_id)
+            dispatcher.utter_message(template="utter_sent_comment")
+        except Exception:
+            dispatcher.utter_message(template="utter_send_comment_error")
+
+
+class ActionCustomizedFallback(Action):
+    def name(self):
+        return "action_customized_fallback"
+
+    def run(self, dispatcher, tracker, domain):
+        logger.debug("action ActionCustomizedFallback called")
+
+        if get_last_action(tracker) in [
+            "utter_ask_to_add_comment",
+            "utter_ask_again_to_add_comment",
+        ]:
+            dispatcher.utter_message(template="utter_comment_fallback")
+        else:
+            dispatcher.utter_message(template="utter_help")
 
 
 class ActionSetupConversation(Action):
@@ -82,9 +135,9 @@ class ActionSetupConversation(Action):
         ]
 
     def get_profile_phone_number(self, token):
-        profile_phone_number = API.get_profile(token)
+        profile_phone_number = API.get_profile_phone_number(token)
         if profile_phone_number:
-            return profile_phone_number
+            return profile_phone_number.get("phone_number")
         return None
 
 
@@ -98,6 +151,7 @@ class ActionFollowUpForm(Action):
         self.response = []
 
         self.dispatch_if_stop_participation(dispatcher, vote)
+        self.set_response_to_ask_comment(vote)
         self.set_response_to_ask_phone_number_again(vote)
         self.set_response_to_starts_new_conversation(vote)
         self.set_response_to_continue_conversation(vote)
@@ -113,6 +167,13 @@ class ActionFollowUpForm(Action):
             self.response = [
                 SlotSet("vote", None),
                 FollowupAction("utter_ask_phone_number_again"),
+            ]
+
+    def set_response_to_ask_comment(self, vote):
+        if ConversationController.pause_to_ask_comment(vote):
+            self.response = [
+                SlotSet("vote", None),
+                FollowupAction("utter_ask_to_add_comment"),
             ]
 
     def set_response_to_starts_new_conversation(self, vote):
@@ -154,6 +215,7 @@ class ActionAskVote(Action):
         conversation_controller = ConversationController(tracker)
         self.response = []
         channel = tracker.get_latest_input_channel()
+
         if not conversation_controller.user_have_comments_to_vote():
             return self.dispatch_user_vote_on_all_comments(dispatcher)
         try:
@@ -242,30 +304,22 @@ class ValidateVoteForm(FormValidationAction):
         voting_helper = VotingHelper(slot_value, tracker)
         conversation_controller = ConversationController(tracker)
         self.dispatch_save_participant_vote(tracker, dispatcher, voting_helper)
-        self.dispatch_save_participant_comment(
-            dispatcher, voting_helper, conversation_controller
-        )
         self.dispatch_invite_to_join_group(tracker, dispatcher, conversation_controller)
-        if conversation_controller.time_to_ask_phone_number_again():
-            return VotingHelper.pause_voting_to_ask_phone_number()
+
+        if conversation_controller.time_to_ask_to_add_comment():
+            return VotingHelper.pause_to_ask_comment()
+
+        # if conversation_controller.time_to_ask_phone_number_again():
+        #    return VotingHelper.pause_voting_to_ask_phone_number()
+
         if conversation_controller.intent_starts_new_conversation():
             return ConversationController.starts_conversation_from_another_link()
 
-        if voting_helper.vote_is_valid() or voting_helper.user_enters_a_new_comment():
+        if voting_helper.vote_is_valid():
             return self.dispatch_show_next_comment(
                 dispatcher, conversation_controller, voting_helper
             )
         dispatcher.utter_message(template="utter_out_of_context")
-
-    def dispatch_save_participant_comment(
-        self, dispatcher, voting_helper, conversation_controller
-    ):
-        if voting_helper.user_enters_a_new_comment():
-            try:
-                voting_helper.send_new_comment(conversation_controller.conversation_id)
-                dispatcher.utter_message(template="utter_sent_comment")
-            except Exception:
-                dispatcher.utter_message(template="utter_send_comment_error")
 
     def dispatch_save_participant_vote(self, tracker, dispatcher, voting_helper):
         if voting_helper.vote_is_valid():

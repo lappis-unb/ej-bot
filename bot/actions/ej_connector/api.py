@@ -122,7 +122,7 @@ class API:
         return response
 
     @staticmethod
-    def get_profile(token):
+    def get_profile_phone_number(token):
         try:
             response = requests.get(PHONE_NUMBER_URL, headers=auth_headers(token))
             return response.json()
