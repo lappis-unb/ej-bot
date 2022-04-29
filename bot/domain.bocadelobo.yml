@@ -52,7 +52,7 @@ slots:
   conversation_id:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: false
+    auto_fill: true
     influence_conversation: true
   conversation_text:
     type: rasa.shared.core.slots.TextSlot
