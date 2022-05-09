@@ -1,5 +1,8 @@
 from requests.models import requote_uri
 from .api import API
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SendCommentHelper:
@@ -28,9 +31,11 @@ class VotingHelper:
         return str(self.vote_slot_value) in VotingHelper.VALID_VOTE_VALUES
 
     def new_vote(self, comment_id):
-        return API.send_comment_vote(
+        response = API.send_comment_vote(
             comment_id, self.vote_slot_value, self.channel, self.token
         )
+        logging.debug(response)
+        return response
 
     @staticmethod
     def continue_voting():

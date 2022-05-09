@@ -17,7 +17,6 @@ from rasa_sdk.types import DomainDict
 
 from .ej_connector import API, EJCommunicationError
 from .ej_connector.user import User
-from .ej_connector.constants import MENSSAGE_CHANNELS
 from .utils import *
 from .ej_connector.helpers import VotingHelper, EngageFactory, SendCommentHelper
 from .ej_connector.conversation import ConversationController
