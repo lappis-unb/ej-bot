@@ -10,7 +10,7 @@ CONVERSATIONS_URL = (
     f"{API_URL}/conversations/?is_promoted=true&participation_source=bot"
 )
 PHONE_NUMBER_URL = f"{API_URL}/profiles/phone-number/"
-REGISTRATION_URL = f"{HOST}/rest-auth/registration/"
+REGISTRATION_URL = f"{API_URL}/users/"
 VOTES_URL = f"{API_URL}/votes/"
 COMMENTS_URL = f"{API_URL}/comments/"
 MENSSAGE_CHANNELS = {"telegram": "telegram", "whatsapp": "twilio"}

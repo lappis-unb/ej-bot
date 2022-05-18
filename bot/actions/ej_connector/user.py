@@ -47,7 +47,7 @@ class User(object):
                 data=self.serialize(),
                 headers=HEADERS,
             )
-            self.token = response.json()["key"]
+            self.token = response.json()["token"]
         except:
             raise EJCommunicationError
 
