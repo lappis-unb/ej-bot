@@ -46,12 +46,12 @@ class APIClassTest(unittest.TestCase):
 
     @patch("actions.ej_connector.user.requests.post")
     def test_create_user_in_ej_with_rasa_id(self, mock_post):
-        response_value = {"key": "key_value"}
+        response_value = {"token": "key_value"}
         mock_post.return_value = Mock(ok=True)
         mock_post.return_value.json.return_value = response_value
         user = User("1234", "David", "61999999999")
         user.authenticate("phone_number")
-        assert user.token == response_value["key"]
+        assert user.token == response_value["token"]
         assert user.phone_number == "61999999999"
         assert user.name == "David"
 
