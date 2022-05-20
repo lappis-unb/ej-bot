@@ -4,13 +4,17 @@ nlu:
     examples: |
       - start
       - start [433](conversation_id)
+      - start [500](conversation_id)
+      - start [2](conversation_id)
+      - start [13](conversation_id)
       - start [56](conversation_id)
       - start [33](conversation_id)
-      - start [dois](conversation_id)
       - start [23](conversation_id)
       - start [7](conversation_id)
       - start [1](conversation_id)
-      - start [quatro](conversation_id)
+      - start [83](conversation_id)
+      - start [117](conversation_id)
+      - start [999](conversation_id)
 
   - intent: agree
     examples: |
@@ -60,45 +64,6 @@ nlu:
       - próxima pergunta
       - Pular
   
-  - regex: regex_phone_number
-    examples: |
-      - ^\(?\d{2}\)?[\s-]?[\s9]?\d{4}-?\d{4}$
-
-  # https://rasa.com/docs/rasa/components/#regexentityextractor
-  - intent: phone_number
-    examples: |
-      - [61992852776](regex_phone_number)
-      - [(61)998476538](regex_phone_number)
-      - [(62)991287365](regex_phone_number)
-      - [(11)994028900](regex_phone_number)
-      - [1140028922](regex_phone_number)
-      - [8933789902](regex_phone_number)
-      - [61992337635](regex_phone_number)
-      - [1140028922](regex_phone_number)
-      - [33998312511](regex_phone_number)
-      - [11999654232](regex_phone_number) 
-      - [61992852776](regex_phone_number)
-      - [61 992852776](regex_phone_number)
-      - [11 999654232](regex_phone_number) 
-      - [33 998312511](regex_phone_number)
-      - [(11) 994028900](regex_phone_number)
-      - [(62) 991287365](regex_phone_number)
-      - 123
-      - 111111
-      - asdhja
-      - aaaaaa
-      - telefone
-      - 0000000000
-      - adahsudsahdu
-      - nao interessa
-      - 68numero
-      - 54554354343543453535353534
-      - rsrsrs
-      - kkkk
-      - hahaha
-      - xyzblafuuuu
-
-
   - intent: stop
     examples: |
       - para
@@ -119,9 +84,19 @@ nlu:
   - intent: url
     examples: |
       - https://cidadedemocratica.org.br
-      - https://www.google.com
+      - https://sitedoparceiro.com.br/paginadecoleta/ej
+      - https://sitedoparceiro.org.br/paginadecoleta
       - http://localhost:8001
+      - http://localhost:8002
+      - http://localhost:8000
       - http://other.com.br/
+      - http://localhost:8000/contatopencillabscombr/conversations/74/contato/tools/chatbot/webchat-preview 
+      - http://localhost:8000/ucccampanhagmailcom/conversations/90/contato/tools/chatbot/webchat-preview 
+      - http://localhost:8000/davidcarloscombr/conversations/101/contato/tools/chatbot/webchat-preview 
+      - http://localhost:8000/ucccampanhagmailcom/conversations/200/contato/tools/chatbot/webchat-preview 
+      - https://ejparticipe.org/ucccampanhagmailcom/conversations/200/contato/tools/chatbot/webchat-preview 
+      - https://ejplatform.pencillabs.com.br/ucccampanhagmailcom/conversations/200/contato/tools/chatbot/webchat-preview 
+      - https://ejplatform.pencillabs.com.br/davidcarloscombr/conversations/101/contato/tools/chatbot/webchat-preview 
 
   - intent: help
     examples: |
@@ -184,13 +159,20 @@ nlu:
       - tentar enviar esse comentario
       - qualquer coisa
       - enviar comentario
-      - asdgfqwe
-      - asdf 1
       - tentar enviar comentario 2
       - tentar enviar comentario 100
-      - 123523324
       - Estando disponíveis na palma da mão, ou seja, no celular.
       - Existe algo na região ?
       - você é um robô?
       - Fala alguma coisa
       - esta é uma revisão 1
+      - Acho que está correto
+      - Acho que isso deveria ser melhor explicado
+      - Eu acho que que isso deveria ser feito
+      - Eu não acho que isso deveria ser feito
+      - Acredito que isso deveria ser feito
+      - Acredito que não temos condições de fazer isso
+      - Imagino que isso deveria ser feito
+      - Não é possível fazer isso
+      - Não concordo que com esse assunto 
+      - Essa conversa é maravilhosa

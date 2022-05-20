@@ -13,10 +13,9 @@ class User(object):
     For telegram channel, tracker_sender_id is the unique ID from the user talking with the bot.
     """
 
-    def __init__(self, tracker_sender_id, name="Participante anônimo", phone_number=""):
+    def __init__(self, tracker_sender_id, name="Participante anônimo"):
         self.name = name
         self.display_name = ""
-        self.phone_number = self.parse_phone_number(phone_number)
         self.tracker_sender_id = tracker_sender_id
         self.email = f"{remove_special(tracker_sender_id)}-rasa@mail.com"
         self.password = f"{remove_special(tracker_sender_id)}-rasa"
@@ -25,18 +24,12 @@ class User(object):
     def serialize(self):
         return json.dumps(self.__dict__)
 
-    def authenticate(self, last_intent):
+    def authenticate(self):
         """
         Differentiate user type of login (using phone number or anonymous)
         providing the current flow for conversation
         """
-        if self.phone_number and last_intent == "phone_number":
-            utter_name = "utter_got_phone_number"
-        else:
-            utter_name = "utter_user_want_anonymous"
-
         self.get_or_create_user()
-        self.authenticate_utter = utter_name
 
     def get_or_create_user(self):
         logger.debug("CREATING NEW USER")
@@ -47,16 +40,6 @@ class User(object):
                 data=self.serialize(),
                 headers=HEADERS,
             )
-            self.token = response.json()["key"]
+            self.token = response.json()["token"]
         except:
             raise EJCommunicationError
-
-    def parse_phone_number(self, phone_number):
-        if phone_number:
-            return (
-                phone_number.replace("(", "")
-                .replace(")", "")
-                .replace("-", "")
-                .replace(" ", "")
-            )
-        return ""

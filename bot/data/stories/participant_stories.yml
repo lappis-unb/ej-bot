@@ -8,11 +8,10 @@ stories:
       - slot_was_set:
         - url
       - action: utter_introduce_ej
-      - action: action_get_conversation_info
+      - action: action_setup_conversation
       - slot_was_set:
         - conversation_id
       - action: utter_show_topic_of_discussion
-      - action: action_setup_conversation
       - checkpoint: starts_voting
 
   - story: participant join conversation on telegram
@@ -25,7 +24,7 @@ stories:
       - action: action_set_channel_info
       - slot_was_set:
         - current_channel_info: 'telegram'
-      - action: action_get_conversation_info
+      - action: action_setup_conversation
       - action: utter_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
@@ -40,21 +39,11 @@ stories:
       - action: action_set_channel_info
       - slot_was_set:
         - current_channel_info: 'twilio'
-      - action: action_get_conversation_info
+      - action: action_setup_conversation
       - action: utter_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
       # It REALLY needed to rewrite the role story for whatsapp tests
-
-  - story: participant provides valid phone number
-    steps:
-      - action: utter_send_phone_number
-      - intent: phone_number
-        entities:
-          - regex_phone_number
-      - slot_was_set:
-        - regex_phone_number
-      - checkpoint: starts_voting
 
   - story: participant joins a invalid conversation
     steps:
@@ -64,57 +53,13 @@ stories:
       - action: utter_advise_participant_to_join_again
       - action: action_restart
 
-  - story: participant provides invalid phone number
-    steps:
-      - action: utter_send_phone_number
-      - intent: phone_number
-      - slot_was_set:
-        - regex_phone_number: null
-      - action: utter_invalid_phone_number
-      - action: utter_ask_phone_number
-      - intent: phone_number
-        entities:
-          - regex_phone_number
-      - action: utter_got_phone_number
-      - checkpoint: starts_voting
-
-  - story: participant dont want to inform phone number
-    steps:
-      - action: utter_ask_phone_number_again
-      - intent: disagree
-      - action: utter_user_want_anonymous
-      - checkpoint: starts_voting
-
   - story: starts voting form
     steps:
       - checkpoint: starts_voting
       - slot_was_set:
         - conversation_id
-      - action: action_setup_conversation
       - action: vote_form
       - active_loop: vote_form
-
-  - story: Ask phone number in the middle of voting
-    steps:
-      - intent: phone_number
-        entities:
-          - regex_phone_number
-      - slot_was_set:
-        - regex_phone_number
-      - action: utter_got_phone_number
-      - checkpoint: starts_voting
-
-  - story: Ask comment in the middle of voting
-    steps:
-      - intent: add_new_comment
-      - action: action_set_new_comment
-      - action: utter_ask_again_to_add_comment
-      - intent: add_new_comment
-      - action: action_set_new_comment
-      - action: utter_ask_again_to_add_comment
-      - intent: add_new_comment
-      - action: action_set_new_comment
-      - checkpoint: starts_voting
 
   - story: participant dont want to send comment
     steps:
@@ -122,12 +67,12 @@ stories:
       - intent: disagree
       - checkpoint: starts_voting
 
-  - story: participant dont want to send more comments
+  - story: participant want to send comment
     steps:
-      - action: utter_ask_again_to_add_comment
-      - intent: disagree
+      - action: utter_ask_to_add_comment
+      - intent: add_new_comment
+      - action: action_set_new_comment
       - checkpoint: starts_voting
-    
 
   - story: Goodbye happy path
     steps:

@@ -1,36 +1,44 @@
-from requests.models import requote_uri
-from .api import API
+import logging
+import json
+import requests
+
+from .constants import *
+from .routes import auth_headers
+
+logger = logging.getLogger(__name__)
 
 
-class SendCommentHelper:
-    def __init__(self, tracker):
-        self.token = tracker.get_slot("ej_user_token")
-        self.tracker = tracker
-
-    def send_new_comment(self, conversation_id):
-        text = self.tracker.latest_message["text"]
-        if len(text) > 3:
-            return API.send_new_comment(conversation_id, text, self.token)
-        else:
-            raise Exception
-
-
-class VotingHelper:
-
-    VALID_VOTE_VALUES = ["Concordar", "Discordar", "Pular", "1", "0", "2"]
+class Vote:
+    """Vote controls voting requests to EJ API and some validations during bot execution."""
 
     def __init__(self, vote_slot_value, tracker):
         self.vote_slot_value = vote_slot_value
         self.channel = tracker.get_latest_input_channel()
         self.token = tracker.get_slot("ej_user_token")
 
-    def vote_is_valid(self):
-        return str(self.vote_slot_value) in VotingHelper.VALID_VOTE_VALUES
+    def is_valid(self):
+        return str(self.vote_slot_value) in VALID_VOTE_VALUES
 
-    def new_vote(self, comment_id):
-        return API.send_comment_vote(
-            comment_id, self.vote_slot_value, self.channel, self.token
-        )
+    def create(self, comment_id):
+        if self.vote_slot_value in VOTE_CHOICES:
+            choice = VOTE_CHOICES[self.vote_slot_value]
+            body = json.dumps(
+                {
+                    "comment": comment_id,
+                    "choice": choice,
+                    "channel": self.channel,
+                }
+            )
+            try:
+                response = requests.post(
+                    VOTES_URL,
+                    data=body,
+                    headers=auth_headers(self.token),
+                )
+                response = response.json()
+                return response
+            except Exception as e:
+                raise EJCommunicationError
 
     @staticmethod
     def continue_voting():
@@ -73,21 +81,5 @@ class VotingHelper:
         """
         return {"vote": "pausar para engajar"}
 
-    @staticmethod
-    def pause_to_ask_comment():
-        return {"vote": "pausa para pedir comentario"}
-
     def finished_voting(self):
         return {"vote": str(self.vote_slot_value).lower()}
-
-
-class EngageFactory:
-
-    ENGAGE_LINKS = {
-        "DudaDavidBot": "https://t.me/joinchat/rW8Tblsmxk83ZDMx",
-        "BocaDeLoboBot": "https://t.me/abocadelobooficial",
-    }
-
-    @staticmethod
-    def bot_has_engage_link(bot_name):
-        return EngageFactory.ENGAGE_LINKS.get(bot_name)
