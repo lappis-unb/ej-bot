@@ -14,13 +14,16 @@ Dessa forma, o **EJ bot** permite a interação com conversas criadas no servido
 
 Para começar a conversar com a Duda é necessário primeiramente a instalação do docker e docker-compose. **O ambiente de desenvolvimento do bot foi homologado em distribuições linux Debian-like**. Instaladas as dependências necessárias, siga os seguintes passos:
 
-1. Abra quatro terminais;
-2. No primeiro execute o comando `make prepare`, espere o comando finalizar. Ele é responsável por gerar a imagem base para os containers do bot, actions e couch. O `make prepare` usa como padrão o domínio domain.default.yml. Para especificar outro domínio, por exemplo o do boca de lobo, é só especificar o dominio da seguinte forma: `make prepare domain=bocadelobo`;
-3. Após a finalização do comando anterior, suba a api (no segundo terminal): `make run-api`;
-4. Agora, suba o servidor de actions (no terceiro terminal): `make run-actions`;
-5. Agora, subra o webchat (no quarto terminal): `make run-webchat`;
+1. Abra dois terminais;
+2. No primeiro execute o comando `make prepare`, espere o comando finalizar. Ele é responsável por gerar a imagem base para os containers do bot, actions e couch. O `make prepare` usa como padrão o domínio domain.default.yml. Para especificar outro domínio como, por exemplo, o do boca de lobo, basta especificar o dominio da seguinte forma: `make prepare domain=bocadelobo`;
+3. Após a finalização do comando anterior, suba a api (no primeiro terminal): `make run-api`;
+4. Agora, suba o servidor de actions (no segundo terminal): `make run-actions`;
 
-Feito isso, você poderá interagir com bot acessando, no seu browser, o endereço `http://localhost:8001`. Mande um oi pra a Duda, que ela irá trazer comentários da EJ para que você responda. Por padrão, o bot irá se conectar no ambiente de homologação da EJ (https://ejplatform.pencillabs.com.br/). Para alterar esse comportamento, leia a subseção **Canais do Bot**.
+Verifique se o Rasa está rodando acessando `http://localhost:5006`.
+
+Para interagir com o bot no ambiente local é necessário primeiro criar uma conversa na plataforma e adicionar comentários a serem votados.
+Com a conversa criada, acesse a área de ferramentas da conversa em `Ferramentas->Bot de Opinião -> Webchat` e clique em **Iniciar coleta**.
+A EJ irá conectar na instância local do Rasa e iniciar a pesquisa de opinião.
 
 É necessário rodar o comando `make clean` sempre que for trocar de domain para evitar que o bot se perca no fluxo.
 
@@ -33,10 +36,8 @@ São utilizados comandos make para execução de diferentes contextos e ferramen
 | make prepare     | Realiza o build do ambiente e o treinamento do primeiro modelo. Sem especificar o domínio, é utilizado o domínio padrão (domain.default.yml). Para especificar outro domínio, por exemplo o boca de lobo, é necessário especificá-lo da seguinte forma: `make prepare domain=bocadelobo`. No momento, existem dois domínios diferentes, o `default` e o `bocadelobo`.                                                                                                         |
 | make train       | Realiza o treinamento dos modelos. É necessário rodar esse comando sempre que há alterações nos arquivos de domain, nlu, stories, rules ou config.yml. Sem especificar o domínio, é utilizado para o treinamento o domínio padrão (domain.default.yml). Para especificar outro domínio, por exemplo o boca de lobo, é necessário especificá-lo da seguinte forma: `make train domain=bocadelobo`. No momento, existem dois domínios diferentes, o `default` e o `bocadelobo`. |
 | make run-shell   | Abre o bot no terminal para realizar interações no terminal                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| make run-x       | Executa o bot no modo rasa x localmente, que fica disponível em localhost:5002                                                                                                                                                                                                                                                                                                                                                                                                |
 | make run-api     | Executa o bot no modo api, é utilizado para poder rodar instâncias como webchat, telegram e rocketchat. A api fica disponível em localhost:5006                                                                                                                                                                                                                                                                                                                               |
 | make run-actions | Executa a api de custom actions. É essa api que implementa toda a comunicação com a EJ e outros serviços externos ao bot.                                                                                                                                                                                                                                                                                                                                                     |
-| make run-webchat | Executa o bot na versão web, fica disponível em localhost:8001 (requer a execução em paralelo do make run-api).                                                                                                                                                                                                                                                                                                                                                               |
 | make clean       | Remove os containers e limpa o ambiente.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 Para outros detalhes, a listagem e documentação dos comandos make disponíveis pode ser vista com o comando:
@@ -59,7 +60,11 @@ Abaixo, segue em destaque na estrutura de pastas os arquivos que serão mais uti
 ```shell
 -- bot/
     -- actions/
-        - actions.py # onde são declaradas ações realizadas pelo bot que vão além de responder o usuário com texto
+        - actions.py # onde são importadas as classes de Action.
+        - comment_actions.py # Actions responsáveis pelo envio de comentários para a EJ.
+        - vote_actions.py # Actions responsáveis pelo envio de votos para a EJ;
+        - setup_actions.py # Actions responsáveis por requisitar os dados da conversa na EJ;
+        - conversation_actions.py # Actions responsáveis por controlar o fluxo da conversa do usuário;
     -- data/
         - nlu.yml # aqui são definidas as intents, que são as entradas esperadas do usuário
         - rules.yml #
@@ -89,17 +94,9 @@ Realiza o treinamento das modelos
 
 Permite a execução do rasa no modo de api, shell.
 
-## Rasa X
-
-Permite a execução do rasa x, que tem uma ampla gama de ferramentas de desenvolvimento do chatbot, como uma interface de testes, treinamento de modelos, correção de intents e testes com usuários.
-
 ## Duckling
 
 Execute o servidor duckling que extrai entidades como e-mail, valores numéricos e urls
-
-## Webchat
-
-Executa um servidor Nginx, utilizando o arquivo html em `webchat/index.html`.
 
 # Testes
 
@@ -123,17 +120,9 @@ Os testes são executados pela Integração Contínua, e ela está utilizando a 
 
 ## WebChat
 
-Você pode simular uma conversa com o ejBot a partir de um webchat.
+Você pode simular uma conversa com o ejBot a partir de um webchat. Esse canal é integrado diretamente
+na EJ, através da área de ferramentas de uma conversa.
 
-1. Suba o container do nginx que serve a pagina do webchat: `make run-webchat`;
-2. Acesse a pagina em `http://localhost:8001/`;
-
-É provável que você precise retreinar o bot, e recriar os containers da API para que a configuração do canal socketio seja aplicada.
-
-É recomendado abrir uma nova aba quando for reinicializar uma conversa com o Chatbot. Caso o bot não esteja reconhecendo uma intent, é necessário executar os comandos `make clean` e `make train`.
-
-Para que seja possível resgatar dados da EJ, é necessário que o endereço que o webchat está
-hospedado possua uma conexão com a EJ (Rasa Conversation). Para isso, basta ir na EJ, na conversa que queira conectar, e nela a parte de Ferramentas > Rasa Chatbot. Lá deve ser incluido o endereço, nesse caso, `http://localhost:8001/`.
 
 ## Telegram
 
@@ -265,25 +254,6 @@ Existem 3 bots diferentes da duda, cada um de um ambiente diferente. São eles:
 - DudaEjDevBot: ambiente de homologação, que aponta para a instância https://rasadefaultdev.pencillabs.com.br/;
 - DudaEjBot: ambiente de produção, que aponta para a instância https://rasadefault.pencillabs.com.br/.
 
-## Interações em grupo
-
-Para que o bot inicie a conversa e fale as instruções, basta dizer um oi, ou enviar /start. Após essa mensagem, o bot dará instruções sobre como prosseguir.
-
-Existe também o comando do telegram /help que lista todos os comandos disponíveis. Atualmente, os únicos comando disponíveis são:
-
-- /selecionarconversa [ID_CONVERSA] (Gera link para participação em uma conversa específica)
-- /participar (Participa de uma conversa pré selecionada)
-
-Um possível fluxo de uso do bot no telegram:
-
-1.  Procure o bot (Duda - EJ Bot) na aba de busca do Telegram;
-2.  Converse com o bot no privado. Selecione qual conversa você deseja que seus usuários participem. Você vai precisar verificar na EJ qual o ID da conversa desejada.
-
-        /selecionarconversa 56
-
-3.  Envie a resposta do bot no grupo ou canal desejado;
-4.  Quando seu público clicar no link, irá ser direcionado para uma conversa privada com o bot, e poderá participar
-    da coleta;
 
 # Ambiente de Homologação
 

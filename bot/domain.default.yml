@@ -11,10 +11,6 @@ intents:
       use_entities: true
   - pass:
       use_entities: true
-  - phone_number:
-      use_entities: true
-  - invalid_phone_number:
-      use_entities: true
   - out_of_context:
       use_entities: true
   - stop:
@@ -28,19 +24,14 @@ intents:
   - start_with_conversation_id:
       use_entities: true
   - add_new_comment:
-      use_entities: true
+      ignore_entities:
+        - conversation_id
 entities:
   - url
   - current_channel_info
   - conversation_id
-  - regex_phone_number
 slots:
   comment_text:
-    type: rasa.shared.core.slots.TextSlot
-    initial_value: null
-    auto_fill: true
-    influence_conversation: false
-  telegram_engagement_group:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
     auto_fill: true
@@ -50,11 +41,14 @@ slots:
     initial_value: null
     auto_fill: true
     influence_conversation: false
-  regex_phone_number:
-    type: rasa.shared.core.slots.FloatSlot
+  # conversation_id_cache is necessary because add_new_comment intent can have numbers and 
+  # trigger and auto_fill for conversation_id. Using conversation_id_cache we avoid this behavior.
+  # https://github.com/RasaHQ/rasa/issues/5561
+  conversation_id_cache:
+    type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: true
-    influence_conversation: true
+    auto_fill: false
+    influence_conversation: false
   conversation_id:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
@@ -97,8 +91,6 @@ slots:
       - pular
       - parar
       - novo link de participação
-      - pausar para pedir telefone
-      - pausar para engajar
   current_channel_info:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
@@ -146,31 +138,7 @@ responses:
 
         Vou te mandar o que me responderam e gostaria da sua opinião:
   utter_ask_to_add_comment:
-    - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta? Se sim, qual?
-  utter_ask_again_to_add_comment:
-    - text: Gostaria de enviar outra opinião? Se sim, qual?
-  utter_ask_phone_number:
-    - text: Você poderia me passar seu telefone com DDD?
-  utter_ask_phone_number_again:
-    - text: >
-        Sua opinião é muito importante para o nosso projeto e por isso eu gostaria de pedir o seu número de telefone. 
-        Com ele, conseguiremos mais força no combate à desinformação e poderemos te enviar conteúdos personalizados sobre a nossa conversa. 
-        Caso queira receber novos conteúdos, basta digitar o número que eu anoto aqui, caso não, basta dizer **não**, que continuamos nossa conversa sem que você seja identificado.
-      channel: "socketio"
-    - text: >
-        Sua opinião é muito importante para o nosso projeto e por isso eu gostaria de pedir o seu número de telefone. 
-        Com ele, conseguiremos mais força no combate à desinformação e poderemos te enviar conteúdos personalizados sobre a nossa conversa. 
-        Caso queira receber novos conteúdos, basta digitar o número que eu anoto aqui, caso não, basta dizer não, que continuamos nossa conversa sem que você seja identificado.
-  utter_explain_ask_phone_number:
-    - text: Eu juro que não vou mandar spam. É só uma forma de eu poder ligar você a sua opinião
-  utter_phone_number_is_optional:
-    - text: Ah e se você não quiser não tem problema, basta dizer não, eu mantenho a sua identidade secreta 🤫
-  utter_send_phone_number:
-    - text: Já pode digitar seu telefone com DDD aqui
-  utter_invalid_phone_number:
-    - text: Hmmm acho que você escreveu alguma coisa errada 😕
-  utter_got_phone_number:
-    - text: Já anotei aqui o seu telefone, obrigada 😉
+    - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta? Caso não queira, basta dizer não que continuamos nossa conversa.
   utter_user_want_anonymous:
     - text: Beleza, vamos prosseguir!
   utter_vote_received:
@@ -180,7 +148,7 @@ responses:
   utter_out_of_context:
     - text: Desculpe, não sei se entendi 😕
   utter_sent_comment:
-    - text: Certo, já anotei seu comentário, muito obrigada pela sua contribuição!!
+    - text: Certo, anotei seu comentário e o enviarei para  outros participantes da pesquisa. Muito obrigada pela contribuição!!
   utter_send_comment_error:
     - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
   utter_comment_fallback:
@@ -212,13 +180,7 @@ responses:
     - text: Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.  Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
   utter_no_selected_conversation:
     - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
-  utter_invite_user_to_join_group:
-    - text: >
-        Estou gostando bastante de te ouvir e gostaria de saber se você tem interesse em fazer parte da nossa comunidade. Lá, publicamos conteúdos personalizados sobre os assuntos que estamos conversando e você poderá interagir com outras pessoas. Para aceitar o convite, clique no link, e você será direcionado para o nosso grupo no Telegram:
 
-        {telegram_engagement_group}
-
-        Voltando a nossa conversa.
   utter_advise_participant_to_join_again:
     - text: >
         Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.
@@ -228,9 +190,7 @@ actions:
   - action_follow_up_form
   - validate_vote_form
   - action_setup_conversation
-  - action_get_conversation_info
   - action_set_channel_info
-  - action_set_conversation_slots
   - action_set_new_comment
   - action_customized_fallback
 

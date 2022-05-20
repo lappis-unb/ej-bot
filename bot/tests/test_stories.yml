@@ -12,62 +12,26 @@ stories:
   - action: action_set_channel_info
   - slot_was_set:
     - current_channel_info
-  - action: action_get_conversation_info
+  - action: action_setup_conversation
   - action: utter_introduce_ej
   - action: utter_show_topic_of_discussion
   - slot_was_set:
     - conversation_id
-  - action: action_setup_conversation
   - action: vote_form
   - active_loop: vote_form
 
-- story: User agree to send three comments during conversation
-  steps:
-  - user: |
-      A cidade deveria ter mais opções de restaurantes
-    intent: add_new_comment
-  - action: action_set_new_comment
-  - action: utter_ask_again_to_add_comment
-  - user: |
-      Investir mais nas tecnologias para a saúde
-    intent: add_new_comment
-  - action: action_set_new_comment
-  - action: utter_ask_again_to_add_comment
-  - user: |
-      Gestão com foco no cidadão
-    intent: add_new_comment
-  - action: action_set_new_comment
-  - checkpoint: starts_voting
-
 - story: User agree to send one comment during conversation
   steps:
+  - action: utter_ask_to_add_comment
   - user: |
       A cidade deveria ter mais opções de restaurantes
     intent: add_new_comment
   - action: action_set_new_comment
-  - action: utter_ask_again_to_add_comment
-  - user: |
-      não
-    intent: disagree
-  - checkpoint: starts_voting 
+  - slot_was_set:
+    - conversation_id
+  - action: vote_form
+  - active_loop: vote_form
   
-- story: User agree to send two comments during conversation
-  steps:
-  - user: |
-      A cidade deveria ter mais opções de restaurantes
-    intent: add_new_comment
-  - action: action_set_new_comment
-  - action: utter_ask_again_to_add_comment
-  - user: |
-      Investir mais nas tecnologias para a saúde
-    intent: add_new_comment
-  - action: action_set_new_comment
-  - action: utter_ask_again_to_add_comment
-  - user: |
-      não
-    intent: disagree
-  - checkpoint: starts_voting
-
 - story: User disagree to send comment during conversation
   steps:
   - action: utter_ask_to_add_comment
@@ -76,53 +40,13 @@ stories:
     intent: disagree
   - checkpoint: starts_voting
 
-# - story: User agree to use phone number during conversation
-#   steps:
-#   - user: |
-#       [61981178174](regex_phone_number)
-#     intent: phone_number
-#     entities:
-#       - regex_phone_number
-#   - slot_was_set:
-#     - regex_phone_number
-#   - slot_was_set:
-#     - conversation_id
-#   - action: utter_got_phone_number
-#   - action: action_setup_conversation
-#   - action: vote_form
-#   - active_loop: vote_form
-#   - action: action_listen
-
-# - story: User want to participate without phone number
-#   steps:
-#   - user: |
-#       não
-#     intent: disagree
-#   - slot_was_set:
-#     - conversation_id
-#   - action: utter_user_want_anonymous
-#   - action: action_setup_conversation
-#   - action: vote_form
-#   - active_loop: vote_form
-#   - action: action_listen
-
-- story: User provide invalid phone number with value aaaaaa 
-  steps:
-  - user: |
-      aaaaaa
-    intent: phone_number
-  - slot_was_set:
-    - regex_phone_number: null 
-  - action: utter_invalid_phone_number
-  - action: utter_ask_phone_number
-
 - story: Start interaction with bot via webchat
   steps:
   - user: |
       [http://localhost:8000/](url)
     intent: url
   - action: utter_introduce_ej
-  - action: action_get_conversation_info
+  - action: action_setup_conversation
   - slot_was_set:
     - conversation_id
   - action: utter_show_topic_of_discussion
@@ -134,17 +58,3 @@ stories:
       ajuda
     intent: help
   - action: utter_help
-
-- story: conversation_id slot is not valid
-  steps:
-  - user: |
-      start [56](conversation_id)
-    intent: start_with_conversation_id
-  - action: action_set_channel_info
-  - action: action_get_conversation_info
-  - action: utter_introduce_ej
-  - action: utter_show_topic_of_discussion
-  - slot_was_set:
-    - conversation_id: null
-  - action: utter_advise_participant_to_join_again
-  - action: action_restart

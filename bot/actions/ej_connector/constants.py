@@ -3,7 +3,9 @@ import os
 HEADERS = {
     "Content-Type": "application/json",
 }
-VOTE_CHOICES = {"Pular": 0, "Concordar": 1, "Discordar": -1, "2": -1}
+VOTE_CHOICES = {"Pular": 0, "Concordar": 1, "Discordar": -1, "2": -1, "1": 1, "0": 0}
+VALID_VOTE_VALUES = ["Concordar", "Discordar", "Pular", "1", "0", "2"]
+
 HOST = os.getenv("EJ_HOST")
 API_URL = f"{HOST}/api/v1"
 CONVERSATIONS_URL = (
