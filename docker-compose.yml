@@ -11,15 +11,6 @@ x-bot-common: &bot-common
     - env/servers.env
 
 services:
-  # =============================== Webchat =================================
-  # Nginx container to run rasa webchat
-  webchat:
-    image: nginx
-    volumes:
-      - ./webchat/:/usr/share/nginx/html/
-    ports:
-      - 8001:80
-
   # =============================== Coach =================================
   # All the models are trained by this coach.
   coach:
