@@ -38,7 +38,7 @@ class ActionFollowUpForm(Action):
         if Conversation.pause_to_ask_comment(vote):
             self.response = [
                 SlotSet("vote", None),
-                FollowupAction("utter_ask_to_add_comment"),
+                FollowupAction("utter_ask_if_wants_to_add_comment"),
             ]
 
     def _set_response_to_starts_new_conversation(self, vote):

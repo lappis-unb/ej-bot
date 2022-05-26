@@ -63,13 +63,16 @@ stories:
 
   - story: participant dont want to send comment
     steps:
-      - action: utter_ask_to_add_comment
+      - action: utter_ask_if_wants_to_add_comment
       - intent: disagree
+      - action: utter_go_back_to_voting
       - checkpoint: starts_voting
 
   - story: participant want to send comment
     steps:
-      - action: utter_ask_to_add_comment
+      - action: utter_ask_if_wants_to_add_comment
+      - intent: agree
+      - action: utter_ask_user_comment
       - intent: add_new_comment
       - action: action_set_new_comment
       - checkpoint: starts_voting

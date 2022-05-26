@@ -22,7 +22,11 @@ stories:
 
 - story: User agree to send one comment during conversation
   steps:
-  - action: utter_ask_to_add_comment
+  - action: utter_ask_if_wants_to_add_comment
+  - user: |
+      sim
+    intent: agree
+  - action: utter_ask_user_comment
   - user: |
       A cidade deveria ter mais opções de restaurantes
     intent: add_new_comment
@@ -34,10 +38,11 @@ stories:
   
 - story: User disagree to send comment during conversation
   steps:
-  - action: utter_ask_to_add_comment
+  - action: utter_ask_if_wants_to_add_comment
   - user: |
       não
     intent: disagree
+  - action: utter_go_back_to_voting
   - checkpoint: starts_voting
 
 - story: Start interaction with bot via webchat
