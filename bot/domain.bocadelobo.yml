@@ -139,8 +139,17 @@ responses:
         {conversation_text}
 
         Vou te mandar o que me responderam e gostaria da sua opinião:
-  utter_ask_to_add_comment:
-    - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta? Se sim, qual?
+  utter_ask_if_wants_to_add_comment:
+  - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
+    buttons:
+      - title: "Sim"
+        payload: "sim"
+      - title: "Não"
+        payload: "não"
+  utter_ask_user_comment:
+    - text: Pode enviar seu comentário que eu anoto aqui!
+  utter_go_back_to_voting:
+    - text: Sem problemas, vou te mandar o que mais me responderam!
   utter_user_want_anonymous:
     - text: Beleza, vamos prosseguir!
   utter_vote_received:
@@ -150,7 +159,7 @@ responses:
   utter_out_of_context:
     - text: Desculpe, não sei se entendi 😕
   utter_sent_comment:
-    - text: Certo, anotei seu comentário e o enviarei para  outros participantes da pesquisa. Muito obrigada pela contribuição!!
+    - text: Certo, anotei seu comentário e o enviarei para outros participantes da pesquisa. Deixa eu ver se ainda tenho outras opiniões para te enviar.
   utter_send_comment_error:
     - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
   utter_comment_fallback:
@@ -160,7 +169,7 @@ responses:
   utter_voted_all_comments:
     - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
   utter_thanks_participation:
-    - text: Fico muito feliz por você ter participado 🤗
+    - text: Sua particição irá nos ajudar a entender o que as pessoas pensam sobre esse assunto, muito obrigado 🤗🤗🤗!!
   utter_stopped:
     - text: Só de você ter me respondido já me ajudou. Muito obrigada! 😘
   utter_stopped_after_disagreed:

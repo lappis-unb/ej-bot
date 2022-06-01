@@ -34,7 +34,7 @@ class ActionCustomizedFallback(Action):
         logger.debug("action ActionCustomizedFallback called")
 
         if self.get_last_action(tracker) in [
-            "utter_ask_to_add_comment",
+            "utter_ask_if_wants_to_add_comment",
         ]:
             dispatcher.utter_message(template="utter_comment_fallback")
         else:
