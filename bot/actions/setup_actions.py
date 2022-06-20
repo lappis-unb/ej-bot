@@ -58,7 +58,8 @@ class ActionSetupConversation(Action):
         else:
             conversation_id = tracker.get_slot("conversation_id")
             if conversation_id:
-                user = User(tracker.sender_id)
+                username = User.get_name_from_tracker_state(tracker.current_state())
+                user = User(tracker.sender_id, name=username)
                 user.authenticate()
                 conversation_data = Conversation.get_by_id(conversation_id)
                 conversation_text = conversation_data.get("text")
