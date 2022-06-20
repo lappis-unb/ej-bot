@@ -13,16 +13,23 @@ class User(object):
     For telegram channel, tracker_sender_id is the unique ID from the user talking with the bot.
     """
 
-    def __init__(self, tracker_sender_id, name="Participante anônimo"):
+    ANONYMOUS_USER_NAME = "Participante anônimo"
+
+    def __init__(self, tracker_sender_id, name=ANONYMOUS_USER_NAME):
         self.name = name
-        self.display_name = ""
+        self.display_name = name
         self.tracker_sender_id = tracker_sender_id
-        self.email = f"{remove_special(tracker_sender_id)}-rasa@mail.com"
-        self.password = f"{remove_special(tracker_sender_id)}-rasa"
-        self.password_confirm = f"{remove_special(tracker_sender_id)}-rasa"
+        self.password = f"{remove_special(tracker_sender_id)}-opinion-bot"
+        self.password_confirm = f"{remove_special(tracker_sender_id)}-opinion-bot"
+        self._set_email()
 
     def serialize(self):
         return json.dumps(self.__dict__)
+
+    def _set_email(self):
+        if self.name != User.ANONYMOUS_USER_NAME:
+            self.email = f"{self.name}-opinion-bot@mail.com"
+        self.email = f"{remove_special(self.tracker_sender_id)}-opinion-bot@mail.com"
 
     def authenticate(self):
         """
@@ -43,3 +50,11 @@ class User(object):
             self.token = response.json()["token"]
         except:
             raise EJCommunicationError
+
+    @staticmethod
+    def get_name_from_tracker_state(state: dict):
+        latest_message = state["latest_message"]
+        metadata = latest_message["metadata"]
+        if metadata:
+            return metadata.get("user_name")
+        return User.ANONYMOUS_USER_NAME

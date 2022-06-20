@@ -199,26 +199,18 @@ class UserClassTest(unittest.TestCase):
 
     def test_user_init_with_rasa(self):
         user = User(SENDER_ID)
-        assert "-rasa@mail.com" in user.email
-        assert "-rasa" in user.password
-        assert "-rasa" in user.password_confirm
-        assert user.name == "Participante anônimo"
-        assert user.display_name == ""
-
-    def test_user_init_with_phone_number(self):
-        user = User(SENDER_ID)
-        assert "-rasa@mail.com" in user.email
-        assert "-rasa" in user.password
-        assert "-rasa" in user.password_confirm
-        assert user.name == "Participante anônimo"
-        assert user.display_name == ""
+        assert "-opinion-bot@mail.com" in user.email
+        assert "-opinion-bot" in user.password
+        assert "-opinion-bot" in user.password_confirm
+        assert user.name == User.ANONYMOUS_USER_NAME
+        assert user.display_name == User.ANONYMOUS_USER_NAME
 
     def test_user_serializer_with_rasa(self):
         user = User(SENDER_ID)
         serialized_user = user.serialize()
         assert type(serialized_user) == str
         dict_user = json.loads(serialized_user)
-        assert "-rasa@mail.com" in dict_user["email"]
+        assert "-opinion-bot@mail.com" in dict_user["email"]
 
 
 class EjUrlsGenerationClassTest(unittest.TestCase):
