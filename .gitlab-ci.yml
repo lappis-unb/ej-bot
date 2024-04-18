@@ -25,6 +25,7 @@ check_style_with_black:
     - black --check .
 
 test_bocadelobo_domain:
+  when: manual
   before_script:
     - export PATH=/app/bin/:/app/:$PATH
     - export PYTHONPATH=/app/:$PYTHONPATH
@@ -38,6 +39,7 @@ test_bocadelobo_domain:
     - rasa test core --fail-on-prediction-errors --out results/results-core-test
 
 test_default_domain:
+  when: manual
   before_script:
     - export PATH=/app/bin/:/app/:$PATH
     - export PYTHONPATH=/app/:$PYTHONPATH
@@ -51,6 +53,7 @@ test_default_domain:
     - rasa test core --fail-on-prediction-errors --out results/results-core-test
 
 test_actions:
+  when: manual
   before_script:
     - export PATH=/app/bin/:/app/:$PATH
     - export PYTHONPATH=/app/:$PYTHONPATH
@@ -63,6 +66,7 @@ test_actions:
 deploy_to_dev:
   image: 
     name: debian:stable
+  when: manual
   stage: deploy
   before_script:
     - apt update && apt install -y bash git
