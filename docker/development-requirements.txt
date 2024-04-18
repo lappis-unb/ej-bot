@@ -1,7 +1,6 @@
 -r actions-requirements.txt
 
-#nltk==3.4.5
-#spacy==3.0.0
+pyTelegramBotAPI
 
 # lint/format/types
 black==21.5b2

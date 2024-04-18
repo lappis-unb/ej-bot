@@ -1,6 +1,8 @@
-./bot/models
-./bot/train_test_split
-./bot/results/
+bot/models
+bot/train_test_split
+bot/results/
+bot/.rasa/
+
 */__pycache__/
 .pytest_cache/
 *.pyc
