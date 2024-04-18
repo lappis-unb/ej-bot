@@ -1,211 +1,204 @@
-version: "2.0"
+version: "3.1"
 config:
   store_entities_as_slots: true
 session_config:
   session_expiration_time: 5
   carry_over_slots_to_new_session: true
 intents:
-  - agree:
-      use_entities: true
-  - disagree:
-      use_entities: true
-  - pass:
-      use_entities: true
-  - out_of_context:
-      use_entities: true
-  - stop:
-      use_entities: true
-  - welcome:
-      use_entities: true
-  - url:
-      use_entities: true
-  - help:
-      use_entities: true
-  - start_with_conversation_id:
-      use_entities: true
-  - add_new_comment:
-      ignore_entities:
-        - conversation_id
+- agree:
+    use_entities: true
+- disagree:
+    use_entities: true
+- pass:
+    use_entities: true
+- out_of_context:
+    use_entities: true
+- stop:
+    use_entities: true
+- welcome:
+    use_entities: true
+- url:
+    use_entities: true
+- help:
+    use_entities: true
+- start_with_conversation_id:
+    use_entities: true
+- add_new_comment:
+    ignore_entities:
+    - conversation_id
 entities:
-  - url
-  - current_channel_info
-  - conversation_id
+- url
+- current_channel_info
+- conversation_id
 slots:
   comment_text:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: false
+    mappings:
+    - type: custom
   ej_user_token:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: false
-  # conversation_id_cache is necessary because add_new_comment intent can have numbers and 
-  # trigger and auto_fill for conversation_id. Using conversation_id_cache we avoid this behavior.
-  # https://github.com/RasaHQ/rasa/issues/5561
+    mappings:
+    - type: custom
   conversation_id_cache:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: false
     influence_conversation: false
+    mappings:
+    - type: custom
   conversation_id:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: conversation_id
   conversation_text:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: false
     influence_conversation: false
+    mappings:
+    - type: custom
   current_comment_id:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: false
     max_value: 1.0
     min_value: 0.0
+    mappings:
+    - type: custom
   number_comments:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: false
     max_value: 1.0
     min_value: 0.0
+    mappings:
+    - type: custom
   number_voted_comments:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: false
     max_value: 1.0
     min_value: 0.0
+    mappings:
+    - type: custom
   vote:
     type: rasa.shared.core.slots.CategoricalSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: false
     values:
-      - concordar
-      - discordar
-      - pular
-      - parar
-      - novo link de participação
+    - concordar
+    - discordar
+    - pular
+    - parar
+    - novo link de participação
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: vote_form
+        requested_slot: vote
   current_channel_info:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: current_channel_info
   url:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: true
     influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: url
   bot_telegram_username:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: false
     influence_conversation: false
+    mappings:
+    - type: custom
   bot_whatsapp_number:
     type: rasa.shared.core.slots.TextSlot
     initial_value: null
-    auto_fill: false
-    influence_conversation: false  
+    influence_conversation: false
+    mappings:
+    - type: custom
 responses:
   utter_introduce_ej:
-    - text: >
-        Olá, Eu sou a Duda, a assistente virtual da Plataforma Empurrando Juntas.
-        Meu trabalho é descobrir a opinião das pessoas sobre determinados temas e para isso eu preciso da sua ajuda. 
-        A suas opiniões serão enviadas para a nossa plataforma, conforme o nosso termo de uso https://www.ejparticipe.org/usage/.
+  - text: "Olá, Eu sou a Duda, a assistente virtual da Plataforma Empurrando Juntas. Meu trabalho é descobrir a opinião das pessoas sobre determinados temas e para isso eu preciso da sua ajuda.  A suas opiniões serão enviadas para a nossa plataforma, conforme o nosso termo de uso https://www.ejparticipe.org/usage/.\n"
   utter_show_topic_of_discussion:
-    - text: |
-        Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:
-        *{conversation_text}*
-
-        Vou te mandar o que me responderam e gostaria da sua opinião:
-      channel: "twilio"
-
-    - text: >
-        Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:
-        **{conversation_text}**
-
-        Vou te mandar o que me responderam e gostaria da sua opinião:
-      channel: "socketio"
-      
-    - text: |
-        Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:
-        {conversation_text}
-
-        Vou te mandar o que me responderam e gostaria da sua opinião:
+  - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n*{conversation_text}*\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
+    channel: twilio
+  - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto: **{conversation_text}**\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
+    channel: socketio
+  - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n{conversation_text}\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
   utter_ask_if_wants_to_add_comment:
-    - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
-      buttons:
-        - title: "Sim"
-          payload: "sim"
-        - title: "Não"
-          payload: "não"
+  - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
+    buttons:
+    - title: Sim
+      payload: sim
+    - title: Não
+      payload: não
   utter_ask_user_comment:
-    - text: Pode enviar seu comentário que eu anoto aqui!
-
+  - text: Pode enviar seu comentário que eu anoto aqui!
   utter_go_back_to_voting:
-    - text: Sem problemas, vou te mandar o que mais me responderam!
-
+  - text: Sem problemas, vou te mandar o que mais me responderam!
   utter_user_want_anonymous:
-    - text: Beleza, vamos prosseguir!
+  - text: Beleza, vamos prosseguir!
   utter_vote_received:
-    - text: Anotado!
-    - text: Anotei aqui.
-    - text: Entendo, registrado.
+  - text: Anotado!
+  - text: Anotei aqui.
+  - text: Entendo, registrado.
   utter_out_of_context:
-    - text: Desculpe, não sei se entendi 😕
+  - text: Desculpe, não sei se entendi 😕
   utter_sent_comment:
-    - text: Certo, anotei seu comentário e o enviarei para outros participantes da pesquisa. Deixa eu ver se ainda tenho outras opiniões pra te enviar.
+  - text: Certo, anotei seu comentário e o enviarei para outros participantes da pesquisa. Deixa eu ver se ainda tenho outras opiniões pra te enviar.
   utter_send_comment_error:
-    - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
+  - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
   utter_comment_fallback:
-    - text: Desculpe, não foi possível reconhecer o comentário 😕.
+  - text: Desculpe, não foi possível reconhecer o comentário 😕.
   utter_ask_send_comment_again:
-    - text: Faz assim, tenta me mandar ele novamente mais tarde, pode ser?!
+  - text: Faz assim, tenta me mandar ele novamente mais tarde, pode ser?!
   utter_voted_all_comments:
-    - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
+  - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
   utter_thanks_participation:
-    - text: Sua particição irá nos ajudar a entender o que as pessoas pensam sobre esse assunto, muito obrigado 🤗🤗🤗!!
+  - text: Sua particição irá nos ajudar a entender o que as pessoas pensam sobre esse assunto, muito obrigado 🤗🤗🤗!!
   utter_stopped:
-    - text: Só de você ter respondido ja me ajudou, muito obrigada!
+  - text: Só de você ter respondido ja me ajudou, muito obrigada!
   utter_stopped_after_disagreed:
-    - text: Mas só de você ter me respondido já me ajudou. Muito obrigada! 😘
+  - text: Mas só de você ter me respondido já me ajudou. Muito obrigada! 😘
   utter_next_conversation:
-    - text: Depois conversamos mais 😘
+  - text: Depois conversamos mais 😘
   utter_finish:
-    - text: Ah quando quiser trocar uma ideia é só me mandar um "Oi".
+  - text: Ah quando quiser trocar uma ideia é só me mandar um "Oi".
   utter_goodbye:
-    - text: Pode deixar que te mantenho por dentro sobre as novidades sobre esse assunto
+  - text: Pode deixar que te mantenho por dentro sobre as novidades sobre esse assunto
   utter_ej_communication_error:
-    - text: Opa, parece que não estou conseguindo acessar nosso servidor.
+  - text: Opa, parece que não estou conseguindo acessar nosso servidor.
   utter_error_try_again_later:
-    - text: Tive um problema técnico, por favor tente participar mais tarde.
+  - text: Tive um problema técnico, por favor tente participar mais tarde.
   utter_ej_connection_doesnt_exist:
-    - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
+  - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
-    - text: Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.  Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
+  - text: Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.  Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
   utter_no_selected_conversation:
-    - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
-
+  - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_advise_participant_to_join_again:
-    - text: >
-        Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.
-
+  - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
 actions:
-  - action_ask_vote
-  - action_follow_up_form
-  - validate_vote_form
-  - action_setup_conversation
-  - action_set_channel_info
-  - action_set_new_comment
-  - action_customized_fallback
-
+- action_ask_vote
+- action_follow_up_form
+- validate_vote_form
+- action_setup_conversation
+- action_set_channel_info
+- action_set_new_comment
+- action_customized_fallback
 forms:
   vote_form:
-    vote:
-      - type: from_text
+    required_slots:
+    - vote
 e2e_actions: []

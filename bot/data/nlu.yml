@@ -1,4 +1,4 @@
-version: "2.0"
+version: "3.1"
 nlu:
   - intent: start_with_conversation_id
     examples: |

@@ -17,7 +17,7 @@ attach:
 	docker exec -it bot bash
 
 build:
-	docker-compose build
+	sudo rm -rf bot/.rasa && docker-compose build --no-cache
 
 build-bot:
 	docker-compose build bot

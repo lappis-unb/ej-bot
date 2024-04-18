@@ -1,2 +1,2 @@
-requests~=2.24.0
-pyjwt==2.0.0
+requests
+pyjwt

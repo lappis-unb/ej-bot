@@ -2,7 +2,8 @@
 
 ## Contexto
 
-Este bot faz parte do ecossistema Empurrando Juntas, composto por alguns projetos que possuem forte relação entre si. A imagem abaixo ilustra um recorte desse ecossistema, colocando em destaque o **EJ server** - o núcleo desse contexto - e o **EJ bot**, que está no presente repositório.
+Este bot faz parte do ecossistema Empurrando Juntas, composto por alguns projetos que possuem forte relação entre si.
+A imagem abaixo ilustra um recorte desse ecossistema, colocando em destaque o **EJ server** - o núcleo desse contexto - e o **EJ bot**, que está no presente repositório.
 
 ![Recorte do diagrama do ecossistema EJ](img/recorte-ej.png)
 

@@ -1,32 +1,34 @@
-language : "pt"
+recipe: default.v1
+language: "pt"
 
 pipeline:
-  - name: WhitespaceTokenizer
-  - name: RegexFeaturizer
-    "case_sensitive": False
-    "use_word_boundaries": True  
-  - name: LexicalSyntacticFeaturizer
-  - name: CountVectorsFeaturizer
-    analyzer: "char_wb"
-    min_ngram: 1
-    max_ngram: 4
-  - name: DIETClassifier
-    epochs: 100
-  - name: EntitySynonymMapper
-  - name: ResponseSelector
-  - name: "DucklingEntityExtractor"
-    url: ${RASA_DUCKLING_HTTP_URL}
-    locale: BR
-    dimensions: ["url"]
+- name: WhitespaceTokenizer
+- name: RegexFeaturizer
+  "case_sensitive": false
+  "use_word_boundaries": true
+- name: LexicalSyntacticFeaturizer
+- name: CountVectorsFeaturizer
+  analyzer: "char_wb"
+  min_ngram: 1
+  max_ngram: 4
+- name: DIETClassifier
+  epochs: 100
+- name: EntitySynonymMapper
+- name: ResponseSelector
+- name: "DucklingEntityExtractor"
+  url: ${RASA_DUCKLING_HTTP_URL}
+  locale: BR
+  dimensions: ["url"]
 policies:
-  - name: RulePolicy
-  - name: MemoizationPolicy
-    max_history: 10
-    epochs: 100
-  - name: UnexpecTEDIntentPolicy
-    max_history: 10
-    epochs: 100
-  - name: TEDPolicy
-    max_history: 10
-    epochs: 100
-    constrain_similarities: true
+- name: RulePolicy
+- name: MemoizationPolicy
+  max_history: 10
+  epochs: 100
+- name: UnexpecTEDIntentPolicy
+  max_history: 10
+  epochs: 100
+- name: TEDPolicy
+  max_history: 10
+  epochs: 100
+  constrain_similarities: true
+assistant_id: 20240418-160211-piercing-squash
