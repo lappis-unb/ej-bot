@@ -5,59 +5,61 @@ session_config:
   session_expiration_time: 5
   carry_over_slots_to_new_session: true
 intents:
-- agree:
-    use_entities: true
-- disagree:
-    use_entities: true
-- pass:
-    use_entities: true
-- out_of_context:
-    use_entities: true
-- stop:
-    use_entities: true
-- welcome:
-    use_entities: true
-- url:
-    use_entities: true
-- help:
-    use_entities: true
-- start_with_conversation_id:
-    use_entities: true
-- add_new_comment:
-    ignore_entities:
-    - conversation_id
+  - comment_confirmation:
+      use_entities: []
+  - agree:
+      use_entities: true
+  - disagree:
+      use_entities: true
+  - pass:
+      use_entities: true
+  - out_of_context:
+      use_entities: true
+  - stop:
+      use_entities: true
+  - welcome:
+      use_entities: true
+  - url:
+      use_entities: true
+  - help:
+      use_entities: true
+  - start_with_conversation_id:
+      use_entities: true
+  - add_new_comment:
+      ignore_entities:
+      - conversation_id
 entities:
-- url
-- current_channel_info
-- conversation_id
+  - url
+  - current_channel_info
+  - conversation_id
 slots:
   comment_text:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: false
     mappings:
     - type: custom
   ej_user_token:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: false
     mappings:
     - type: custom
   conversation_id_cache:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: false
     mappings:
     - type: custom
   conversation_id:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: true
     mappings:
     - type: from_entity
       entity: conversation_id
   conversation_text:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: false
     mappings:
@@ -87,42 +89,54 @@ slots:
     mappings:
     - type: custom
   vote:
-    type: rasa.shared.core.slots.CategoricalSlot
-    initial_value: null
+    type: text
     influence_conversation: false
-    values:
-    - concordar
-    - discordar
-    - pular
-    - parar
-    - novo link de participação
     mappings:
     - type: from_text
       conditions:
       - active_loop: vote_form
         requested_slot: vote
+  comment_confirmation:
+    type: categorical
+    values: 
+      - Sim
+      - Não
+    influence_conversation: true
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: vote_form
+        requested_slot: comment_confirmation
+  comment:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: vote_form
+        requested_slot: comment
   current_channel_info:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: true
     mappings:
     - type: from_entity
       entity: current_channel_info
   url:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: false
     mappings:
     - type: from_entity
       entity: url
   bot_telegram_username:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: false
     mappings:
     - type: custom
   bot_whatsapp_number:
-    type: rasa.shared.core.slots.TextSlot
+    type: text
     initial_value: null
     influence_conversation: false
     mappings:
@@ -132,23 +146,21 @@ responses:
   - text: "Olá, Eu sou a Duda, a assistente virtual da Plataforma Empurrando Juntas. Meu trabalho é descobrir a opinião das pessoas sobre determinados temas e para isso eu preciso da sua ajuda.  A suas opiniões serão enviadas para a nossa plataforma, conforme o nosso termo de uso https://www.ejparticipe.org/usage/.\n"
   utter_show_topic_of_discussion:
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n*{conversation_text}*\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
-    channel: twilio
+    channel: whatsapp
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto: **{conversation_text}**\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
     channel: socketio
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n{conversation_text}\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
-  utter_ask_if_wants_to_add_comment:
+  utter_ask_comment_confirmation:
   - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
     buttons:
     - title: Sim
       payload: sim
     - title: Não
       payload: não
-  utter_ask_user_comment:
+  utter_ask_comment:
   - text: Pode enviar seu comentário que eu anoto aqui!
   utter_go_back_to_voting:
   - text: Sem problemas, vou te mandar o que mais me responderam!
-  utter_user_want_anonymous:
-  - text: Beleza, vamos prosseguir!
   utter_vote_received:
   - text: Anotado!
   - text: Anotei aqui.
@@ -161,16 +173,12 @@ responses:
   - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
   utter_comment_fallback:
   - text: Desculpe, não foi possível reconhecer o comentário 😕.
-  utter_ask_send_comment_again:
-  - text: Faz assim, tenta me mandar ele novamente mais tarde, pode ser?!
   utter_voted_all_comments:
   - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
   utter_thanks_participation:
   - text: Sua particição irá nos ajudar a entender o que as pessoas pensam sobre esse assunto, muito obrigado 🤗🤗🤗!!
   utter_stopped:
   - text: Só de você ter respondido ja me ajudou, muito obrigada!
-  utter_stopped_after_disagreed:
-  - text: Mas só de você ter me respondido já me ajudou. Muito obrigada! 😘
   utter_next_conversation:
   - text: Depois conversamos mais 😘
   utter_finish:
@@ -191,14 +199,18 @@ responses:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
 actions:
 - action_ask_vote
-- action_follow_up_form
 - validate_vote_form
-- action_setup_conversation
+- action_get_conversation
 - action_set_channel_info
 - action_set_new_comment
 - action_customized_fallback
 forms:
   vote_form:
+    ignored_intents:
+      - agree
+      - disagree
     required_slots:
-    - vote
+      - vote
+      - comment_confirmation
+      - comment
 e2e_actions: []

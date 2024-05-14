@@ -1,6 +1,7 @@
-from actions.ej_connector.user import User
 import json
 import unittest
+
+from bot.actions.ej_connector.user import User
 
 
 class UserTest(unittest.TestCase):

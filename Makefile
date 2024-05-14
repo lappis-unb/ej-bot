@@ -1,8 +1,4 @@
-current_dir := $(shell pwd)
-user := $(shell whoami) 
-
-help:
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+.PHONY: train
 
 clean: ## Bring down the bot and cleans database and trained models
 	docker-compose down
@@ -31,7 +27,8 @@ build-coach:
 ## Generate a tar.gz file in bot/models/, that is used for the bot interpretation
 train:
 	mkdir -p bot/models
-	domain=$(if $(findstring bocadelobo, $(domain)),domain.bocadelobo.yml,domain.default.yml) docker-compose up coach
+	docker-compose up coach
+
 ## Run duckling server that extract entities such as email, number and urls
 run-duck:
 	docker-compose up -d duckling
@@ -83,9 +80,3 @@ validate:
 	docker-compose up -d bot
 	domain=$(if $(findstring bocadelobo, $(domain)),domain.bocadelobo.yml,domain.default.yml) docker-compose exec bot make validate
 
-visualize:
-	docker-compose run --name coach --rm  -v $(current_dir)/bot:/coach coach rasa visualize --domain $(if $(findstring bocadelobo, $(domain)),domain.$(domain).yml,domain.default.yml) --stories data/stories.md --config config.yml --nlu data/nlu.md --out ./graph.html -vv
-	$(info )
-	$(info Caso o FIREFOX não seja iniciado automáticamente, abra o seguinte arquivo com seu navegador:)
-	$(info bot/graph.html)
-	firefox bot/graph.html

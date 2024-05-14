@@ -1,9 +1,8 @@
 -r actions-requirements.txt
-
+packaging==20.9
 pyTelegramBotAPI
-
-# lint/format/types
+python-dotenv
 black==21.5b2
-flake8==3.7.9
-pytest==3.5.1
+pydantic<1.10.10
+pytest
 mock

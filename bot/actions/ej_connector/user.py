@@ -1,11 +1,11 @@
-import os
 import json
-import logging
-import requests
-from .constants import *
-from ..utils import remove_special
+from typing import Any, Text
 
-logger = logging.getLogger(__name__)
+import requests
+
+from actions.logger import custom_logger
+
+from .constants import *
 
 
 class User(object):
@@ -19,8 +19,8 @@ class User(object):
         self.name = name
         self.display_name = name
         self.tracker_sender_id = tracker_sender_id
-        self.password = f"{remove_special(tracker_sender_id)}-opinion-bot"
-        self.password_confirm = f"{remove_special(tracker_sender_id)}-opinion-bot"
+        self.password = f"{self.remove_special(tracker_sender_id)}-opinion-bot"
+        self.password_confirm = f"{self.remove_special(tracker_sender_id)}-opinion-bot"
         self._set_email()
 
     def serialize(self):
@@ -29,27 +29,32 @@ class User(object):
     def _set_email(self):
         if self.name != User.ANONYMOUS_USER_NAME:
             self.email = f"{self.name}-opinion-bot@mail.com"
-        self.email = f"{remove_special(self.tracker_sender_id)}-opinion-bot@mail.com"
+        self.email = (
+            f"{self.remove_special(self.tracker_sender_id)}-opinion-bot@mail.com"
+        )
 
     def authenticate(self):
         """
         Differentiate user type of login (using phone number or anonymous)
         providing the current flow for conversation
         """
-        self.get_or_create_user()
-
-    def get_or_create_user(self):
-        logger.debug("CREATING NEW USER")
-        logger.debug(self.serialize())
+        custom_logger(f"creating new user", data=self.__dict__)
+        response = None
         try:
-            response = requests.post(
-                REGISTRATION_URL,
-                data=self.serialize(),
-                headers=HEADERS,
-            )
+            response = self._get_or_create_user(AUTH_URL, self.serialize())
+            self.token = response.json()["token"]
+        except Exception:
+            response = self._get_or_create_user(REGISTRATION_URL, self.serialize())
             self.token = response.json()["token"]
         except:
-            raise EJCommunicationError
+            raise Exception("COULD NOT CREATE USER")
+
+    def _get_or_create_user(self, url: Text, payload: Any) -> Any:
+        return requests.post(
+            url,
+            data=payload,
+            headers=HEADERS,
+        )
 
     @staticmethod
     def get_name_from_tracker_state(state: dict):
@@ -58,3 +63,8 @@ class User(object):
         if metadata:
             return metadata.get("user_name")
         return User.ANONYMOUS_USER_NAME
+
+    def remove_special(self, line):
+        for char in ":+":
+            line = line.replace(char, "")
+        return line

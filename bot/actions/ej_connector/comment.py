@@ -1,8 +1,11 @@
-from .routes import auth_headers
 import json
-import requests
-from .constants import *
 import logging
+from typing import Text
+
+import requests
+
+from .constants import *
+from .routes import auth_headers
 
 logger = logging.getLogger(__name__)
 
@@ -36,5 +39,29 @@ class Comment:
             return response
 
     @staticmethod
-    def pause_to_ask_comment():
-        return {"vote": "pausa para pedir comentario"}
+    def pause_to_ask_comment(vote_option: Text):
+        return {"vote": vote_option, "comment_confirmation": None, "comment": None}
+
+    @staticmethod
+    def resume_voting(slot_value: Text):
+        return {"vote": None, "comment_confirmation": slot_value, "comment": ""}
+
+    @staticmethod
+    def get_utter(metadata, comment_title):
+        if metadata and "agent" in metadata:
+            return Comment.get_livechat_utter(comment_title)
+        return Comment.get_buttons_utter(comment_title)
+
+    @staticmethod
+    def get_livechat_utter(comment_title):
+        # channel is livechat, can't render buttons
+        return {"text": comment_title}
+
+    @staticmethod
+    def get_buttons_utter(comment_title):
+        buttons = [
+            {"title": "Concordar", "payload": "1"},
+            {"title": "Discordar", "payload": "-1"},
+            {"title": "Pular", "payload": "0"},
+        ]
+        return {"text": comment_title, "buttons": buttons}

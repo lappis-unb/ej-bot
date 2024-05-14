@@ -8,15 +8,13 @@ stories:
       - slot_was_set:
         - url
       - action: utter_introduce_ej
-      - action: action_setup_conversation
+      - action: action_get_conversation
       - slot_was_set:
         - conversation_id
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 
   - story: participant join conversation on telegram
-  # When using a link with a payload user send to bot a message
-  # start [payload]. We use it to set conversation_id
     steps:
       - intent: start_with_conversation_id
       - slot_was_set:
@@ -24,26 +22,23 @@ stories:
       - action: action_set_channel_info
       - slot_was_set:
         - current_channel_info: 'telegram'
-      - action: action_setup_conversation
+      - action: action_get_conversation
       - action: utter_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
     
   - story: participant join conversation on whatsapp
-  # When using a link with a payload user send to bot a message
-  # start [payload]. We use it to set conversation_id
     steps:
       - intent: start_with_conversation_id
       - slot_was_set:
         - conversation_id
       - action: action_set_channel_info
       - slot_was_set:
-        - current_channel_info: 'twilio'
-      - action: action_setup_conversation
+        - current_channel_info: 'whatsapp'
+      - action: action_get_conversation
       - action: utter_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
-      # It REALLY needed to rewrite the role story for whatsapp tests
 
   - story: participant joins a invalid conversation
     steps:
@@ -53,29 +48,31 @@ stories:
       - action: utter_advise_participant_to_join_again
       - action: action_restart
 
-  - story: starts voting form
+  - story: starts voting form and accepts to add a new comment
     steps:
       - checkpoint: starts_voting
       - slot_was_set:
         - conversation_id
       - action: vote_form
       - active_loop: vote_form
+      - slot_was_set:
+        - comment_confirmation: Sim
+      - action: utter_ask_comment
+      - action: vote_form
+      - active_loop: vote_form
 
-  - story: participant dont want to send comment
+  - story: starts voting form but deny adding a new comment.
     steps:
-      - action: utter_ask_if_wants_to_add_comment
-      - intent: disagree
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - slot_was_set:
+        - comment_confirmation: Não
       - action: utter_go_back_to_voting
-      - checkpoint: starts_voting
-
-  - story: participant want to send comment
-    steps:
-      - action: utter_ask_if_wants_to_add_comment
-      - intent: agree
-      - action: utter_ask_user_comment
-      - intent: add_new_comment
-      - action: action_set_new_comment
-      - checkpoint: starts_voting
+      - action: vote_form
+      - active_loop: vote_form
 
   - story: Goodbye happy path
     steps:

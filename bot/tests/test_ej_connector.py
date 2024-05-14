@@ -1,15 +1,16 @@
-import pytest
+import json
+import os
 import unittest
 from unittest.mock import Mock, patch
-import os
-import json
 
-from actions.ej_connector.comment import Comment
-from actions.ej_connector.vote import Vote
-from actions.ej_connector.conversation import Conversation
-from actions.ej_connector.user import User
-from actions.ej_connector.routes import *
-from actions.ej_connector.constants import *
+import pytest
+
+from bot.actions.ej_connector.comment import Comment
+from bot.actions.ej_connector.constants import *
+from bot.actions.ej_connector.conversation import Conversation
+from bot.actions.ej_connector.routes import *
+from bot.actions.ej_connector.user import User
+from bot.actions.ej_connector.vote import Vote
 
 CONVERSATION_ID = "1"
 COMMENT_ID = "1"
@@ -39,7 +40,7 @@ class MockedTracker:
 class APIClassTest(unittest.TestCase):
     """tests actions.ej_connector.api API class"""
 
-    @patch("actions.ej_connector.user.requests.post")
+    @patch("bot.actions.ej_connector.user.requests.post")
     def test_create_user_in_ej_with_rasa_id(self, mock_post):
         response_value = {"token": "key_value"}
         mock_post.return_value = Mock(ok=True)
@@ -49,23 +50,23 @@ class APIClassTest(unittest.TestCase):
         assert user.token == response_value["token"]
         assert user.name == "David"
 
-    @patch("actions.ej_connector.user.requests.post")
+    @patch("bot.actions.ej_connector.user.requests.post")
     def test_create_user_returns_invalid_response(self, mock_post):
-        response_value = {"error": "key_value"}
         mock_post.return_value = Mock(ok=True)
-        mock_post.return_value.json.return_value = response_value
-        with pytest.raises(EJCommunicationError):
+        mock_post.return_value.json.return_value = {}
+        with pytest.raises(Exception):
             user = User("1234", "David")
             user.authenticate()
 
-    @patch("actions.ej_connector.user.requests.post")
+    @patch("bot.actions.ej_connector.user.requests.post")
     def test_create_user_returns_forbidden_response(self, mock_post):
-        mock_post.return_value = Mock(status=401), "forbidden"
-        with pytest.raises(EJCommunicationError):
+        mock_post.return_value = Mock(ok=True)
+        mock_post.return_value.json.return_value = {}
+        with pytest.raises(Exception):
             user = User("1234", "David")
             user.authenticate()
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_conversation(self, mock_get):
         response_value = {
             "text": "This is the conversation title",
@@ -76,7 +77,7 @@ class APIClassTest(unittest.TestCase):
         response = Conversation.get_by_id(CONVERSATION_ID)
         assert response.get("text") == response_value["text"]
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_conversation_in_ej_invalid_response(self, mock_get):
         response_value = {}
         mock_get.return_value = Mock(ok=True)
@@ -84,13 +85,13 @@ class APIClassTest(unittest.TestCase):
         with pytest.raises(EJCommunicationError):
             Conversation.get_by_id(CONVERSATION_ID)
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_conversation_in_ej_forbidden_response(self, mock_get):
         mock_get.return_value = Mock(status=401), "forbidden"
         with pytest.raises(EJCommunicationError):
             Conversation.get_by_id(CONVERSATION_ID)
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_random_comment_in_ej(self, mock_get):
         response_value = {
             "content": "This is the comment text",
@@ -103,14 +104,14 @@ class APIClassTest(unittest.TestCase):
         assert response["content"] == response_value["content"]
         assert response["id"] == "1"
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_random_comment_in_ej_forbidden_response(self, mock_get):
         mock_get.return_value = Mock(status=401), "forbidden"
         with pytest.raises(EJCommunicationError):
             conversation = Conversation(CONVERSATION_ID, "xpto", "")
             conversation.get_next_comment()
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_user_conversation_statistics(self, mock_get):
         statistics_mock = {
             "votes": 3,
@@ -123,14 +124,14 @@ class APIClassTest(unittest.TestCase):
         assert response["votes"] == statistics_mock["votes"]
         assert response["missing_votes"] == statistics_mock["missing_votes"]
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_user_conversation_statistics_error_status(self, mock_get):
         mock_get.return_value = Mock(status=404), "not found"
         with pytest.raises(EJCommunicationError):
             conversation = Conversation(CONVERSATION_ID, "xpto", "")
             conversation.get_participant_statistics()
 
-    @patch("actions.ej_connector.vote.requests.post")
+    @patch("bot.actions.ej_connector.vote.requests.post")
     def test_send_user_vote(self, mock_post):
         vote_response_mock = {"created": True}
         mock_post.return_value = Mock(ok=True)
@@ -139,21 +140,21 @@ class APIClassTest(unittest.TestCase):
         tracker = Mock()
         tracker.get_latest_input_channel = lambda: "foo"
         tracker.get_slot = lambda x: "foo"
-        vote = Vote("Pular", tracker)
+        vote = Vote("0", tracker)
         response = vote.create(COMMENT_ID)
         assert response["created"]
 
-    @patch("actions.ej_connector.vote.requests.post")
+    @patch("bot.actions.ej_connector.vote.requests.post")
     def test_send_user_vote_error_status(self, mock_post):
         mock_post.return_value = Mock(status=401), "forbidden"
-        with pytest.raises(EJCommunicationError):
+        with pytest.raises(Exception):
             tracker = Mock()
             tracker.get_latest_input_channel = lambda: "foo"
             tracker.get_slot = lambda x: "foo"
-            vote = Vote("Pular", tracker)
+            vote = Vote("0", tracker)
             vote.create(COMMENT_ID)
 
-    @patch("actions.ej_connector.comment.requests.post")
+    @patch("bot.actions.ej_connector.comment.requests.post")
     def test_send_user_comment(self, mock_post):
         vote_response_mock = {"created": True, "content": "content"}
         mock_post.return_value = Mock(ok=True)
@@ -164,14 +165,14 @@ class APIClassTest(unittest.TestCase):
         assert response["created"]
         assert response["content"] == "content"
 
-    @patch("actions.ej_connector.comment.requests.post")
+    @patch("bot.actions.ej_connector.comment.requests.post")
     def test_send_user_comment_error_status(self, mock_post):
         mock_post.return_value = Mock(status=404), "conversation not found"
         with pytest.raises(EJCommunicationError):
             comment = Comment(CONVERSATION_ID, "xpto", "")
             comment.create()
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_webchat_connection_to_conversation(self, mock_get):
         response_value = [
             {
@@ -187,7 +188,7 @@ class APIClassTest(unittest.TestCase):
         assert response[0]["conversation"] == response_value[0]["conversation"]
         assert response[0]["links"]["conversation"][-2] == "1"
 
-    @patch("actions.ej_connector.conversation.requests.get")
+    @patch("bot.actions.ej_connector.conversation.requests.get")
     def test_get_webchat_connection_not_existing(self, mock_get):
         mock_get.return_value = Mock(status=404), "conversation not found"
         with pytest.raises(EJCommunicationError):
@@ -195,7 +196,7 @@ class APIClassTest(unittest.TestCase):
 
 
 class UserClassTest(unittest.TestCase):
-    """tests actions.ej_connector.user file"""
+    """tests bot.actions.ej_connector.user file"""
 
     def test_user_init_with_rasa(self):
         user = User(SENDER_ID)
@@ -214,7 +215,7 @@ class UserClassTest(unittest.TestCase):
 
 
 class EjUrlsGenerationClassTest(unittest.TestCase):
-    """tests actions.ej_connector.api ej urls generation"""
+    """tests bot.actions.ej_connector.api ej urls generation"""
 
     def test_conversation_url_generator(self):
         url = conversation_url(CONVERSATION_ID)

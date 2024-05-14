@@ -18,7 +18,7 @@ train-nlu:
 
 # CORE
 train:
-	rasa train -vv --domain $(domain)
+	rasa train -vv --domain domain.yml
 
 # TESTS
 test:

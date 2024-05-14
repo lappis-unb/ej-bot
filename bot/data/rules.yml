@@ -11,23 +11,7 @@ rules:
       - active_loop: null
       - active_loop: action_restart
       
-  - rule: Help command
-    steps:
-      - intent: help
-      - action: utter_help
-  
   - rule: Show help fallback when low NLU confidence
     steps:
       - intent: nlu_fallback
       - action: action_customized_fallback
-
-  - rule: end voting form
-    condition:
-        - active_loop: vote_form
-    steps:
-      - action: vote_form
-      - active_loop: null
-      - action: action_follow_up_form
-      - action: utter_next_conversation
-      - action: utter_finish
-      - action: action_restart

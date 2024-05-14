@@ -1,27 +1,15 @@
-# This files contains your custom actions which can be used to run
-# custom Python code.
-#
-# See this gu"id"e on how to implement these action:
-# https://rasa.com/docs/rasa/custom-actions
-
-from .ej_connector.user import User
 import os
-import logging
 
+from actions.logger import custom_logger
 from rasa_sdk import Action
-from rasa_sdk.events import SlotSet, FollowupAction
-from .ej_connector import EJCommunicationError, Conversation
-from .utils import *
+from rasa_sdk.events import FollowupAction, SlotSet
 
-logger = logging.getLogger(__name__)
-
-from .setup_actions import *
-from .comment_actions import *
-from .vote_actions import *
+from .ej_connector import Conversation, EJCommunicationError
+from .ej_connector.user import User
 
 
 # TODO: Rename to ActionGetConversation
-class ActionSetupConversation(Action):
+class ActionGetConversation(Action):
     """
     When in socketio channel:
         Send request to EJ with current URL where the bot is hosted
@@ -32,7 +20,7 @@ class ActionSetupConversation(Action):
     """
 
     def name(self):
-        return "action_setup_conversation"
+        return "action_get_conversation"
 
     def run(self, dispatcher, tracker, domain):
         self.response = []
@@ -113,7 +101,7 @@ class ActionSetChannelInfo(Action):
         return "action_set_channel_info"
 
     def run(self, dispatcher, tracker, domain):
-        logger.debug("action ActionSetChannelInfo called")
+        custom_logger("action ActionSetChannelInfo called")
         channel = tracker.get_latest_input_channel()
         if tracker.get_latest_input_channel() == "rocketchat":
             if "agent" in tracker.latest_message["metadata"]:
@@ -123,13 +111,6 @@ class ActionSetChannelInfo(Action):
             return [
                 SlotSet("current_channel_info", channel),
                 SlotSet("bot_telegram_username", bot_telegram_username),
-            ]
-        if tracker.get_latest_input_channel() == "twilio":
-            bot_whatsapp_number = os.getenv("TWILIO_WHATSAPP")
-
-            return [
-                SlotSet("current_channel_info", channel),
-                SlotSet("bot_whatsapp_number", number_from_wpp(bot_whatsapp_number)),
             ]
 
         return [
