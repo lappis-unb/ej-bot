@@ -148,30 +148,14 @@ conversa e verifique se a requisição irá chegar no Rasa por meio da URL do Ng
 
 São utilizados comandos make para execução de diferentes contextos e ferramentas do bot, os principais são descritos a seguir:
 
-| Comando          | Descrição                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Comando          | Descrição |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| make prepare     | Realiza o build do ambiente e o treinamento do primeiro modelo. Sem especificar o domínio, é utilizado o domínio padrão (domain.default.yml). Para especificar outro domínio, por exemplo o boca de lobo, é necessário especificá-lo da seguinte forma: `make prepare domain=bocadelobo`. No momento, existem dois domínios diferentes, o `default` e o `bocadelobo`.                                                                                                         |
-| make train       | Realiza o treinamento dos modelos. É necessário rodar esse comando sempre que há alterações nos arquivos de domain, nlu, stories, rules ou config.yml. Sem especificar o domínio, é utilizado para o treinamento o domínio padrão (domain.default.yml). Para especificar outro domínio, por exemplo o boca de lobo, é necessário especificá-lo da seguinte forma: `make train domain=bocadelobo`. No momento, existem dois domínios diferentes, o `default` e o `bocadelobo`. |
-| make run-shell   | Abre o bot no terminal para realizar interações no terminal                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| make run-api     | Executa o bot no modo api, é utilizado para poder rodar instâncias como webchat, telegram e rocketchat. A api fica disponível em localhost:5006                                                                                                                                                                                                                                                                                                                               |
-| make run-actions | Executa a api de custom actions. É essa api que implementa toda a comunicação com a EJ e outros serviços externos ao bot.                                                                                                                                                                                                                                                                                                                                                     |
-| make clean       | Remove os containers e limpa o ambiente.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-
-# Containers
-
-A aplicação é dividida em diferentes containers do docker, que são listados e explicados sucintamente a seguir.
-
-## Coach
-
-Realiza o treinamento das modelos
-
-## Rasa
-
-Permite a execução do rasa no modo de api, shell.
-
-## Duckling
-
-Execute o servidor duckling que extrai entidades como e-mail, valores numéricos e urls
+| make prepare     | Realiza o build do ambiente e o treinamento do modelo NLU. |
+| make train       | Realiza apenas o treinamento dos modelos. É necessário rodar esse comando sempre que há alterações nos arquivos de domain, nlu, stories, rules ou config.yml.|
+| make run-shell   | Abre o bot no terminal para realizar interações no terminal |
+| make run-api     | Executa o bot no modo API. No ambiente local, ela ficará disponível na url `http://localhost:5006` |
+| make run-actions | Executa os módulos de backend (Actions). Esses módulos implementam a comunicação dot chatbot com a API da EJ e outros serviços externos ao bot. |
+| make clean       | Remove os containers e limpa o ambiente. |
 
 # Testes
 
@@ -185,5 +169,3 @@ A execução de testes também é realizada por meio de comandos make, listados 
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | make test          | Executa os testes listados no arquivo bot/tests/test_stories.yml. Esses testes são e2e, simulando a interação do usuário com o bot.                                                    |
 | make test-actions  | Executa os testes listados na pasta bot/tests/ que sejam do tipo python (.py). Esses testes são unitários, testando os métodos que são utilizados nas actions do bot.                  |
-| make test-nlu  | Executa o teste do NLU por meio da validação cruzada, que cria automaticamente várias divisões de treinamento/teste a partir das intents que foram criadas no arquivo bot/data/nlu.yml |
-| make run-test-core | Executa uma avaliação da modelo de diálogo treinada em um conjunto de histórias de teste, criado automaticamente pelo rasa analisando as histórias em bot/data/stories.yml             |

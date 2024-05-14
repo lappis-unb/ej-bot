@@ -8,14 +8,6 @@ install:
 	pip install -r ../requirements.txt && \
 	pip install -r ../x-requirements.txt
 
-# RASA X
-x:
-	rasa x
-
-# NLU
-train-nlu:
-	rasa train nlu -vv
-
 # CORE
 train:
 	rasa train -vv --domain domain.yml
@@ -27,16 +19,9 @@ test:
 test-actions:
 	python -m pytest
 
-test-nlu:
-	rasa test nlu --nlu data/nlu.yml --cross-validation
-
-test-core:
-	rasa test core --fail-on-prediction-errors --out results/results-core-test
-
 # VALIDACAO
 validate:
-	rasa data validate -vv --domain $(domain) --data data/ -vv
-
+	rasa data validate -vv --data data/ -vv
 
 # MENSAGEIROS
 shell:
