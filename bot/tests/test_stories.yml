@@ -12,38 +12,13 @@ stories:
   - action: action_set_channel_info
   - slot_was_set:
     - current_channel_info
-  - action: action_setup_conversation
+  - action: action_get_conversation
   - action: utter_introduce_ej
   - action: utter_show_topic_of_discussion
   - slot_was_set:
     - conversation_id
   - action: vote_form
   - active_loop: vote_form
-
-- story: User agree to send one comment during conversation
-  steps:
-  - action: utter_ask_if_wants_to_add_comment
-  - user: |
-      sim
-    intent: agree
-  - action: utter_ask_user_comment
-  - user: |
-      A cidade deveria ter mais opções de restaurantes
-    intent: add_new_comment
-  - action: action_set_new_comment
-  - slot_was_set:
-    - conversation_id
-  - action: vote_form
-  - active_loop: vote_form
-  
-- story: User disagree to send comment during conversation
-  steps:
-  - action: utter_ask_if_wants_to_add_comment
-  - user: |
-      não
-    intent: disagree
-  - action: utter_go_back_to_voting
-  - checkpoint: starts_voting
 
 - story: Start interaction with bot via webchat
   steps:
@@ -51,15 +26,8 @@ stories:
       [http://localhost:8000/](url)
     intent: url
   - action: utter_introduce_ej
-  - action: action_setup_conversation
+  - action: action_get_conversation
   - slot_was_set:
     - conversation_id
   - action: utter_show_topic_of_discussion
   - checkpoint: starts_voting
-
-- story: User wants help
-  steps:
-  - user: |
-      ajuda
-    intent: help
-  - action: utter_help

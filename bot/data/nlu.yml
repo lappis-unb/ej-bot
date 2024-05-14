@@ -16,44 +16,10 @@ nlu:
       - start [117](conversation_id)
       - start [999](conversation_id)
 
-  - intent: agree
+  - intent: comment_confirmation
     examples: |
       - sim
-      - concordo
-      - penso igual
-      - sou a favor
-      - de acordo
-      - positivo
-      - correto
-      - afirmativo
-      - concordar
-      - uhum
-      - com certeza
-      - claro
-      - topo
-      - topo sim
-      - ok
-      - pode ser
-      - bora
-      - Concordar
-      - vamos
-      
-  - intent: disagree
-    examples: |
       - não
-      - nao
-      - nunca
-      - jamais
-      - discordo
-      - discordar
-      - não concordo
-      - não quero
-      - não topo
-      - tô de boa
-      - nem
-      - não obg
-      - nao to de boa
-      - Discordar
 
   - intent: pass
     examples: |

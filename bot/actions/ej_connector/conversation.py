@@ -94,13 +94,6 @@ class Conversation:
         )
 
     @staticmethod
-    def intent_starts_new_conversation(tracker):
-        return (
-            tracker.latest_message.get("intent").get("name")
-            == "start_with_conversation_id"
-        )
-
-    @staticmethod
     def starts_conversation_from_another_link():
         """
         Rasa end a form when all slots are filled. This method
