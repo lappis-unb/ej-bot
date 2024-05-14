@@ -5,11 +5,17 @@ conversacional.
 
 O chatbot é implementado utilizando o [Framework Rasa](https://rasa.com/). Com ele, 
 é possível criar histórias, que são sequências de interações entre o chatbot e o participante.
-Ao interagir com o chatbot pelo WhatsApp, o usuário será capaz de:
+Ao interagir com o chatbot, o usuário será capaz de:
 
 - Receber uma mensagem de boas-vindas e visualizar o título da conversa.
 - Votar nos comentários da conversa.
 - Adicionar um novo comentário que será enviado para moderação.
+
+| Canal          | Imagem |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WhatsApp     | ![./img/whatsapp_sample.png](./img/whatsapp_sample.png) |
+| Telegram       | ![./img/telegram_sample.png](./img/telegram_sample.png)|
+
 
 [[_TOC_]]
 
