@@ -25,14 +25,18 @@ prepare: build train
 
 ############################## ENVIRONMENTS ##############################
 
-run-shell: run-duck ## Run bot in shell, sucessful when shows "Bot loaded. Type a message and press enter (use '/stop' to exit): "    
+run-duck:
+	docker-compose up -d duckling
+
+# Run duckling server that extract entities such as email, number and urls
+run-shell: run-duck
 	docker-compose run --name bot bot make shell
 
-## Run api locally, it is hosted in localhost:5006 and is used for webchat, telegram and rocketchat integrations
+# Run api locally, it is hosted in localhost:5006 and is used for webchat, telegram and rocketchat integrations
 run-api: run-duck
 	docker-compose up bot
 
-## Run actions server, as an api avaiable in localhost:5055
+# Run actions server, as an api avaiable in localhost:5055
 run-actions: 
 	docker-compose up actions
 
