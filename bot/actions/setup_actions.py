@@ -4,19 +4,14 @@ from actions.logger import custom_logger
 from rasa_sdk import Action
 from rasa_sdk.events import FollowupAction, SlotSet
 
-from .ej_connector import Conversation, EJCommunicationError
+from .ej_connector import Conversation
 from .ej_connector.user import User
 
 
-# TODO: Rename to ActionGetConversation
 class ActionGetConversation(Action):
     """
-    When in socketio channel:
-        Send request to EJ with current URL where the bot is hosted
-        Get conversation ID and Title in return
-    When in other channels:
-        Get already set slot conversation id and send it to EJ
-        to get corresponding conversation title
+    Authenticates the chatbot user on EJ API and requests initial conversation data.
+    This action is called on the beginner of every new conversation.
     """
 
     def name(self):
@@ -24,40 +19,18 @@ class ActionGetConversation(Action):
 
     def run(self, dispatcher, tracker, domain):
         self.response = []
-        if tracker.get_latest_input_channel() == "socketio":
-            bot_url = tracker.get_slot("url")
-            try:
-                conversation_data = Conversation.get_by_bot_url(bot_url)
-                if conversation_data:
-                    user = User(tracker.sender_id)
-                    user.authenticate()
-                    conversation_text = conversation_data.get("conversation").get(
-                        "text"
-                    )
-                    conversation_id = conversation_data.get("conversation").get("id")
-                    conversation = Conversation(
-                        conversation_id, conversation_text, user.token
-                    )
-                    self._set_slots_to_init_conversation(conversation, user)
-                else:
-                    self._dispatch_conversation_not_found(dispatcher)
-            except EJCommunicationError:
-                self._dispatch_communication_error_with_ej(dispatcher)
+        conversation_id = tracker.get_slot("conversation_id")
+        if conversation_id:
+            username = User.get_name_from_tracker_state(tracker.current_state())
+            user = User(tracker, name=username)
+            conversation_data = Conversation.get_by_id(conversation_id, user.tracker)
+            conversation_text = conversation_data.get("text")
+            conversation = Conversation(conversation_id, conversation_text, tracker)
+            user.authenticate()
+            self._set_slots_to_init_conversation(conversation, user)
         else:
-            conversation_id = tracker.get_slot("conversation_id")
-            if conversation_id:
-                username = User.get_name_from_tracker_state(tracker.current_state())
-                user = User(tracker.sender_id, name=username)
-                user.authenticate()
-                conversation_data = Conversation.get_by_id(conversation_id)
-                conversation_text = conversation_data.get("text")
-                conversation = Conversation(
-                    conversation_id, conversation_text, user.token
-                )
-                self._set_slots_to_init_conversation(conversation, user)
-            else:
-                dispatcher.utter_message(template="utter_no_selected_conversation")
-                return [FollowupAction("action_session_start")]
+            dispatcher.utter_message(template="utter_no_selected_conversation")
+            return [FollowupAction("action_session_start")]
         return self.response
 
     def _dispatch_communication_error_with_ej(self, dispatcher):
@@ -71,19 +44,11 @@ class ActionGetConversation(Action):
         return [FollowupAction("action_session_start")]
 
     def _set_slots_to_init_conversation(self, conversation, user):
-        statistics = conversation.get_participant_statistics()
-        first_comment = conversation.get_next_comment()
         self.response = [
             SlotSet("conversation_text", conversation.title),
-            SlotSet("conversation_id", conversation.id),
             SlotSet("conversation_id_cache", conversation.id),
-            SlotSet("number_voted_comments", statistics["votes"]),
-            SlotSet(
-                "number_comments", statistics["missing_votes"] + statistics["votes"]
-            ),
-            SlotSet("comment_text", first_comment["content"]),
-            SlotSet("current_comment_id", first_comment["id"]),
-            SlotSet("ej_user_token", user.token),
+            SlotSet("access_token", user.tracker.get_slot("access_token")),
+            SlotSet("refresh_token", user.tracker.get_slot("refresh_token")),
         ]
 
 

@@ -120,8 +120,8 @@ módulos do repositório [whatsapp_api_integration](https://gitlab.com/pencillab
 O endpoint utiliza esses módulos para enviar o texto digitado pelo usuário para o
 componente do Rasa responsável pelo processamento de linguagem natural.
 
-Com a conta de desenvolvedor configurada, atualize o arquivo `.env` do pacote
-`whatsapp_api_integration` com os valores disponibilizados no painel do Facebook.
+Com a conta de desenvolvedor configurada, atualize o arquivo `variables.env` 
+com os valores disponibilizados no painel do Facebook.
  
 ```
 WPP_AUTHORIZATION_TOKEN=<token de authorização do WhatsApp para API de mensagens>

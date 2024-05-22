@@ -11,7 +11,8 @@ CONVERSATIONS_URL = (
     f"{API_URL}/conversations/?is_promoted=true&participation_source=bot"
 )
 REGISTRATION_URL = f"{API_URL}/users/"
-AUTH_URL = f"{API_URL}/login/"
+AUTH_URL = f"{API_URL}/token/"
+REFRESH_TOKEN_URL = f"{API_URL}/refresh-token/"
 VOTES_URL = f"{API_URL}/votes/"
 COMMENTS_URL = f"{API_URL}/comments/"
 

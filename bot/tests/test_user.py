@@ -1,17 +1,16 @@
 import json
-import unittest
 
 from bot.actions.ej_connector.user import User
 
 
-class UserTest(unittest.TestCase):
-    def test_creating_user(self):
-        user = User("1234", "David")
+class TestUser:
+    def test_creating_user(self, tracker):
+        user = User(tracker, "David")
         assert user.name == "David"
         assert user.email == f"1234-opinion-bot@mail.com"
 
-    def test_serializing_user(self):
-        user = User("1234", "David")
+    def test_serializing_user(self, tracker):
+        user = User(tracker, "David")
         user_dict = user.serialize()
         assert json.loads(user_dict)["name"] == "David"
 

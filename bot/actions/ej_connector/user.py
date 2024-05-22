@@ -4,6 +4,7 @@ from typing import Any, Text
 import requests
 
 from actions.logger import custom_logger
+from actions.ej_connector.ej_api import EjApi
 
 from .constants import *
 
@@ -15,16 +16,26 @@ class User(object):
 
     ANONYMOUS_USER_NAME = "Participante anônimo"
 
-    def __init__(self, tracker_sender_id, name=ANONYMOUS_USER_NAME):
+    def __init__(self, tracker: Any, name=ANONYMOUS_USER_NAME):
         self.name = name
         self.display_name = name
-        self.tracker_sender_id = tracker_sender_id
-        self.password = f"{self.remove_special(tracker_sender_id)}-opinion-bot"
-        self.password_confirm = f"{self.remove_special(tracker_sender_id)}-opinion-bot"
+        self.tracker_sender_id = tracker.sender_id
+        self.password = f"{self.remove_special(tracker.sender_id)}-opinion-bot"
+        self.password_confirm = f"{self.remove_special(tracker.sender_id)}-opinion-bot"
+        self.ej_api = EjApi(tracker)
+        self.tracker = tracker
         self._set_email()
 
     def serialize(self):
-        return json.dumps(self.__dict__)
+        return json.dumps(
+            {
+                "name": self.name,
+                "display_name": self.display_name,
+                "password": self.password,
+                "password_confirm": self.password_confirm,
+                "email": self.email,
+            }
+        )
 
     def _set_email(self):
         if self.name != User.ANONYMOUS_USER_NAME:
@@ -38,16 +49,27 @@ class User(object):
         Differentiate user type of login (using phone number or anonymous)
         providing the current flow for conversation
         """
-        custom_logger(f"creating new user", data=self.__dict__)
+        access_token = self.tracker.get_slot("access_token")
+        refresh_token = self.tracker.get_slot("refresh_token")
+        custom_logger(f"TOKENS: {access_token} {refresh_token}")
+        if access_token and refresh_token:
+            return self.tracker
+
+        custom_logger(f"creating new user", data=self.serialize())
         response = None
         try:
-            response = self._get_or_create_user(AUTH_URL, self.serialize())
-            self.token = response.json()["token"]
+            response = self.ej_api.request(AUTH_URL, self.serialize())
+            access_token = response.json()["access_token"]
+            refresh_token = response.json()["refresh_token"]
         except Exception:
-            response = self._get_or_create_user(REGISTRATION_URL, self.serialize())
-            self.token = response.json()["token"]
+            response = self.ej_api.request(REGISTRATION_URL, self.serialize())
+            access_token = response.json()["access_token"]
+            refresh_token = response.json()["refresh_token"]
         except:
             raise Exception("COULD NOT CREATE USER")
+
+        self.tracker.slots["access_token"] = access_token
+        self.tracker.slots["refresh_token"] = refresh_token
 
     def _get_or_create_user(self, url: Text, payload: Any) -> Any:
         return requests.post(

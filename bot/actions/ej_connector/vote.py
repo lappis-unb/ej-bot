@@ -1,12 +1,15 @@
 from dataclasses import dataclass
 import json
-from typing import List, Text, Any
+from typing import Any, Text
+from rasa_sdk import Tracker
+
 import requests
+
+from actions.logger import custom_logger
+from rasa_sdk import Tracker
 
 from .constants import *
 from .routes import auth_headers
-
-from actions.logger import custom_logger
 
 
 @dataclass
@@ -14,13 +17,13 @@ class Vote:
     """Vote controls voting requests to EJ API and some validations during bot execution."""
 
     vote_slot_value: Text
-    tracker: Any
+    tracker: Tracker
     channel: Text = ""
     token: Text = ""
 
     def __post_init__(self):
         self.channel = self.tracker.get_latest_input_channel()
-        self.token = self.tracker.get_slot("ej_user_token")
+        self.token = self.tracker.get_slot("access_token")
 
     def is_valid(self):
         return str(self.vote_slot_value) in VALID_VOTE_VALUES
@@ -48,13 +51,19 @@ class Vote:
                 raise EJCommunicationError
 
     @staticmethod
-    def continue_voting():
+    def continue_voting(tracker: Tracker):
         """
         Rasa ends a form when all slots are filled. This method
         fills vote slot with None value,
         forcing the form to keep sending comments to user voting.
         """
-        return {"vote": None, "comment_confirmation": None, "comment": None}
+        return {
+            "vote": None,
+            "comment_confirmation": None,
+            "comment": None,
+            "access_token": tracker.get_slot("access_token"),
+            "refresh_token": tracker.get_slot("refresh_token"),
+        }
 
     @staticmethod
     def stop_voting():
