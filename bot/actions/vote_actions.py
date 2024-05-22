@@ -60,7 +60,6 @@ class ActionAskVote(Action):
             next_comment,
             user_voted_comments,
             total_comments,
-            tracker,
         )
 
         message = Comment.get_utter(metadata, comment_title)

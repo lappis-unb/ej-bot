@@ -77,9 +77,7 @@ class Conversation:
         return statistics["comments"]
 
     @staticmethod
-    def get_comment_title(comment, user_voted_comments, total_comments, tracker):
-        if tracker.get_latest_input_channel() == "twilio":
-            return f"{'*'+comment['content']+'*'} \n O que você acha disso ({user_voted_comments}/{total_comments})?"
+    def get_comment_title(comment, user_voted_comments, total_comments):
         return f"{comment['content']} \n O que você acha disso ({user_voted_comments}/{total_comments})?"
 
     @staticmethod
