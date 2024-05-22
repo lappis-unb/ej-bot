@@ -4,6 +4,8 @@ from typing import Text
 
 import requests
 
+from rasa_sdk import Tracker
+
 from .constants import *
 from .routes import auth_headers
 
@@ -13,10 +15,10 @@ logger = logging.getLogger(__name__)
 class Comment:
     """Comment controls commenting requests to EJ API and some validations during bot execution."""
 
-    def __init__(self, conversation_id: str, comment_text: str, token: str):
+    def __init__(self, conversation_id: str, comment_text: str, tracker: Tracker):
         self.conversation_id = conversation_id
         self.text = comment_text
-        self.token = token
+        self.token = tracker.get_slot("access_token")
 
     def create(self):
         if len(self.text) > 3:

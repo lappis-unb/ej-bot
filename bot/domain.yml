@@ -2,7 +2,7 @@ version: "3.1"
 config:
   store_entities_as_slots: true
 session_config:
-  session_expiration_time: 5
+  session_expiration_time: 10
   carry_over_slots_to_new_session: true
 intents:
   - comment_confirmation:
@@ -39,7 +39,13 @@ slots:
     influence_conversation: false
     mappings:
     - type: custom
-  ej_user_token:
+  refresh_token:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  access_token:
     type: text
     initial_value: null
     influence_conversation: false
@@ -58,6 +64,12 @@ slots:
     mappings:
     - type: from_entity
       entity: conversation_id
+  conversation_statistics:
+    type: any
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
   conversation_text:
     type: text
     initial_value: null
@@ -80,7 +92,7 @@ slots:
     min_value: 0.0
     mappings:
     - type: custom
-  number_voted_comments:
+  user_voted_comments:
     type: rasa.shared.core.slots.FloatSlot
     initial_value: null
     influence_conversation: false

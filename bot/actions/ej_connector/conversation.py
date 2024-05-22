@@ -1,15 +1,15 @@
 import logging
-import requests
+from typing import Any
+from rasa_sdk import Tracker
 
 from .constants import EJCommunicationError
 from .routes import (
     webchat_domain_url,
     user_statistics_url,
-    auth_headers,
-    HEADERS,
     conversation_random_comment_url,
     conversation_url,
 )
+from actions.ej_connector.ej_api import EjApi
 
 
 logger = logging.getLogger(__name__)
@@ -18,24 +18,25 @@ logger = logging.getLogger(__name__)
 class Conversation:
     """Conversation controls requests to EJ API and some validations during bot execution."""
 
-    def __init__(self, conversation_id, conversation_title, token=None):
+    def __init__(self, conversation_id, conversation_title: str, tracker: Tracker):
         self.id = conversation_id
         self.title = conversation_title
-        self.token = token
+        self.ej_api = EjApi(tracker)
 
     @staticmethod
     def get_by_bot_url(url):
+        ej_api = EjApi(tracker=None)
         try:
-            response = requests.get(webchat_domain_url(url), headers=HEADERS)
-            response = response.json()
+            response = ej_api.request(webchat_domain_url(url))
+            return response.json()
         except:
             raise EJCommunicationError
-        return response
 
     @staticmethod
-    def get_by_id(conversation_id):
+    def get_by_id(conversation_id, tracker: Any):
+        ej_api = EjApi(tracker)
         try:
-            response = requests.get(conversation_url(conversation_id), headers=HEADERS)
+            response = ej_api.request(conversation_url(conversation_id))
             conversation = response.json()
             if len(conversation) == 0:
                 raise EJCommunicationError
@@ -46,7 +47,7 @@ class Conversation:
     def get_participant_statistics(self):
         try:
             url = user_statistics_url(self.id)
-            response = requests.get(url, headers=auth_headers(self.token))
+            response = self.ej_api.request(url)
             response = response.json()
         except:
             raise EJCommunicationError
@@ -55,7 +56,7 @@ class Conversation:
     def get_next_comment(self):
         url = conversation_random_comment_url(self.id)
         try:
-            response = requests.get(url, headers=auth_headers(self.token))
+            response = self.ej_api.request(url)
             comment = response.json()
             comment_url_as_list = comment["links"]["self"].split("/")
             comment["id"] = comment_url_as_list[len(comment_url_as_list) - 2]
@@ -72,14 +73,14 @@ class Conversation:
         return statistics["total_comments"]
 
     @staticmethod
-    def get_current_comment(statistics):
+    def get_user_voted_comments_counter(statistics):
         return statistics["comments"]
 
     @staticmethod
-    def get_comment_title(comment_content, current_comment, total_comments, tracker):
+    def get_comment_title(comment, user_voted_comments, total_comments, tracker):
         if tracker.get_latest_input_channel() == "twilio":
-            return f"{'*'+comment_content['content']+'*'} \n O que você acha disso ({current_comment}/{total_comments})?"
-        return f"{comment_content['content']} \n O que você acha disso ({current_comment}/{total_comments})?"
+            return f"{'*'+comment['content']+'*'} \n O que você acha disso ({user_voted_comments}/{total_comments})?"
+        return f"{comment['content']} \n O que você acha disso ({user_voted_comments}/{total_comments})?"
 
     @staticmethod
     def user_wants_to_stop_participation(vote_slot_value):
@@ -88,7 +89,7 @@ class Conversation:
     @staticmethod
     def time_to_ask_to_add_comment(statistics):
         total_comments = Conversation.get_total_comments(statistics)
-        current_comment = Conversation.get_current_comment(statistics)
+        current_comment = Conversation.get_user_voted_comments_counter(statistics)
         return (total_comments >= 4 and current_comment == 4) or (
             total_comments < 4 and current_comment == 2
         )

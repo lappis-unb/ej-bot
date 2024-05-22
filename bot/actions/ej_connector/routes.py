@@ -9,7 +9,7 @@ HEADERS = {
 
 def auth_headers(token):
     headers = HEADERS.copy()
-    headers["Authorization"] = f"Token {token}"
+    headers["Authorization"] = f"Bearer {token}"
     return headers
 
 

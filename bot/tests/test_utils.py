@@ -1,16 +1,14 @@
-import unittest
-
 from bot.actions.ej_connector.comment import Comment
-
-from .test_ej_connector import MockedTracker
 
 from bot.actions.ej_connector.constants import *
 from bot.actions.ej_connector.conversation import Conversation
 from bot.actions.ej_connector.vote import Vote
 from bot.actions.ej_connector.user import User
 
+TOKEN = "mock_token_value"
 
-class UtilsTest(unittest.TestCase):
+
+class TestUtils:
     def test_vote_values_list(self):
         values = ["1", "-1", "0"]
         assert values == VALID_VOTE_VALUES
@@ -18,29 +16,28 @@ class UtilsTest(unittest.TestCase):
     def test_stop_participation(self):
         assert Conversation.user_wants_to_stop_participation("parar") == True
 
-    def test_vote_is_valid(self):
-        mocked_tracker = MockedTracker()
-        vote = Vote("1", mocked_tracker)
+    def test_vote_is_valid(self, tracker):
+        vote = Vote("1", tracker)
         assert vote.is_valid() == True
 
-    def test_vote_is_invalid(self):
-        mocked_tracker = MockedTracker()
-        vote = Vote("xpto", mocked_tracker)
+    def test_vote_is_invalid(self, tracker):
+        vote = Vote("xpto", tracker)
         assert vote.is_valid() == False
 
-    def test_continue_voting(self):
-        assert Vote.continue_voting() == {
+    def test_continue_voting(self, tracker):
+        assert Vote.continue_voting(tracker) == {
             "vote": None,
             "comment_confirmation": None,
             "comment": None,
+            "access_token": "1234",
+            "refresh_token": "1234",
         }
 
     def test_stop_voting(self):
         assert Vote.stop_voting() == {"vote": "parar"}
 
-    def test_finished_voting(self):
-        mocked_tracker = MockedTracker()
-        vote = Vote("Discordar", mocked_tracker)
+    def test_finished_voting(self, tracker):
+        vote = Vote("Discordar", tracker)
         assert vote.finished_voting() == {"vote": "discordar"}
 
     def test_user_have_comments_to_vote(self):
@@ -65,8 +62,8 @@ class UtilsTest(unittest.TestCase):
         assert "text" in utter
         assert message == utter["text"]
 
-    def test_remove_special(self):
-        user = User("1234")
+    def test_remove_special(self, tracker):
+        user = User(tracker, "1234")
         assert ":" not in user.remove_special("sdf:adsf")
         assert "+" not in user.remove_special("sdf+adsf")
         assert "+" not in user.remove_special("sdf+:adsf")
