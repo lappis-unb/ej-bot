@@ -83,9 +83,8 @@ URL https que o Telegram irá utilizar para enviar os eventos.
 ```
 TELEGRAM_TOKEN=<token que o BotFather vai gerar>
 TELEGRAM_BOT_NAME=<nome do bot que você criou>
-TELEGRAM_WEBHOOK_URL=<url https do ngrok>
+TELEGRAM_WEBHOOK_URL=<url https do ngrok>/webhooks/telegram/webhook
 ```
-
 Após alterar as variáveis, reinicie o módulo actions e a API do Rasa.
 
 **2. Teste a conexão com o Telegram**
@@ -140,7 +139,8 @@ Você precisará apontar para a porta `5006`, que é a porta utilizada pela API 
 $ ./ngrok http 5006
 ```
 
-No painel de desenvolvedor, inclua a URL https do Ngrok com o path para o endpoint do WhatsApp.
+No painel de desenvolvedor, inclua a URL https do Ngrok com a subrota `/webhooks/whatsapp/webhook`
+para o endpoint do WhatsApp .
 
 ![configuração do webhook](./img/facebook_webhhok.png)
 
