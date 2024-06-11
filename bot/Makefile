@@ -25,7 +25,7 @@ validate:
 
 # MENSAGEIROS
 shell:
-	rasa shell -m models/ -vv --endpoints endpoints.yml --port 5006
+	rasa shell -m models/ -vv --endpoints endpoints.yml --port 5005
 
 api:
 	rasa run -m models/ -vv --credentials credentials.${ENV}.yml --endpoints endpoints.yml --enable-api --port 5006 --auth-token thisismysecret --cors "*"

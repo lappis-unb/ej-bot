@@ -1,6 +1,9 @@
 import os
+from pathlib import Path
 
+import yaml
 from actions.logger import custom_logger
+
 from rasa_sdk import Action
 from rasa_sdk.events import FollowupAction, SlotSet
 
@@ -52,32 +55,21 @@ class ActionGetConversation(Action):
         ]
 
 
-class ActionSetChannelInfo(Action):
-    """
-    Rasa set current user channel on tracker.get_latest_input_channel()
-    but it cannot read nuances such as:
-        - Being on a private or group chat on telegram or rocketchat
-        - Being on rocketchat livechat or any other kind of chat
-    This kind of data is set on message metadata, and we access it to
-    set current channel with more detail
-    """
-
+class ActionIntroduceEj(Action):
     def name(self):
-        return "action_set_channel_info"
+        return "action_introduce_ej"
 
     def run(self, dispatcher, tracker, domain):
-        custom_logger("action ActionSetChannelInfo called")
-        channel = tracker.get_latest_input_channel()
-        if tracker.get_latest_input_channel() == "rocketchat":
-            if "agent" in tracker.latest_message["metadata"]:
-                channel = "rocket_livechat"
-        if tracker.get_latest_input_channel() == "telegram":
-            bot_telegram_username = os.getenv("TELEGRAM_BOT_NAME")
-            return [
-                SlotSet("current_channel_info", channel),
-                SlotSet("bot_telegram_username", bot_telegram_username),
-            ]
+        actions_path = os.path.dirname(os.path.realpath(__file__))
+        path = Path(actions_path)
+        messages = str(path.parent.absolute()) + "/messages.yml"
+        text: str = ""
+        with open(messages) as file:
+            messages = yaml.safe_load(file)
+            bot_name = os.getenv("BOT_NAME")
+            if not bot_name:
+                bot_name = "Default"
+            text = messages.get(bot_name).get("introduction")
+            dispatcher.utter_message(text=text)
 
-        return [
-            SlotSet("current_channel_info", channel),
-        ]
+        return []

@@ -28,10 +28,6 @@ prepare: build train
 run-duck:
 	docker-compose up -d duckling
 
-# Run duckling server that extract entities such as email, number and urls
-run-shell: run-duck
-	docker-compose run --name bot bot make shell
-
 # Run api locally, it is hosted in localhost:5006 and is used for webchat, telegram and rocketchat integrations
 run-api: run-duck
 	docker-compose up bot

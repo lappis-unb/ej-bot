@@ -7,7 +7,7 @@ stories:
       - intent: url
       - slot_was_set:
         - url
-      - action: utter_introduce_ej
+      - action: action_introduce_ej
       - action: action_get_conversation
       - slot_was_set:
         - conversation_id
@@ -23,7 +23,7 @@ stories:
       - slot_was_set:
         - current_channel_info: 'telegram'
       - action: action_get_conversation
-      - action: utter_introduce_ej
+      - action: action_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
     
@@ -36,7 +36,7 @@ stories:
       - slot_was_set:
         - current_channel_info: 'whatsapp'
       - action: action_get_conversation
-      - action: utter_introduce_ej
+      - action: action_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 

@@ -22,7 +22,11 @@ class Vote:
     token: Text = ""
 
     def __post_init__(self):
-        self.channel = self.tracker.get_latest_input_channel()
+        input_channel = self.tracker.get_latest_input_channel()
+        if input_channel == "cmdline":
+            self.channel = "unknown"
+        else:
+            self.channel = input_channel
         self.token = self.tracker.get_slot("access_token")
 
     def is_valid(self):
