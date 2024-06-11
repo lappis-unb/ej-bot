@@ -19,8 +19,6 @@ intents:
       use_entities: true
   - welcome:
       use_entities: true
-  - url:
-      use_entities: true
   - help:
       use_entities: true
   - start_with_conversation_id:
@@ -29,7 +27,6 @@ intents:
       ignore_entities:
       - conversation_id
 entities:
-  - url
   - current_channel_info
   - conversation_id
 slots:
@@ -134,13 +131,6 @@ slots:
     mappings:
     - type: from_entity
       entity: current_channel_info
-  url:
-    type: text
-    initial_value: null
-    influence_conversation: false
-    mappings:
-    - type: from_entity
-      entity: url
   bot_whatsapp_number:
     type: text
     initial_value: null

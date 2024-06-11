@@ -2,18 +2,6 @@ version: "3.1"
 
 stories:
 
-  - story: participant join conversation on webchat
-    steps:
-      - intent: url
-      - slot_was_set:
-        - url
-      - action: action_introduce_ej
-      - action: action_get_conversation
-      - slot_was_set:
-        - conversation_id
-      - action: utter_show_topic_of_discussion
-      - checkpoint: starts_voting
-
   - story: participant join conversation on telegram
     steps:
       - intent: start_with_conversation_id

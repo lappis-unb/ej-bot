@@ -47,23 +47,6 @@ nlu:
       - cansei de responder
       - não quero mais responder
   
-  - intent: url
-    examples: |
-      - https://cidadedemocratica.org.br
-      - https://sitedoparceiro.com.br/paginadecoleta/ej
-      - https://sitedoparceiro.org.br/paginadecoleta
-      - http://localhost:8001
-      - http://localhost:8002
-      - http://localhost:8000
-      - http://other.com.br/
-      - http://localhost:8000/contatopencillabscombr/conversations/74/contato/tools/chatbot/webchat-preview 
-      - http://localhost:8000/ucccampanhagmailcom/conversations/90/contato/tools/chatbot/webchat-preview 
-      - http://localhost:8000/davidcarloscombr/conversations/101/contato/tools/chatbot/webchat-preview 
-      - http://localhost:8000/ucccampanhagmailcom/conversations/200/contato/tools/chatbot/webchat-preview 
-      - https://ejparticipe.org/ucccampanhagmailcom/conversations/200/contato/tools/chatbot/webchat-preview 
-      - https://ejplatform.pencillabs.com.br/ucccampanhagmailcom/conversations/200/contato/tools/chatbot/webchat-preview 
-      - https://ejplatform.pencillabs.com.br/davidcarloscombr/conversations/101/contato/tools/chatbot/webchat-preview 
-
   - intent: help
     examples: |
       - ajuda
