@@ -2,7 +2,6 @@ version: "3.1"
 nlu:
   - intent: start_with_conversation_id
     examples: |
-      - start
       - start [433](conversation_id)
       - start [500](conversation_id)
       - start [2](conversation_id)
@@ -15,6 +14,10 @@ nlu:
       - start [83](conversation_id)
       - start [117](conversation_id)
       - start [999](conversation_id)
+      - start [2](conversation_id)
+      - start [3](conversation_id)
+      - start [4](conversation_id)
+      - start [239](conversation_id)
 
   - intent: comment_confirmation
     examples: |
@@ -49,16 +52,18 @@ nlu:
   
   - intent: help
     examples: |
+      - start
+      - /start
+      - começar
+      - iniciar
       - ajuda
+      - ajudar
+      - how it works
+      - como funciona
       - help
       - comandos disponíveis
       - quais comandos posso usar?
-      - oi
-      - olá
       - participar
-      - selecionarconversa
-      - listar
-      - listarconversas
 
   - intent: out_of_context
     examples: |
