@@ -1,7 +1,11 @@
-#### This file contains tests to evaluate that your bot behaves as expected.
-#### If you want to learn more, please see the docs: https://rasa.com/docs/rasa/testing-your-assistant
-
 stories:
+- story: User interacts with bot without the conversation ID.
+  steps:
+  - user: |
+      start
+    intent: help
+  - action: utter_help
+
 - story: User joins conversation to vote
   steps:
   - user: |
@@ -20,14 +24,26 @@ stories:
   - action: vote_form
   - active_loop: vote_form
 
-- story: Start interaction with bot via webchat
+- story: User voted in all comments
   steps:
   - user: |
-      [http://localhost:8000/](url)
-    intent: url
-  - action: action_introduce_ej
-  - action: action_get_conversation
+      start [5](conversation_id)
+    intent: start_with_conversation_id
   - slot_was_set:
     - conversation_id
+  - action: action_set_channel_info
+  - slot_was_set:
+    - current_channel_info
+  - action: action_get_conversation
+  - action: action_introduce_ej
   - action: utter_show_topic_of_discussion
-  - checkpoint: starts_voting
+  - slot_was_set:
+    - conversation_id
+  - action: vote_form
+  - active_loop: vote_form
+  - slot_was_set:
+    - vote
+  - slot_was_set:
+    - comment_confirmation
+  - slot_was_set:
+    - comment
