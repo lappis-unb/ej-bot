@@ -60,6 +60,10 @@ nos endpoints da EJ.
 Ambos os comandos precisam ser executados em parelelo, para o correto funcionamento do chatbot.
 Verifique se o Rasa está rodando acessando `http://localhost:5006`.
 
+# Testando o chatbot via shell
+
+Após configurar a API e o servidor de Actions, é possível interagir com o chatbot por meio
+do shell do Rasa, basta executar o comando `make shell`.
 
 # Integração no Telegram
 
@@ -124,7 +128,7 @@ com os valores disponibilizados no painel do Facebook.
  
 ```
 WPP_AUTHORIZATION_TOKEN=<token de authorização do WhatsApp para API de mensagens>
-WPP_VERIFY_TOKEN=1234=<token de verificação aleatório>
+WPP_VERIFY_TOKEN=<token de verificação aleatório>
 WPP_PHONE_NUMBER_IDENTIFIER=<identificador do número de telefone de testes>
 ```
 
