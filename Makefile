@@ -29,6 +29,10 @@ run-duck:
 	docker-compose up -d duckling
 
 # Run api locally, it is hosted in localhost:5006 and is used for webchat, telegram and rocketchat integrations
+
+run-redis:
+	docker-compose up redis
+
 run-api: run-duck
 	docker-compose up bot
 

@@ -1,2 +1,6 @@
+tracker_store:
+  type: redis
+  url: ${REDIS_HOST}
+  port: ${REDIS_PORT}
 action_endpoint:
   url: ${ACTIONS_SERVER_URL}

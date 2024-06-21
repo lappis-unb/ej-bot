@@ -191,6 +191,8 @@ responses:
   - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_advise_participant_to_join_again:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
+  utter_invalid_vote_during_participation:
+  - text: "A sua resposta nesse comentário não é uma resposta válida. Vou te reenviar o comentário."
 actions:
 - action_introduce_ej
 - action_ask_vote

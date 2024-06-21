@@ -144,7 +144,8 @@ $ ./ngrok http 5006
 ```
 
 No painel de desenvolvedor, inclua a URL https do Ngrok com a subrota `/webhooks/whatsapp/webhook`
-para o endpoint do WhatsApp .
+para o endpoint do WhatsApp. Não esqueça de habilitar os eventos de webhook no painel de desenvolvedor,
+caso contrário, mesmo enviando mensagens na conversa, a API do rasa não receberá nenhuma requisição.
 
 ![configuração do webhook](./img/facebook_webhhok.png)
 
