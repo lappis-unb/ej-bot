@@ -192,7 +192,7 @@ responses:
   utter_advise_participant_to_join_again:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
   utter_invalid_vote_during_participation:
-  - text: "A sua resposta nesse comentário não é uma resposta válida. Vou te reenviar o comentário."
+  - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_text}** não foi válida. Poderia responder novamente?"
 actions:
 - action_introduce_ej
 - action_ask_vote

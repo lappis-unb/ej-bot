@@ -151,7 +151,6 @@ class ValidateVoteForm(FormValidationAction):
             return Comment.pause_to_ask_comment(slot_value)
 
         vote = Vote(slot_value, tracker)
-
         if vote.is_valid():
             custom_logger(f"POST vote to EJ API: {vote}")
             vote_data = vote.create(tracker.get_slot("current_comment_id"))

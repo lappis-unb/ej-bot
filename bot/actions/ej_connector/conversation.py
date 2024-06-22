@@ -85,12 +85,15 @@ class Conversation:
         return str(vote_slot_value).upper() == "PARAR"
 
     @staticmethod
-    def time_to_ask_to_add_comment(statistics):
-        total_comments = Conversation.get_total_comments(statistics)
-        current_comment = Conversation.get_user_voted_comments_counter(statistics)
-        return (total_comments >= 4 and current_comment == 4) or (
-            total_comments < 4 and current_comment == 2
-        )
+    def time_to_ask_to_add_comment(statistics, tracker: Tracker) -> bool:
+        comment_confirmation = tracker.get_slot("comment_confirmation")
+        if not comment_confirmation:
+            total_comments = Conversation.get_total_comments(statistics)
+            current_comment = Conversation.get_user_voted_comments_counter(statistics)
+            return (total_comments >= 4 and current_comment == 4) or (
+                total_comments < 4 and current_comment == 2
+            )
+        return False
 
     @staticmethod
     def starts_conversation_from_another_link():
