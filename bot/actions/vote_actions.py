@@ -144,23 +144,26 @@ class ValidateVoteForm(FormValidationAction):
         conversation = Conversation(conversation_id, conversation_text, tracker)
         statistics = conversation.get_participant_statistics()
 
-        if Conversation.time_to_ask_to_add_comment(statistics):
+        vote = Vote(slot_value, tracker)
+
+        if vote.is_valid():
+            custom_logger(f"POST vote to EJ API: {vote}")
+            vote_data = vote.create(tracker.get_slot("current_comment_id"))
+            self._dispatch_save_participant_vote(dispatcher, vote_data)
+        else:
+            dispatcher.utter_message(template="utter_invalid_vote_during_participation")
+            return Vote.continue_voting(tracker)
+
+        if Conversation.time_to_ask_to_add_comment(statistics, tracker):
             custom_logger(
                 f"TIME TO ASK COMMENT {Comment.pause_to_ask_comment(slot_value)}"
             )
             return Comment.pause_to_ask_comment(slot_value)
 
-        vote = Vote(slot_value, tracker)
         if vote.is_valid():
-            custom_logger(f"POST vote to EJ API: {vote}")
-            vote_data = vote.create(tracker.get_slot("current_comment_id"))
-            self._dispatch_save_participant_vote(dispatcher, vote_data)
             return self._dispatch_show_next_comment(
                 dispatcher, statistics, vote, tracker
             )
-        else:
-            dispatcher.utter_message(template="utter_invalid_vote_during_participation")
-            return Vote.continue_voting(tracker)
 
     def _dispatch_save_participant_vote(self, dispatcher, vote_data):
         if vote_data.get("created"):
