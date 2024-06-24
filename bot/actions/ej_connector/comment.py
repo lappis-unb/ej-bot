@@ -59,6 +59,13 @@ class Comment:
         # channel is livechat, can't render buttons
         return {"text": comment_title}
 
+    def is_internal(self):
+        """
+        return true if self.text is equall to '-'.
+        The '-' character is used to stop the vote form and request a new EJ conversation.
+        """
+        return str(self.text) == "-"
+
     @staticmethod
     def get_buttons_utter(comment_title):
         buttons = [

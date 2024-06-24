@@ -116,9 +116,13 @@ class ValidateVoteForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-        user_new_comment = tracker.latest_message["text"]
+        user_comment = tracker.latest_message["text"]
+
+        if Conversation.user_requested_new_conversation(user_comment):
+            return Comment.resume_voting("")
+
         conversation_id = tracker.get_slot("conversation_id_cache")
-        comment = Comment(conversation_id, user_new_comment, tracker)
+        comment = Comment(conversation_id, user_comment, tracker)
         try:
             comment.create()
             dispatcher.utter_message(template="utter_sent_comment")
@@ -137,7 +141,7 @@ class ValidateVoteForm(FormValidationAction):
 
         if Conversation.user_wants_to_stop_participation(slot_value):
             custom_logger(f"Stoping voting because of slot_value {slot_value}")
-            return Vote.stop_voting()
+            return Vote.finished_voting()
 
         conversation_id = tracker.get_slot("conversation_id_cache")
         conversation_text = tracker.get_slot("conversation_text")
@@ -146,11 +150,20 @@ class ValidateVoteForm(FormValidationAction):
 
         vote = Vote(slot_value, tracker)
 
+        if Conversation.user_requested_new_conversation(slot_value):
+            finished_voting_slots = vote.finished_voting()
+            action_restart_slot = Conversation.force_nlu_restart(slot_value)
+            return {**finished_voting_slots, **action_restart_slot}
+
         if vote.is_valid():
             custom_logger(f"POST vote to EJ API: {vote}")
             vote_data = vote.create(tracker.get_slot("current_comment_id"))
             self._dispatch_save_participant_vote(dispatcher, vote_data)
         else:
+            if vote.is_internal():
+                return self._dispatch_show_next_comment(
+                    dispatcher, statistics, vote, tracker
+                )
             dispatcher.utter_message(template="utter_invalid_vote_during_participation")
             return Vote.continue_voting(tracker)
 
@@ -170,11 +183,11 @@ class ValidateVoteForm(FormValidationAction):
             dispatcher.utter_message(template="utter_vote_received")
 
     def _dispatch_show_next_comment(
-        self, dispatcher, statistics, voting_helper, tracker
+        self, dispatcher, statistics, vote: Vote, tracker: Tracker
     ):
         if not Conversation.no_comments_left_to_vote(statistics):
             return Vote.continue_voting(tracker)
         else:
             dispatcher.utter_message(template="utter_voted_all_comments")
             dispatcher.utter_message(template="utter_thanks_participation")
-            return voting_helper.finished_voting()
+            return vote.finished_voting()

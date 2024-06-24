@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import yaml
-from actions.logger import custom_logger
 
 from rasa_sdk import Action
 from rasa_sdk.events import FollowupAction, SlotSet

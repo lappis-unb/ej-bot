@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 import json
-from typing import Any, Text
-from rasa_sdk import Tracker
+from typing import Text
 
 import requests
 
 from actions.logger import custom_logger
+from rasa_sdk import Tracker
 from rasa_sdk import Tracker
 
 from .constants import *
@@ -30,7 +30,17 @@ class Vote:
         self.token = self.tracker.get_slot("access_token")
 
     def is_valid(self):
+        """
+        return true if vote_slot_value is equal to on of VALID_VOTE_VALUES values.
+        """
         return str(self.vote_slot_value) in VALID_VOTE_VALUES
+
+    def is_internal(self):
+        """
+        return true if vote_slot_value is equall to '-'.
+        The '-' character is used to stop the vote form and request a new EJ conversation.
+        """
+        return str(self.vote_slot_value) == "-"
 
     def create(self, comment_id):
         if self.is_valid():
@@ -58,8 +68,8 @@ class Vote:
     def continue_voting(tracker: Tracker):
         """
         Rasa ends a form when all slots are filled. This method
-        fills vote slot with None value,
-        forcing the form to keep sending comments to user voting.
+        fills the vote_form slots with None values,
+        forcing Rasa to keep sending comments to voting.
         """
         return {
             "vote": None,
@@ -69,16 +79,5 @@ class Vote:
             "refresh_token": tracker.get_slot("refresh_token"),
         }
 
-    @staticmethod
-    def stop_voting():
-        """
-        Rasa end a form when all slots are filled. This method
-        fill vote slot with "parar" value, forcing the form to stop.
-
-        On ActionFollowUpForm class, whe check if vote is == parar, if so,
-        we send a utter finishing the conversation.
-        """
-        return {"vote": "parar"}
-
     def finished_voting(self):
-        return {"vote": str(self.vote_slot_value).lower()}
+        return {"vote": "-", "comment_confirmation": "-", "comment": "-"}

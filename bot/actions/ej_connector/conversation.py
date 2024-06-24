@@ -1,15 +1,16 @@
 import logging
-from typing import Any
+import re
+
+from actions.ej_connector.ej_api import EjApi
 from rasa_sdk import Tracker
 
-from .constants import EJCommunicationError
+from .constants import EJCommunicationError, START_CONVERSATION_COMMAND
 from .routes import (
-    webchat_domain_url,
-    user_statistics_url,
     conversation_random_comment_url,
     conversation_url,
+    user_statistics_url,
+    webchat_domain_url,
 )
-from actions.ej_connector.ej_api import EjApi
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class Conversation:
             raise EJCommunicationError
 
     @staticmethod
-    def get_by_id(conversation_id, tracker: Any):
+    def get_by_id(conversation_id, tracker: Tracker):
         ej_api = EjApi(tracker)
         try:
             response = ej_api.request(conversation_url(conversation_id))
@@ -43,6 +44,28 @@ class Conversation:
             return conversation
         except:
             raise EJCommunicationError
+
+    @staticmethod
+    def user_requested_new_conversation(user_input: str):
+        """
+        return true if user_input is equal to "/START_CONVERSATION_COMMAND ID".
+        """
+        pattern = re.compile(f"^{START_CONVERSATION_COMMAND}\s\d+")
+        return re.search(pattern, user_input)
+
+    @staticmethod
+    def force_nlu_restart(user_channel_input: str):
+        """
+        check if user_channel_input is a request to participant on a new conversation.
+        If so, returns a dictionary with updated NLU slots.
+        """
+        # user_channel_input must be /start <id>
+        conversation_id = user_channel_input.split(" ")[1]
+        return {
+            "restart_conversation": True,
+            "conversation_id_cache": conversation_id,
+            "conversation_id": conversation_id,
+        }
 
     def get_participant_statistics(self):
         try:

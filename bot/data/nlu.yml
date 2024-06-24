@@ -1,29 +1,17 @@
 version: "3.1"
 nlu:
+  - regex: conversation_id
+    examples: |
+      - \d+
   - intent: start_with_conversation_id
     examples: |
-      - start [433](conversation_id)
-      - start [500](conversation_id)
-      - start [2](conversation_id)
-      - start [13](conversation_id)
-      - start [56](conversation_id)
-      - start [33](conversation_id)
-      - start [23](conversation_id)
-      - start [7](conversation_id)
       - start [1](conversation_id)
-      - start [83](conversation_id)
-      - start [117](conversation_id)
-      - start [999](conversation_id)
-      - start [2](conversation_id)
-      - start [3](conversation_id)
-      - start [4](conversation_id)
-      - start [239](conversation_id)
-
+      - start [50](conversation_id)
+      - start [100](conversation_id)
   - intent: comment_confirmation
     examples: |
       - sim
       - não
-
   - intent: pass
     examples: |
       - não sei
@@ -32,7 +20,6 @@ nlu:
       - passa
       - próxima pergunta
       - Pular
-  
   - intent: stop
     examples: |
       - para
@@ -49,7 +36,6 @@ nlu:
       - podemos parar
       - cansei de responder
       - não quero mais responder
-  
   - intent: help
     examples: |
       - start
@@ -64,7 +50,6 @@ nlu:
       - comandos disponíveis
       - quais comandos posso usar?
       - participar
-
   - intent: out_of_context
     examples: |
       - Como tá o tempo?
@@ -81,7 +66,6 @@ nlu:
       - xpto
       - ihuul
       - uhuul
-  
   - intent: add_new_comment
     examples: |
       - a uva passa deve ser banida da ceia de natal

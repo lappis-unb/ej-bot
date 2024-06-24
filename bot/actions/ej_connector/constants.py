@@ -4,6 +4,7 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 VALID_VOTE_VALUES = ["1", "-1", "0"]
+START_CONVERSATION_COMMAND = "/start"
 
 HOST = os.getenv("EJ_HOST")
 API_URL = f"{HOST}/api/v1"

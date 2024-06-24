@@ -6,40 +6,16 @@ stories:
     steps:
       - intent: help
       - action: utter_help
-
-  - story: participant join conversation on telegram
-    steps:
-      - intent: start_with_conversation_id
-      - slot_was_set:
-        - conversation_id
-      - action: action_set_channel_info
-      - slot_was_set:
-        - current_channel_info: 'telegram'
-      - action: action_get_conversation
-      - action: action_introduce_ej
-      - action: utter_show_topic_of_discussion
-      - checkpoint: starts_voting
     
-  - story: participant join conversation on whatsapp
+  - story: participant joins a conversation
     steps:
       - intent: start_with_conversation_id
       - slot_was_set:
         - conversation_id
-      - action: action_set_channel_info
-      - slot_was_set:
-        - current_channel_info: 'whatsapp'
       - action: action_get_conversation
       - action: action_introduce_ej
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
-
-  - story: participant joins a invalid conversation
-    steps:
-      - checkpoint: starts_voting
-      - slot_was_set:
-        - conversation_id: null
-      - action: utter_advise_participant_to_join_again
-      - action: action_restart
 
   - story: starts voting form and accepts to add a new comment
     steps:
@@ -53,6 +29,21 @@ stories:
       - action: utter_ask_comment
       - action: vote_form
       - active_loop: vote_form
+
+
+  # This story will cover the cenary where the participant was voting on some
+  # conversation and, for some reason, typed /start ID 
+  # to initiate a voting for a different conversation.
+  - story: participant starts a new conversation inside vote form
+    steps:
+      - action: vote_form
+      - active_loop: null
+      - slot_was_set:
+        - restart_conversation: True
+      - action: action_get_conversation
+      - action: action_introduce_ej
+      - action: utter_show_topic_of_discussion
+      - checkpoint: starts_voting
 
   - story: starts voting form but deny adding a new comment.
     steps:

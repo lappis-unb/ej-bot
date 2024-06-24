@@ -27,7 +27,6 @@ intents:
       ignore_entities:
       - conversation_id
 entities:
-  - current_channel_info
   - conversation_id
 slots:
   comment_text:
@@ -40,6 +39,12 @@ slots:
     type: text
     initial_value: null
     influence_conversation: false
+    mappings:
+    - type: custom
+  restart_conversation:
+    type: bool
+    initial_value: false
+    influence_conversation: true
     mappings:
     - type: custom
   access_token:
@@ -124,13 +129,6 @@ slots:
       conditions:
       - active_loop: vote_form
         requested_slot: comment
-  current_channel_info:
-    type: text
-    initial_value: null
-    influence_conversation: true
-    mappings:
-    - type: from_entity
-      entity: current_channel_info
   bot_whatsapp_number:
     type: text
     initial_value: null
@@ -198,7 +196,6 @@ actions:
 - action_ask_vote
 - validate_vote_form
 - action_get_conversation
-- action_set_channel_info
 - action_set_new_comment
 - action_customized_fallback
 forms:
