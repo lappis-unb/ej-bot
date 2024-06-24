@@ -5,6 +5,8 @@ session_config:
   session_expiration_time: 10
   carry_over_slots_to_new_session: true
 intents:
+  - check_authentication:
+      use_entities: []
   - comment_confirmation:
       use_entities: []
   - agree:
@@ -28,6 +30,8 @@ intents:
   - add_new_comment:
       ignore_entities:
       - conversation_id
+  - need_authentication:
+      use_entities: true
 entities:
   - url
   - current_channel_info
@@ -59,7 +63,7 @@ slots:
     - type: custom
   conversation_id:
     type: text
-    initial_value: null
+    initial_value: 1
     influence_conversation: true
     mappings:
     - type: from_entity
@@ -153,10 +157,28 @@ slots:
     influence_conversation: false
     mappings:
     - type: custom
+  auth_link:
+    type: text
+    initial_value: "https://brasilparticipativo.presidencia.gov.br/users/sign_in"
+    influence_conversation: false
+    mappings:
+    - type: custom
+  user_can_vote:
+    type: bool
+    initial_value: null
+    influence_conversation: true
+    mappings:
+    - type: custom
+  user_is_anonymous:
+    type: bool
+    initial_value: null
+    influence_conversation: true
+    mappings:
+    - type: custom
 responses:
-  utter_introduce_ej:
+  utter_presentation:
   - text: "Olá, Eu sou a Duda, a assistente virtual da Plataforma Empurrando Juntas. Meu trabalho é descobrir a opinião das pessoas sobre determinados temas e para isso eu preciso da sua ajuda.  A suas opiniões serão enviadas para a nossa plataforma, conforme o nosso termo de uso https://www.ejparticipe.org/usage/.\n"
-  utter_show_topic_of_discussion:
+  utter_show_topic:
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n*{conversation_text}*\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
     channel: whatsapp
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto: **{conversation_text}**\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
@@ -209,6 +231,14 @@ responses:
   - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_advise_participant_to_join_again:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
+  utter_vote_limit_reached:
+  - text: "Você já atingiu o número máximo de votos para o assunto *{conversation_text}*.\n\n Por favor, autentique-se para continuar respondendo"
+  utter_get_token:
+  - text: "Aqui está seu link para se autenticar, ele expira em 20min:\n\n {auth_link}"
+  utter_awaiting_authentication:
+  - text: "Estou aguardando você se autenticar para continuar a votação. 😊"
+  utter_user_is_authenticated:
+  - text: "Você já está autenticado! 😊"
 actions:
 - action_ask_vote
 - validate_vote_form
@@ -216,6 +246,9 @@ actions:
 - action_set_channel_info
 - action_set_new_comment
 - action_customized_fallback
+- action_check_user_can_vote
+- action_get_auth_link
+- action_setup_user
 forms:
   vote_form:
     ignored_intents:
@@ -225,4 +258,5 @@ forms:
       - vote
       - comment_confirmation
       - comment
+      - user_can_vote
 e2e_actions: []

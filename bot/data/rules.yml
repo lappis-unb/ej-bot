@@ -1,15 +1,6 @@
 version: "2.0"
 
 rules:
-  - rule: User doesn't want to participate anymore
-    steps:
-      # This unhappy path handles the case of an intent `stop`.
-      - intent: stop
-      - action: utter_stopped
-      - action: utter_next_conversation
-      - action: utter_finish
-      - active_loop: null
-      - active_loop: action_restart
       
   - rule: Show help fallback when low NLU confidence
     steps:

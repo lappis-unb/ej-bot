@@ -15,11 +15,58 @@ nlu:
       - start [83](conversation_id)
       - start [117](conversation_id)
       - start [999](conversation_id)
+  
+  - intent: welcome
+    examples: |
+      - oi
+      - ola
+      - e ai
+      - eae
+      - eaeae
+      - hello
+      - hi
+      - oie
+      - olaaa
 
   - intent: comment_confirmation
     examples: |
       - sim
       - não
+
+  - intent: need_authentication
+    examples: |
+      - preciso me autenticar
+      - como faco para me autenticar?
+      - preciso de um link de autenticacao
+      - quero me autenticar
+      - quero me registrar
+      - quero me logar
+      - quero validar minha participacao
+      - preciso validar minha participacao
+      - preciso validar minha conta
+      - quero um novo link de autenticacao
+      - quero um novo link de login
+      - quero um novo link de registro
+  
+  - intent: check_authentication
+    examples: |
+      - ja me autentiquei
+      - ja me registrei
+      - ja me loguei
+      - ja validei minha participacao
+      - ja validei minha conta
+      - ja me cadastrei
+      - me autentiquei
+      - me registrei
+      - me loguei
+      - validei minha participacao
+      - pronto
+      - ja fiz
+      - consegui
+      - ja fiz isso
+      - ja fiz o que voce pediu
+      - conclui
+      - ja conclui
 
   - intent: pass
     examples: |
