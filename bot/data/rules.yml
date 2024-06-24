@@ -14,4 +14,4 @@ rules:
   - rule: Show help fallback when low NLU confidence
     steps:
       - intent: nlu_fallback
-      - action: action_customized_fallback
+      - action: utter_help
