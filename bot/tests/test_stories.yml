@@ -13,9 +13,6 @@ stories:
     intent: start_with_conversation_id
   - slot_was_set:
     - conversation_id
-  - action: action_set_channel_info
-  - slot_was_set:
-    - current_channel_info
   - action: action_get_conversation
   - action: action_introduce_ej
   - action: utter_show_topic_of_discussion
@@ -31,9 +28,6 @@ stories:
     intent: start_with_conversation_id
   - slot_was_set:
     - conversation_id
-  - action: action_set_channel_info
-  - slot_was_set:
-    - current_channel_info
   - action: action_get_conversation
   - action: action_introduce_ej
   - action: utter_show_topic_of_discussion
