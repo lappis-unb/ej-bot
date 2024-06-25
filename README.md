@@ -64,7 +64,7 @@ Verifique se o Rasa está rodando acessando `http://localhost:5006`.
 
 Após configurar a API e o servidor de Actions, é possível interagir com o chatbot por meio
 do shell do Rasa. O primeiro passo é entrar no container do Rasa com o comando `make attach`. 
-Depois, basta executar o comando `make shell` que o Rasa irá abrir uma chat dentro do terminal
+Depois, basta executar o comando `make shell`, que o Rasa irá abrir uma chat dentro do terminal
 para que você possa interagir com o chatbot.
 
 # Integração no Telegram
