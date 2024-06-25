@@ -43,7 +43,6 @@ class WhatsApp(InputChannel):
             # extracting whatsapp text message
             whatsapp_event = WhatsAppEvent(request.json)
             whatsapp_message = whatsapp_event.get_event_message()
-            sender_id = request.json.get("entry")[0].get("id")
 
             # Send whatsapp message to Rasa NLU
             if type(whatsapp_message) is NotImplementedMessage:
@@ -54,7 +53,7 @@ class WhatsApp(InputChannel):
                 UserMessage(
                     whatsapp_message.text,
                     collector,
-                    sender_id,
+                    whatsapp_message.recipient_phone,
                     input_channel=self.name(),
                 )
             )
