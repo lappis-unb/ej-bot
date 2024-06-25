@@ -1,0 +1,19 @@
+# CHANGELOG
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+
+## [0.3.3] - Jun 24, 2024
+
+### Added
+- When beginning a new conversation during the voting, the chatbot will request the new conversation to the EJ API.
+- When the user sends a text that isn't a valid vote option, the chatbot will return a warning message and will show a new comment to vote on.
+- When the user sends a text at the beginning of the research that isn't valid to initiate participation, the chatbot will return a help message.
+- When the user starts the research only with the `/start` command (without and ID), the chatbot will return a help message.
+
+### Changed
+
+- By default, the chatbot will not use Rasa cache to train the NLU model.
