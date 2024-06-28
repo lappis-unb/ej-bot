@@ -1,0 +1,38 @@
+version: "3.1"
+
+stories:
+
+  - story: user is not auth but can vote
+    steps:
+      - checkpoint: start_presentation
+      - action: utter_presentation
+      - action: utter_show_topic
+      - slot_was_set:
+        - user_is_anonymous: True
+      - action: action_check_user_can_vote
+      - slot_was_set:
+        - user_can_vote: True
+      - checkpoint: start_vote
+  
+  - story: user is not auth and can't vote
+    steps:
+      - checkpoint: start_presentation
+      - action: utter_presentation
+      - action: utter_show_topic
+      - slot_was_set:
+        - user_is_anonymous: True
+      - action: action_check_user_can_vote
+      - slot_was_set:
+        - user_can_vote: False
+      - checkpoint: start_authentication
+  
+  - story: user is auth
+    steps:
+      - checkpoint: start_presentation
+      - action: utter_presentation
+      - action: utter_show_topic
+      - slot_was_set:
+        - user_is_anonymous: False
+      - checkpoint: start_vote
+
+

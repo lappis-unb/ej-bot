@@ -1,0 +1,29 @@
+version: "3.1"
+
+stories:
+
+  - story: authentication is needed and successfully authenticated
+    steps:
+      - checkpoint: start_authentication
+      - action: action_get_auth_link
+      - action: utter_get_token
+      - action: utter_awaiting_authentication
+      - intent: check_authentication
+      - action: action_setup_user
+      - slot_was_set:
+        - user_is_anonymous: False
+      - action: utter_authenticated
+      - checkpoint: start_vote
+  
+  - story: authentication is needed and not authenticated
+    steps:
+      - checkpoint: start_authentication
+      - action: action_get_auth_link
+      - action: utter_get_token
+      - action: utter_awaiting_authentication
+      - intent: check_authentication
+      - action: action_setup_user
+      - slot_was_set:
+        - user_is_anonymous: True
+      - action: utter_not_authenticated
+      - checkpoint: start_authentication

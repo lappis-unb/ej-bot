@@ -27,16 +27,40 @@ nlu:
       - hi
       - oie
       - olaaa
+  
+  - intent: want_vote
+    examples: |
+      - quero votar
+      - quero participar
+      - quero votar agora
+      - quero votar nessa proposta
+      - quero votar nesse projeto
+      - quero votar nesse assunto
+      - quero votar nesse tema
+      - quero votar nesse topico
+      - quero votar nesse topico agora
+      - quero votar nesse topico ja
+      - quero votar nesse topico ja ja
+      - quero votar nesse topico
+      - participar
+      - votar
+      - iniciar
+      - votar agora
+      - começar
+      - votar nesse topico
+      - votar nesse tema
+      - votar nesse assunto
+      - preciso votar
 
   - intent: comment_confirmation
     examples: |
       - sim
       - não
 
-  - intent: need_authentication
+  - intent: want_authentication
     examples: |
       - preciso me autenticar
-      - como faco para me autenticar?
+      - como faco para me autenticar
       - preciso de um link de autenticacao
       - quero me autenticar
       - quero me registrar
@@ -47,6 +71,8 @@ nlu:
       - quero um novo link de autenticacao
       - quero um novo link de login
       - quero um novo link de registro
+      - quero logar
+      - quero me cadastrar
   
   - intent: check_authentication
     examples: |
@@ -115,23 +141,27 @@ nlu:
     examples: |
       - ajuda
       - help
-      - comandos disponíveis
-      - quais comandos posso usar?
-      - oi
-      - olá
-      - participar
-      - selecionarconversa
-      - listar
-      - listarconversas
+      - comandos disponiveis
+      - quais comandos posso usar
+      - preciso de ajuda
+      - orientacao
+      - como usar
+      - como funciona
+      - como votar
+      - como participar
+      - o que posso fazer
+      - o que devo fazer
+      - o que fazer
+      - me ajuda
 
   - intent: out_of_context
     examples: |
-      - Como tá o tempo?
-      - Como vc tá?
+      - Como tá o tempo
+      - Como vc tá
       - asdfgasd
       - oque
       - que
-      - 4 + 2 = ?
+      - 4 + 2 = 
       - ahn
       - opa
       - ops
@@ -175,8 +205,8 @@ nlu:
       - tentar enviar comentario 2
       - tentar enviar comentario 100
       - Estando disponíveis na palma da mão, ou seja, no celular.
-      - Existe algo na região ?
-      - você é um robô?
+      - Existe algo na região
+      - você é um robô
       - Fala alguma coisa
       - esta é uma revisão 1
       - Acho que está correto

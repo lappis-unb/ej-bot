@@ -5,6 +5,8 @@ session_config:
   session_expiration_time: 10
   carry_over_slots_to_new_session: true
 intents:
+  - want_vote:
+      use_entities: []
   - check_authentication:
       use_entities: []
   - comment_confirmation:
@@ -30,7 +32,7 @@ intents:
   - add_new_comment:
       ignore_entities:
       - conversation_id
-  - need_authentication:
+  - want_authentication:
       use_entities: true
 entities:
   - url
@@ -55,15 +57,9 @@ slots:
     influence_conversation: false
     mappings:
     - type: custom
-  conversation_id_cache:
-    type: text
-    initial_value: null
-    influence_conversation: false
-    mappings:
-    - type: custom
   conversation_id:
-    type: text
-    initial_value: 1
+    type: float
+    initial_value: 1.0
     influence_conversation: true
     mappings:
     - type: from_entity
@@ -72,6 +68,12 @@ slots:
     type: any
     initial_value: null
     influence_conversation: false
+    mappings:
+    - type: custom
+  conversation_is_empty:
+    type: bool
+    initial_value: null
+    influence_conversation: true
     mappings:
     - type: custom
   conversation_text:
@@ -106,6 +108,7 @@ slots:
     - type: custom
   vote:
     type: text
+    initial_value: null
     influence_conversation: false
     mappings:
     - type: from_text
@@ -165,7 +168,7 @@ slots:
     - type: custom
   user_can_vote:
     type: bool
-    initial_value: null
+    initial_value: False
     influence_conversation: true
     mappings:
     - type: custom
@@ -175,13 +178,19 @@ slots:
     influence_conversation: true
     mappings:
     - type: custom
+  secret_id:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
 responses:
   utter_presentation:
   - text: "Olá, Eu sou a Duda, a assistente virtual da Plataforma Empurrando Juntas. Meu trabalho é descobrir a opinião das pessoas sobre determinados temas e para isso eu preciso da sua ajuda.  A suas opiniões serão enviadas para a nossa plataforma, conforme o nosso termo de uso https://www.ejparticipe.org/usage/.\n"
   utter_show_topic:
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n*{conversation_text}*\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
     channel: whatsapp
-  - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto: **{conversation_text}**\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
+  - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n**{conversation_text}**\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
     channel: socketio
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n{conversation_text}\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
   utter_ask_comment_confirmation:
@@ -226,13 +235,17 @@ responses:
   utter_ej_connection_doesnt_exist:
   - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
-  - text: Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.  Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
+  - text: "Seção de ajuda de exemplo"
   utter_no_selected_conversation:
   - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_advise_participant_to_join_again:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
-  utter_vote_limit_reached:
-  - text: "Você já atingiu o número máximo de votos para o assunto *{conversation_text}*.\n\n Por favor, autentique-se para continuar respondendo"
+  utter_not_authenticated:
+  - text: "Não consegui validar sua autenticação. Clique no novo link para se autenticar novamente.\n"
+  utter_authenticated:
+  - text: "Validei sua autenticação! 😊"
+  utter_vote_limit_anonymous_reached:
+  - text: "Você já atingiu o número máximo de votos para o assunto *{conversation_text}*.\n\nPor favor, autentique-se para continuar respondendo"
   utter_get_token:
   - text: "Aqui está seu link para se autenticar, ele expira em 20min:\n\n {auth_link}"
   utter_awaiting_authentication:
@@ -249,14 +262,14 @@ actions:
 - action_check_user_can_vote
 - action_get_auth_link
 - action_setup_user
+- action_stop_vote
 forms:
   vote_form:
     ignored_intents:
       - agree
       - disagree
     required_slots:
-      - vote
+      - vote 
       - comment_confirmation
       - comment
-      - user_can_vote
 e2e_actions: []

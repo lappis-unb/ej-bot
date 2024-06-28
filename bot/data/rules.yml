@@ -1,8 +1,15 @@
-version: "2.0"
+version: "3.1"
+
 
 rules:
-      
-  - rule: Show help fallback when low NLU confidence
+  - rule: User doesn't want to participate anymore
     steps:
-      - intent: nlu_fallback
-      - action: action_customized_fallback
+      - intent: stop
+      - action: action_stop_vote
+      - action: utter_finish
+
+  - rule: User needs help
+    steps:
+      - intent: help
+      - action: action_stop_vote
+      - action: utter_help

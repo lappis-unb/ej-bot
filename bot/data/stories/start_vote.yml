@@ -1,0 +1,68 @@
+version: "3.1"
+
+stories:
+
+  - story: user want vote, is anonymous and cant vote
+    steps:
+      - intent: want_vote
+      - slot_was_set:
+        - user_is_anonymous: True
+      - action: action_check_user_can_vote
+      - slot_was_set:
+        - user_can_vote: False
+      - checkpoint: start_authentication
+
+  - story: user want vote, is anonymous and can vote
+    steps:
+      - intent: want_vote
+      - slot_was_set:
+        - user_is_anonymous: True
+      - action: action_check_user_can_vote
+      - slot_was_set:
+        - user_can_vote: True
+      - checkpoint: start_vote
+  
+  - story: user want vote and is auth
+    steps:
+      - intent: want_vote
+      - slot_was_set:
+        - user_is_anonymous: False
+      - checkpoint: start_vote
+
+  - story: user is voting
+    steps:
+      - checkpoint: start_vote
+      - action: vote_form
+      - active_loop: vote_form
+  
+  - story: user is voting and cant vote
+    steps:
+      - checkpoint: start_vote
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - slot_was_set:
+          - user_can_vote: False
+      - action: utter_vote_limit_anonymous_reached
+      - checkpoint: start_authentication
+  
+  - story: user is voting and conversation is empty
+    steps:
+      - checkpoint: start_vote
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - slot_was_set:
+          - conversation_is_empty: True
+      - action: utter_voted_all_comments
+      - action: utter_thanks_participation
+
+  - story: user is voting and want stop
+    steps:
+      - checkpoint: start_vote
+      - action: vote_form
+      - active_loop: vote_form
+      - intent: stop
+      - action: action_stop_vote
+      - active_loop: null
+      - action: utter_finish

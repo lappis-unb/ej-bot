@@ -1,0 +1,53 @@
+version: "3.1"
+
+stories:
+
+
+  - story: participant join conversation on telegram with conversation_id
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: action_setup_user
+      - checkpoint: start_presentation
+
+
+  - story: participant join conversation on telegram without conversation_id
+    steps:
+      - intent: welcome
+      - slot_was_set:
+        - conversation_id: 1
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'telegram'
+      - action: action_setup_user
+      - checkpoint: start_presentation
+
+
+  - story: participant join conversation on whatsapp with conversation_id
+    steps:
+      - intent: start_with_conversation_id
+      - slot_was_set:
+        - conversation_id
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'whatsapp'
+      - action: action_setup_user
+      - checkpoint: start_presentation
+
+
+  - story: participant join conversation on whatsapp without conversation_id
+    steps:
+      - intent: welcome
+      - slot_was_set:
+        - conversation_id: 1
+      - action: action_set_channel_info
+      - slot_was_set:
+        - current_channel_info: 'whatsapp'
+      - action: action_setup_user
+      - checkpoint: start_presentation
+
+
