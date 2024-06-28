@@ -42,11 +42,19 @@ class Comment:
 
     @staticmethod
     def pause_to_ask_comment(vote_option: Text):
-        return {"vote": vote_option, "comment_confirmation": None, "comment": None}
+        return {
+            "vote": vote_option,
+            "comment_confirmation": None,
+            "comment": None,
+        }
 
     @staticmethod
     def resume_voting(slot_value: Text):
-        return {"vote": None, "comment_confirmation": slot_value, "comment": ""}
+        return {
+            "vote": None,
+            "comment_confirmation": slot_value,
+            "comment": "",
+        }
 
     @staticmethod
     def get_utter(metadata, comment_title):

@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Text
 
 from actions.logger import custom_logger
 from rasa_sdk import Action, FormValidationAction, Tracker
-from rasa_sdk.events import EventType, FollowupAction, SlotSet
+from rasa_sdk.events import EventType, FollowupAction, SlotSet, ActiveLoop
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
 
@@ -10,6 +10,8 @@ from .ej_connector import EJCommunicationError
 from .ej_connector.comment import Comment
 from .ej_connector.conversation import Conversation
 from .ej_connector.vote import Vote
+from .ej_connector.constants import CONVERSATION_ID
+from actions.action_check_user_can_vote import CheckUserCanVote
 
 
 class ActionAskVote(Action):
@@ -26,24 +28,61 @@ class ActionAskVote(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        conversation_id = tracker.get_slot("conversation_id_cache")
-        conversation_text = tracker.get_slot("conversation_text")
-        conversation = Conversation(conversation_id, conversation_text, tracker)
-        conversation_statistics = conversation.get_participant_statistics()
-        if Conversation.no_comments_left_to_vote(conversation_statistics):
-            return self._dispatch_user_vote_on_all_comments(dispatcher)
 
+        custom_logger("Running action_ask_vote")
+        tmp_vote = tracker.get_slot("vote")
+        custom_logger(f"Vote: {tmp_vote}")
+
+        check_vote_action = CheckUserCanVote()
+        can_vote_result = check_vote_action.run(dispatcher, tracker, domain)
+        user_can_vote = next(
+            (
+                event
+                for event in can_vote_result
+                if event["event"] == "slot" and event["name"] == "user_can_vote"
+            ),
+            None,
+        )
+
+        custom_logger(f"User can vote: {user_can_vote}")
+        custom_logger(f"User can vote value: {user_can_vote['value']}")
+
+        if not (user_can_vote and user_can_vote["value"]):
+            return [
+                ActiveLoop(None),
+                SlotSet("user_can_vote", False),
+            ]
+
+        response = []
+
+        conversation_id = CONVERSATION_ID
+        custom_logger(f"conversation_id: {conversation_id}")
+
+        conversation_text = tracker.get_slot("conversation_text")
+        conversation = Conversation(conversation_id, tracker, conversation_text)
+        conversation_statistics = conversation.get_participant_statistics()
+
+        if conversation_statistics.status_code != 200:
+            response += self._dispatch_errors(dispatcher)
+
+        conversation_statistics = conversation_statistics.json()
+
+        if Conversation.no_comments_left_to_vote(conversation_statistics):
+            response += self._dispatch_user_vote_on_all_comments(dispatcher)
+            return response
         try:
             comment = conversation.get_next_comment()
-            return self._dispatch_comment_to_vote(
+            response += self._dispatch_comment_to_vote(
                 dispatcher, tracker, conversation_statistics, comment
             )
+            return response
         except EJCommunicationError:
-            return self._dispatch_errors(dispatcher)
+            response += self._dispatch_errors(dispatcher)
+            return response
 
     def _dispatch_errors(self, dispatcher):
-        dispatcher.utter_message(template="utter_ej_communication_error")
-        dispatcher.utter_message(template="utter_error_try_again_later")
+        dispatcher.utter_message(response="utter_ej_communication_error")
+        dispatcher.utter_message(response="utter_error_try_again_later")
         return [FollowupAction("action_session_start")]
 
     def _dispatch_comment_to_vote(
@@ -75,10 +114,8 @@ class ActionAskVote(Action):
             SlotSet("current_comment_id", comment_id),
         ]
 
-    def _dispatch_user_vote_on_all_comments(self, dispatcher):
-        dispatcher.utter_message(template="utter_voted_all_comments")
-        dispatcher.utter_message(template="utter_thanks_participation")
-        return [SlotSet("vote", "concordar")]
+    def _dispatch_user_vote_on_all_comments(self):
+        return [SlotSet("vote", "vote_all_comments")]
 
 
 class ValidateVoteForm(FormValidationAction):
@@ -104,9 +141,11 @@ class ValidateVoteForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
+        custom_logger("Validating comment_confirmation")
+
         comment_confirmation_value = tracker.get_slot("comment_confirmation")
         if comment_confirmation_value == "não":
-            dispatcher.utter_message(template="utter_go_back_to_voting")
+            dispatcher.utter_message(response="utter_go_back_to_voting")
             return Comment.resume_voting(slot_value)
 
     def validate_comment(
@@ -116,15 +155,17 @@ class ValidateVoteForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
+        custom_logger("Validating comment")
+
         user_new_comment = tracker.latest_message["text"]
-        conversation_id = tracker.get_slot("conversation_id_cache")
+        conversation_id = CONVERSATION_ID
         comment = Comment(conversation_id, user_new_comment, tracker)
         try:
             comment.create()
-            dispatcher.utter_message(template="utter_sent_comment")
+            dispatcher.utter_message(response="utter_sent_comment")
             return Comment.resume_voting(slot_value)
         except:
-            dispatcher.utter_message(template="utter_send_comment_error")
+            dispatcher.utter_message(response="utter_send_comment_error")
 
     def validate_vote(
         self,
@@ -133,16 +174,23 @@ class ValidateVoteForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-        """Validate vote value."""
+        """Validate validate_vote value."""
+        custom_logger("Validating validate_vote")
+        tmp_vote = tracker.get_slot("vote")
+        custom_logger(f"Vote: {tmp_vote}")
 
-        if Conversation.user_wants_to_stop_participation(slot_value):
-            custom_logger(f"Stoping voting because of slot_value {slot_value}")
-            return Vote.stop_voting()
+        conversation_id = CONVERSATION_ID
 
-        conversation_id = tracker.get_slot("conversation_id_cache")
         conversation_text = tracker.get_slot("conversation_text")
-        conversation = Conversation(conversation_id, conversation_text, tracker)
+        conversation = Conversation(conversation_id, tracker, conversation_text)
         statistics = conversation.get_participant_statistics()
+
+        if statistics.status_code != 200:
+            dispatcher.utter_message(response="utter_ej_communication_error")
+            dispatcher.utter_message(response="utter_error_try_again_later")
+            return [FollowupAction("action_session_start")]
+
+        statistics = statistics.json()
 
         vote = Vote(slot_value, tracker)
         if vote.is_valid():
@@ -150,22 +198,15 @@ class ValidateVoteForm(FormValidationAction):
             vote_data = vote.create(tracker.get_slot("current_comment_id"))
             self._dispatch_save_participant_vote(dispatcher, vote_data)
 
-        if Conversation.time_to_ask_to_add_comment(statistics):
-            custom_logger(
-                f"TIME TO ASK COMMENT {Comment.pause_to_ask_comment(slot_value)}"
-            )
-            return Comment.pause_to_ask_comment(slot_value)
-
-        if vote.is_valid():
             custom_logger(f"Dispatching conversation next comment")
             return self._dispatch_show_next_comment(
                 dispatcher, statistics, vote, tracker
             )
-        dispatcher.utter_message(template="utter_out_of_context")
+        dispatcher.utter_message(response="utter_out_of_context")
 
     def _dispatch_save_participant_vote(self, dispatcher, vote_data):
         if vote_data.get("created"):
-            dispatcher.utter_message(template="utter_vote_received")
+            dispatcher.utter_message(response="utter_vote_received")
 
     def _dispatch_show_next_comment(
         self, dispatcher, statistics, voting_helper, tracker
@@ -173,6 +214,9 @@ class ValidateVoteForm(FormValidationAction):
         if not Conversation.no_comments_left_to_vote(statistics):
             return Vote.continue_voting(tracker)
         else:
-            dispatcher.utter_message(template="utter_voted_all_comments")
-            dispatcher.utter_message(template="utter_thanks_participation")
-            return voting_helper.finished_voting()
+            # dispatcher.utter_message(response="utter_voted_all_comments")
+            # dispatcher.utter_message(response="utter_thanks_participation")
+            return [
+                ActiveLoop(None),
+                SlotSet("conversation_is_empty", True),
+            ]

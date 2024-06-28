@@ -3,10 +3,12 @@ from typing import Any, Dict
 
 import requests
 
+from actions.logger import custom_logger
 from rasa_sdk import Tracker
 
 from .constants import REFRESH_TOKEN_URL
 from .routes import HEADERS, auth_headers
+from .user import User
 
 
 @dataclass
@@ -19,6 +21,11 @@ class EjApi:
     url: str = ""
     access_token: str = ""
     refresh_token: str = ""
+
+    def __init__(self, tracker: Tracker):
+        self.tracker = tracker
+        self.access_token = ""
+        self.refresh_token = ""
 
     def __post_init__(self):
         if self.tracker:
@@ -40,6 +47,7 @@ class EjApi:
         """
         Requests a new access_token using the refresh_token attribute.
         """
+        custom_logger("Refreshing access token.")
         response = requests.post(REFRESH_TOKEN_URL, {"refresh": self.refresh_token})
         if response.status_code == 200:
             data = response.json()
@@ -62,6 +70,12 @@ class EjApi:
         """
         Send a HTTP request to the EJ API endpoints.
         """
+        user = User(self.tracker)
+        tracker_auth = user.authenticate()
+        self.tracker = tracker_auth
+        self.access_token = self.tracker.get_slot("access_token")
+        self.refresh_token = self.tracker.get_slot("refresh_token")
+
         response: Any
         headers = self.get_headers()
         if payload:

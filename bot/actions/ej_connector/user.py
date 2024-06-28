@@ -9,8 +9,6 @@ import jwt
 from datetime import datetime, timedelta, timezone
 
 from actions.logger import custom_logger
-from actions.ej_connector.ej_api import EjApi
-
 from .constants import *
 
 load_dotenv()
@@ -30,13 +28,20 @@ class User(object):
         self.name = name
         self.display_name = name
         self.tracker_sender_id = tracker.sender_id
-        self.password = self._encrypt_data(f"{tracker.sender_id}")
-        self.password_confirm = self._encrypt_data(f"{tracker.sender_id}")
-        self.ej_api = EjApi(tracker)
+        self.password = self._generate_hash_password(f"{tracker.sender_id}")
+        self.password_confirm = self._generate_hash_password(f"{tracker.sender_id}")
         self.tracker = tracker
         self._set_email()
         self.secret_id = self._generate_hash(self.tracker_sender_id)
-        self.is_bot = True
+        self.anonymous = self._set_anonymous()
+
+    def _set_anonymous(self):
+        response = self.get_user()
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("anonymous")
+        else:
+            return True
 
     def serialize(self):
         if self.secret_id is None:
@@ -49,6 +54,7 @@ class User(object):
             "password_confirm": self.password_confirm,
             "email": self.email,
             "secret_id": self.secret_id,
+            "anonymous": self.anonymous,
         }
 
         return json.dumps(data)
@@ -88,8 +94,9 @@ class User(object):
             custom_logger(f"try authentication")
             auth_serializer = self.serialize_auth()
             custom_logger(f"auth_serializer: {auth_serializer}")
-            response = self.ej_api.request(AUTH_URL, auth_serializer)
+            response = self.auth_user()
             data = response.json()
+            custom_logger(f"response: {data}")
             access_token = data["access_token"]
             refresh_token = data["refresh_token"]
 
@@ -102,8 +109,9 @@ class User(object):
                 custom_logger(f"try registration")
                 user_serializer = self.serialize()
                 custom_logger(f"user_serializer: {user_serializer}")
-                response = self.ej_api.request(REGISTRATION_URL, user_serializer)
+                response = self.register_user()
                 data = response.json()
+                custom_logger(f"response: {data}")
                 access_token = data["access_token"]
                 refresh_token = data["refresh_token"]
             except Exception as e:
@@ -120,10 +128,26 @@ class User(object):
         )
         return self.tracker
 
-    def _get_or_create_user(self, url: Text, payload: Any) -> Any:
-        return requests.post(
+    def get_user(self):
+        url = f"{GET_USER_URL}?secret_id={self.secret_id}"
+        return requests.get(
             url,
-            data=payload,
+            headers=HEADERS,
+        )
+
+    def register_user(self):
+        user_serializer = self.serialize()
+        return requests.post(
+            REGISTRATION_URL,
+            user_serializer,
+            headers=HEADERS,
+        )
+
+    def auth_user(self):
+        auth_serializer = self.serialize_auth()
+        return requests.post(
+            AUTH_URL,
+            auth_serializer,
             headers=HEADERS,
         )
 
@@ -154,8 +178,13 @@ class User(object):
         token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
         return token
 
-    @staticmethod
-    def _encrypt_data(content):
-        fernet = Fernet(SECRET_KEY.encode())
-        encrypted = fernet.encrypt(content.encode())
-        return encrypted.decode()
+    def _generate_hash_password(self, seed):
+        combined = f"{seed}{SECRET_KEY}"
+        hash_object = hashlib.sha256(combined.encode())
+        hex_dig = hash_object.hexdigest()
+        return hex_dig
+
+
+def generate_secret_key():
+    secret_key = Fernet.generate_key()
+    return secret_key.decode()

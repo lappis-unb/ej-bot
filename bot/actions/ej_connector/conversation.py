@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 class Conversation:
     """Conversation controls requests to EJ API and some validations during bot execution."""
 
-    def __init__(self, conversation_id, conversation_title: str, tracker: Tracker):
-        self.id = conversation_id
-        self.title = conversation_title
+    def __init__(self, conversation_id, tracker: Tracker, conversation_text: str = ""):
+        self.id: int = int(conversation_id)
+        self.title = conversation_text
         self.ej_api = EjApi(tracker)
 
     @staticmethod
@@ -48,7 +48,6 @@ class Conversation:
         try:
             url = user_statistics_url(self.id)
             response = self.ej_api.request(url)
-            response = response.json()
         except:
             raise EJCommunicationError
         return response
@@ -71,6 +70,14 @@ class Conversation:
     @staticmethod
     def get_total_comments(statistics):
         return statistics["total_comments"]
+
+    @staticmethod
+    def get_total_anonymous_votes(statistics):
+        return statistics["anonymous_votes_limit"]
+
+    @staticmethod
+    def user_is_anonymous(statistics):
+        return statistics["is_anonymous"]
 
     @staticmethod
     def get_user_voted_comments_counter(statistics):

@@ -74,7 +74,4 @@ class Vote:
         On ActionFollowUpForm class, whe check if vote is == parar, if so,
         we send a utter finishing the conversation.
         """
-        return {"vote": "parar"}
-
-    def finished_voting(self):
-        return {"vote": str(self.vote_slot_value).lower()}
+        return {"vote": "stop_voting"}
