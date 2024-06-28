@@ -1,0 +1,21 @@
+version: "3.1"
+
+stories:
+
+  - story: user is voting and wants to stop
+    steps:
+      - checkpoint: start_vote
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - intent: stop
+      - action: utter_finish
+  
+  - story: user is voting and need help
+    steps:
+      - checkpoint: start_vote
+      - action: vote_form
+      - active_loop: vote_form
+      - active_loop: null
+      - intent: help
+      - action: utter_help

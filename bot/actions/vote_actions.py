@@ -51,6 +51,10 @@ class ActionAskVote(Action):
             return [
                 ActiveLoop(None),
                 SlotSet("user_can_vote", False),
+                SlotSet("vote", "need_auth"),
+                SlotSet("comment_text", None),
+                SlotSet("number_comments", None),
+                SlotSet("current_comment_id", None),
             ]
 
         response = []
@@ -179,6 +183,16 @@ class ValidateVoteForm(FormValidationAction):
         tmp_vote = tracker.get_slot("vote")
         custom_logger(f"Vote: {tmp_vote}")
 
+        intents = tracker.latest_message["intent"].get("name")
+        if intents == "check_authentication":
+            return [FollowupAction("action_stop_vote")]
+
+        if intents == "stop":
+            return [FollowupAction("action_stop_vote")]
+
+        if intents == "help":
+            return [FollowupAction("action_stop_vote")]
+
         conversation_id = CONVERSATION_ID
 
         conversation_text = tracker.get_slot("conversation_text")
@@ -199,24 +213,22 @@ class ValidateVoteForm(FormValidationAction):
             self._dispatch_save_participant_vote(dispatcher, vote_data)
 
             custom_logger(f"Dispatching conversation next comment")
-            return self._dispatch_show_next_comment(
-                dispatcher, statistics, vote, tracker
-            )
+            return self._dispatch_show_next_comment(statistics, tracker)
         dispatcher.utter_message(response="utter_out_of_context")
 
     def _dispatch_save_participant_vote(self, dispatcher, vote_data):
         if vote_data.get("created"):
             dispatcher.utter_message(response="utter_vote_received")
 
-    def _dispatch_show_next_comment(
-        self, dispatcher, statistics, voting_helper, tracker
-    ):
+    def _dispatch_show_next_comment(self, statistics, tracker):
         if not Conversation.no_comments_left_to_vote(statistics):
             return Vote.continue_voting(tracker)
         else:
-            # dispatcher.utter_message(response="utter_voted_all_comments")
-            # dispatcher.utter_message(response="utter_thanks_participation")
             return [
                 ActiveLoop(None),
                 SlotSet("conversation_is_empty", True),
+                SlotSet("vote", None),
+                SlotSet("comment_text", None),
+                SlotSet("number_comments", None),
+                SlotSet("current_comment_id", None),
             ]

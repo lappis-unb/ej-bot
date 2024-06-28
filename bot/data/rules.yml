@@ -2,14 +2,3 @@ version: "3.1"
 
 
 rules:
-  - rule: User doesn't want to participate anymore
-    steps:
-      - intent: stop
-      - action: action_stop_vote
-      - action: utter_finish
-
-  - rule: User needs help
-    steps:
-      - intent: help
-      - action: action_stop_vote
-      - action: utter_help
