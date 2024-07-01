@@ -2,15 +2,6 @@ import os
 
 HOST = os.getenv("EJ_HOST")
 API_URL = f"{HOST}/api/v1"
-HEADERS = {
-    "Content-Type": "application/json",
-}
-
-
-def auth_headers(token):
-    headers = HEADERS.copy()
-    headers["Authorization"] = f"Bearer {token}"
-    return headers
 
 
 def conversation_url(conversation_id):

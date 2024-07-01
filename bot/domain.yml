@@ -70,12 +70,6 @@ slots:
     influence_conversation: false
     mappings:
     - type: custom
-  conversation_is_empty:
-    type: bool
-    initial_value: null
-    influence_conversation: true
-    mappings:
-    - type: custom
   conversation_text:
     type: text
     initial_value: null
@@ -182,6 +176,24 @@ slots:
     type: text
     initial_value: null
     influence_conversation: false
+    mappings:
+    - type: custom
+  user_reached_max_votes:
+    type: bool
+    initial_value: False
+    influence_conversation: true
+    mappings:
+    - type: custom
+  user_reached_max_anonymous_votes:
+    type: bool
+    initial_value: False
+    influence_conversation: true
+    mappings:
+    - type: custom
+  user_want_stop_vote:
+    type: bool
+    initial_value: False
+    influence_conversation: true
     mappings:
     - type: custom
 responses:

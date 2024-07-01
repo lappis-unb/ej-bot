@@ -7,7 +7,7 @@ import requests
 from rasa_sdk import Tracker
 
 from .constants import *
-from .routes import auth_headers
+from .ej_api import EjApi
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ class Comment:
         self.conversation_id = conversation_id
         self.text = comment_text
         self.token = tracker.get_slot("access_token")
+        self.ej_api = EjApi(tracker)
 
     def create(self):
         if len(self.text) > 3:
@@ -30,11 +31,8 @@ class Comment:
                 }
             )
             try:
-                response = requests.post(
-                    COMMENTS_URL,
-                    data=body,
-                    headers=auth_headers(self.token),
-                )
+                response = self.ej_api.request(url=COMMENTS_URL, payload=body)
+
                 response = response.json()
             except Exception as e:
                 raise EJCommunicationError

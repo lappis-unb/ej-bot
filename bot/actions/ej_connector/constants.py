@@ -17,6 +17,9 @@ REFRESH_TOKEN_URL = f"{API_URL}/refresh-token/"
 VOTES_URL = f"{API_URL}/votes/"
 COMMENTS_URL = f"{API_URL}/comments/"
 CONVERSATION_ID = 1
+HEADERS = {
+    "Content-Type": "application/json",
+}
 
 
 class EJCommunicationError(Exception):

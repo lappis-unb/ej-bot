@@ -6,11 +6,12 @@ from rasa_sdk.events import EventType, FollowupAction, SlotSet, ActiveLoop
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
 
-from .ej_connector import EJCommunicationError
+from .ej_connector.ej_error import EJError
 from .ej_connector.comment import Comment
 from .ej_connector.conversation import Conversation
 from .ej_connector.vote import Vote
 from .ej_connector.constants import CONVERSATION_ID
+from .decorators import check_intent, Intent
 from actions.action_check_user_can_vote import CheckUserCanVote
 
 
@@ -33,8 +34,8 @@ class ActionAskVote(Action):
         tmp_vote = tracker.get_slot("vote")
         custom_logger(f"Vote: {tmp_vote}")
 
-        check_vote_action = CheckUserCanVote()
-        can_vote_result = check_vote_action.run(dispatcher, tracker, domain)
+        check_user_can_vote = CheckUserCanVote()
+        can_vote_result = check_user_can_vote.run(dispatcher, tracker, domain)
         user_can_vote = next(
             (
                 event
@@ -45,17 +46,9 @@ class ActionAskVote(Action):
         )
 
         custom_logger(f"User can vote: {user_can_vote}")
-        custom_logger(f"User can vote value: {user_can_vote['value']}")
 
         if not (user_can_vote and user_can_vote["value"]):
-            return [
-                ActiveLoop(None),
-                SlotSet("user_can_vote", False),
-                SlotSet("vote", "need_auth"),
-                SlotSet("comment_text", None),
-                SlotSet("number_comments", None),
-                SlotSet("current_comment_id", None),
-            ]
+            return Vote.user_limit_anonymous_vote()
 
         response = []
 
@@ -72,7 +65,7 @@ class ActionAskVote(Action):
         conversation_statistics = conversation_statistics.json()
 
         if Conversation.no_comments_left_to_vote(conversation_statistics):
-            response += self._dispatch_user_vote_on_all_comments(dispatcher)
+            response += Vote.user_vote_total_limit()
             return response
         try:
             comment = conversation.get_next_comment()
@@ -80,9 +73,9 @@ class ActionAskVote(Action):
                 dispatcher, tracker, conversation_statistics, comment
             )
             return response
-        except EJCommunicationError:
-            response += self._dispatch_errors(dispatcher)
-            return response
+        except EJError as e:
+            custom_logger(f"Error getting next comment: {e}")
+            return self._dispatch_errors(dispatcher)
 
     def _dispatch_errors(self, dispatcher):
         dispatcher.utter_message(response="utter_ej_communication_error")
@@ -118,9 +111,6 @@ class ActionAskVote(Action):
             SlotSet("current_comment_id", comment_id),
         ]
 
-    def _dispatch_user_vote_on_all_comments(self):
-        return [SlotSet("vote", "vote_all_comments")]
-
 
 class ValidateVoteForm(FormValidationAction):
     """
@@ -131,19 +121,18 @@ class ValidateVoteForm(FormValidationAction):
     If the returned vote value is None, Rasa will call ActionAskVote again until a
     not-null value is returned by this action. This will assure that the chatbot keeps
     sending new comments to vote.
-
-    https://rasa.com/docs/rasa/forms/#validating-form-input
     """
 
     def name(self) -> Text:
         return "validate_vote_form"
 
+    @check_intent([Intent.CHECK_AUTHENTICATION, Intent.STOP, Intent.HELP])
     def validate_comment_confirmation(
         self,
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: DomainDict,
+        domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
         custom_logger("Validating comment_confirmation")
 
@@ -152,12 +141,13 @@ class ValidateVoteForm(FormValidationAction):
             dispatcher.utter_message(response="utter_go_back_to_voting")
             return Comment.resume_voting(slot_value)
 
+    @check_intent([Intent.CHECK_AUTHENTICATION, Intent.STOP, Intent.HELP])
     def validate_comment(
         self,
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: DomainDict,
+        domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
         custom_logger("Validating comment")
 
@@ -171,27 +161,18 @@ class ValidateVoteForm(FormValidationAction):
         except:
             dispatcher.utter_message(response="utter_send_comment_error")
 
+    @check_intent([Intent.CHECK_AUTHENTICATION, Intent.STOP, Intent.HELP])
     def validate_vote(
         self,
         slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: DomainDict,
+        domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
         """Validate validate_vote value."""
         custom_logger("Validating validate_vote")
         tmp_vote = tracker.get_slot("vote")
         custom_logger(f"Vote: {tmp_vote}")
-
-        intents = tracker.latest_message["intent"].get("name")
-        if intents == "check_authentication":
-            return [FollowupAction("action_stop_vote")]
-
-        if intents == "stop":
-            return [FollowupAction("action_stop_vote")]
-
-        if intents == "help":
-            return [FollowupAction("action_stop_vote")]
 
         conversation_id = CONVERSATION_ID
 
@@ -214,7 +195,9 @@ class ValidateVoteForm(FormValidationAction):
 
             custom_logger(f"Dispatching conversation next comment")
             return self._dispatch_show_next_comment(statistics, tracker)
-        dispatcher.utter_message(response="utter_out_of_context")
+        else:
+            dispatcher.utter_message(response="utter_out_of_context")
+            return vote.clear_slots()
 
     def _dispatch_save_participant_vote(self, dispatcher, vote_data):
         if vote_data.get("created"):
@@ -224,11 +207,4 @@ class ValidateVoteForm(FormValidationAction):
         if not Conversation.no_comments_left_to_vote(statistics):
             return Vote.continue_voting(tracker)
         else:
-            return [
-                ActiveLoop(None),
-                SlotSet("conversation_is_empty", True),
-                SlotSet("vote", None),
-                SlotSet("comment_text", None),
-                SlotSet("number_comments", None),
-                SlotSet("current_comment_id", None),
-            ]
+            return Vote.user_reached_max_votes()

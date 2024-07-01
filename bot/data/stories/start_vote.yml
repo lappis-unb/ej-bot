@@ -42,7 +42,7 @@ stories:
       - active_loop: vote_form
       - active_loop: null
       - slot_was_set:
-          - user_can_vote: False
+          - user_reached_max_anonymous_votes: True
       - action: utter_vote_limit_anonymous_reached
       - checkpoint: start_authentication
   
@@ -53,7 +53,7 @@ stories:
       - active_loop: vote_form
       - active_loop: null
       - slot_was_set:
-          - conversation_is_empty: True
+          - user_reached_max_votes: True
       - action: utter_voted_all_comments
       - action: utter_thanks_participation
 
@@ -66,3 +66,13 @@ stories:
       - action: action_stop_vote
       - active_loop: null
       - action: utter_finish
+
+  - story: user is voting and need help
+    steps:
+      - checkpoint: start_vote
+      - action: vote_form
+      - active_loop: vote_form
+      - intent: help
+      - action: action_stop_vote
+      - active_loop: null
+      - action: utter_help

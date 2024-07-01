@@ -2,7 +2,7 @@ import logging
 from typing import Any
 from rasa_sdk import Tracker
 
-from .constants import EJCommunicationError
+from .ej_error import EJError
 from .routes import (
     webchat_domain_url,
     user_statistics_url,
@@ -30,7 +30,7 @@ class Conversation:
             response = ej_api.request(webchat_domain_url(url))
             return response.json()
         except:
-            raise EJCommunicationError
+            raise EJError(response.status_code)
 
     @staticmethod
     def get_by_id(conversation_id, tracker: Any):
@@ -39,17 +39,17 @@ class Conversation:
             response = ej_api.request(conversation_url(conversation_id))
             conversation = response.json()
             if len(conversation) == 0:
-                raise EJCommunicationError
+                raise EJError(response.status_code)
             return conversation
         except:
-            raise EJCommunicationError
+            raise EJError(response.status_code)
 
     def get_participant_statistics(self):
         try:
             url = user_statistics_url(self.id)
             response = self.ej_api.request(url)
         except:
-            raise EJCommunicationError
+            raise EJError(response.status_code)
         return response
 
     def get_next_comment(self):
@@ -61,7 +61,7 @@ class Conversation:
             comment["id"] = comment_url_as_list[len(comment_url_as_list) - 2]
             return comment
         except Exception as e:
-            raise EJCommunicationError
+            raise EJError(response.status_code)
 
     @staticmethod
     def no_comments_left_to_vote(statistics):

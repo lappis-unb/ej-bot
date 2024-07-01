@@ -1,25 +1,27 @@
-from dataclasses import dataclass
 import json
-from typing import Any, Text
-from rasa_sdk import Tracker
-
 import requests
 
-from actions.logger import custom_logger
+from dataclasses import dataclass
+from typing import Any, Text
+
 from rasa_sdk import Tracker
+from rasa_sdk.events import SlotSet, ActiveLoop
+
+from actions.logger import custom_logger
 
 from .constants import *
-from .routes import auth_headers
+from .ej_api import EjApi
 
 
 @dataclass
 class Vote:
     """Vote controls voting requests to EJ API and some validations during bot execution."""
 
-    vote_slot_value: Text
-    tracker: Tracker
-    channel: Text = ""
-    token: Text = ""
+    def __init__(self, vote_slot_value, tracker: Tracker):
+        self.tracker = tracker
+        self.vote_slot_value = vote_slot_value
+        self.ej_api = EjApi(tracker)
+        self.__post_init__()
 
     def __post_init__(self):
         self.channel = self.tracker.get_latest_input_channel()
@@ -38,17 +40,22 @@ class Vote:
                 }
             )
             try:
-                response = requests.post(
-                    VOTES_URL,
-                    data=body,
-                    headers=auth_headers(self.token),
-                )
+                response = self.ej_api.request(url=VOTES_URL, payload=body)
+
                 response = response.json()
                 custom_logger(f"REGISTERED VOTE", data=response)
                 return response
             except Exception as e:
                 custom_logger(f"ERROR POSTING VOTE \n {e}")
                 raise EJCommunicationError
+
+    @staticmethod
+    def clear_slots():
+        return [
+            SlotSet("vote", None),
+            SlotSet("comment_confirmation", None),
+            SlotSet("comment", None),
+        ]
 
     @staticmethod
     def continue_voting(tracker: Tracker):
@@ -66,12 +73,37 @@ class Vote:
         }
 
     @staticmethod
-    def stop_voting():
-        """
-        Rasa end a form when all slots are filled. This method
-        fill vote slot with "parar" value, forcing the form to stop.
+    def need_help():
+        response = Vote.clear_slots()
+        response += [
+            ActiveLoop(None),
+            SlotSet("user_need_help", True),
+        ]
+        return response
 
-        On ActionFollowUpForm class, whe check if vote is == parar, if so,
-        we send a utter finishing the conversation.
-        """
-        return {"vote": "stop_voting"}
+    @staticmethod
+    def stop_voting():
+        response = Vote.clear_slots()
+        response += [
+            ActiveLoop(None),
+            SlotSet("user_want_stop_vote", True),
+        ]
+        return response
+
+    @staticmethod
+    def user_limit_anonymous_vote():
+        response = Vote.clear_slots()
+        response += [
+            ActiveLoop(None),
+            SlotSet("user_reached_max_anonymous_votes", True),
+        ]
+        return response
+
+    @staticmethod
+    def user_reached_max_votes():
+        response = Vote.clear_slots()
+        response += [
+            ActiveLoop(None),
+            SlotSet("user_reached_max_votes", True),
+        ]
+        return response
