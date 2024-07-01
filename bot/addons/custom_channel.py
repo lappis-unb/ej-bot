@@ -53,7 +53,7 @@ class WhatsApp(InputChannel):
                 UserMessage(
                     whatsapp_message.text,
                     collector,
-                    whatsapp_message.recipient_phone,
+                    whatsapp_event.recipient_phone,
                     input_channel=self.name(),
                 )
             )
