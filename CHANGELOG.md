@@ -6,7 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.3.6] - Jun 26, 2024
+## [0.3.7] - Jul 2, 2024
+
+### Changed
+
+- increases session_expiration_time
+- logs whatsapp events in custom_channel 
+
+## [0.3.6] - Jul 2, 2024
 
 ### Changed
 
