@@ -7,6 +7,7 @@ from typing import Text, Callable, Awaitable
 from .whatsapp_api_integration.message import NotImplementedMessage, WhatsAppEvent
 from .whatsapp_api_integration.rasa import WhatsappMessagesParser
 from .whatsapp_api_integration.wpp_api_client import WhatsAppApiClient
+from actions.logger import custom_logger
 
 
 from rasa.core.channels.channel import (
@@ -39,6 +40,8 @@ class WhatsApp(InputChannel):
                 if request.args.get("hub.verify_token") != "1234":
                     return HTTPResponse("Invalid verify token", status=500)
                 return HTTPResponse(request.args.get("hub.challenge"), status=200)
+
+            custom_logger("WHATSAPP EVENT", request.json)
 
             # extracting whatsapp text message
             whatsapp_event = WhatsAppEvent(request.json)
