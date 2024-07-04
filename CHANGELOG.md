@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.3.8] - Jul 4, 2024
+
+### Added
+
+- Allows the user to stop voting by sending the "stop" intent during the conversation.
+
+### Changed
+
+- Shows conversation title after starting a new conversation with the /start command.
+
+### Fixed
+
+- Set carry_over_slots_to_new_session to false. This will fix a bug when user takes to long to answer.
+
+### Removed
+
+- Removes unused intents.
+
 ## [0.3.7] - Jul 2, 2024
 
 ### Changed
