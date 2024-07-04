@@ -139,10 +139,6 @@ class ValidateVoteForm(FormValidationAction):
     ) -> Dict[Text, Any]:
         """Validate vote value."""
 
-        if Conversation.user_wants_to_stop_participation(slot_value):
-            custom_logger(f"Stoping voting because of slot_value {slot_value}")
-            return Vote.finished_voting()
-
         conversation_id = tracker.get_slot("conversation_id_cache")
         conversation_text = tracker.get_slot("conversation_text")
         conversation = Conversation(conversation_id, conversation_text, tracker)

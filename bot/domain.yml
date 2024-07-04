@@ -5,22 +5,10 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: false
 intents:
-  - comment_confirmation:
-      use_entities: []
-  - agree:
-      use_entities: true
-  - disagree:
-      use_entities: true
-  - pass:
-      use_entities: true
-  - out_of_context:
-      use_entities: true
-  - stop:
-      use_entities: true
-  - welcome:
-      use_entities: true
-  - help:
-      use_entities: true
+  - stop
+  - comment_confirmation
+  - out_of_context
+  - help
   - start_with_conversation_id:
       use_entities: true
   - add_new_comment:
@@ -201,8 +189,7 @@ actions:
 forms:
   vote_form:
     ignored_intents:
-      - agree
-      - disagree
+      - stop
     required_slots:
       - vote
       - comment_confirmation

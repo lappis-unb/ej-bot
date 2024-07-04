@@ -3,39 +3,47 @@ nlu:
   - regex: conversation_id
     examples: |
       - \d+
+
   - intent: start_with_conversation_id
     examples: |
       - start [1](conversation_id)
       - start [50](conversation_id)
       - start [100](conversation_id)
+
   - intent: comment_confirmation
     examples: |
       - sim
       - não
-  - intent: pass
-    examples: |
-      - não sei
-      - pular
-      - pulo
-      - passa
-      - próxima pergunta
-      - Pular
+
   - intent: stop
     examples: |
+      - pararr
+      - paraar
+      - parar!
+      - parar
+      - desejo parar 
+      - parar agora
+      - parando
+      - pare agora
+      - pare
       - para
       - PARAR
-      - PAUSAR
-      - parar
-      - pausa
-      - pausar
-      - chega
+      - PARAR AGORA
+      - pari
+      - pause
+      - finalizar
+      - finalize
+      - parei
+      - quero parar
+      - encerrar
+      - quero encerrar
+      - encerrado
       - sair
-      - SAIR
-      - stop
-      - não quero mais conversar
-      - podemos parar
-      - cansei de responder
-      - não quero mais responder
+      - PAUSAR
+      - pausar
+      - voltar
+      - volte
+
   - intent: help
     examples: |
       - start
@@ -50,22 +58,7 @@ nlu:
       - comandos disponíveis
       - quais comandos posso usar?
       - participar
-  - intent: out_of_context
-    examples: |
-      - Como tá o tempo?
-      - Como vc tá?
-      - asdfgasd
-      - oque
-      - que
-      - 4 + 2 = ?
-      - ahn
-      - opa
-      - ops
-      - fala
-      - blabla
-      - xpto
-      - ihuul
-      - uhuul
+
   - intent: add_new_comment
     examples: |
       - a uva passa deve ser banida da ceia de natal

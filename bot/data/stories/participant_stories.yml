@@ -2,12 +2,12 @@ version: "3.1"
 
 stories:
 
-  - story: participant don't sent the conversation ID.
+  - story: Send message without conversation_id
     steps:
       - intent: help
       - action: utter_help
     
-  - story: participant joins a conversation
+  - story: Start a new conversation
     steps:
       - intent: start_with_conversation_id
       - slot_was_set:
@@ -17,7 +17,26 @@ stories:
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 
-  - story: starts voting form and accepts to add a new comment
+
+  # This story will cover the cenary where the participant was voting on some
+  # conversation and, for some reason, typed /start ID 
+  # to initiate a voting for a different conversation.
+  - story: Starts participation, than starts a new conversation inside vote form.
+    steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - slot_was_set:
+        - restart_conversation: true
+      - active_loop: null
+      - action: action_get_conversation
+      - action: action_introduce_ej
+      - action: utter_show_topic_of_discussion
+      - checkpoint: starts_voting
+
+  - story: Starts participation, than adds a new comment
     steps:
       - checkpoint: starts_voting
       - slot_was_set:
@@ -30,26 +49,7 @@ stories:
       - action: vote_form
       - active_loop: vote_form
 
-
-  # This story will cover the cenary where the participant was voting on some
-  # conversation and, for some reason, typed /start ID 
-  # to initiate a voting for a different conversation.
-  - story: participant starts a new conversation inside vote form
-    steps:
-      - checkpoint: starts_voting
-      - slot_was_set:
-        - conversation_id
-      - action: vote_form
-      - active_loop: vote_form
-      - slot_was_set:
-        - restart_conversation: True
-      - active_loop: null
-      - action: action_get_conversation
-      - action: action_introduce_ej
-      - action: utter_show_topic_of_discussion
-      - checkpoint: starts_voting
-
-  - story: starts voting form but deny adding a new comment.
+  - story: Starts participation, but rejects adding a new a comment
     steps:
       - checkpoint: starts_voting
       - slot_was_set:
@@ -62,9 +62,23 @@ stories:
       - action: vote_form
       - active_loop: vote_form
 
-  - story: Goodbye happy path
+  - story: Starts participation, than hit stop to end voting.
     steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - intent: stop
+      - action: action_deactivate_loop
+      - active_loop: null
+      - checkpoint: end_dialogue
+
+  - story: End dialogue
+    steps:
+      - checkpoint: end_dialogue
       - action: utter_thanks_participation
       - action: utter_next_conversation
       - action: utter_finish
       - action: action_session_start
+
