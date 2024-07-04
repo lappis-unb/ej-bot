@@ -152,8 +152,8 @@ class ValidateVoteForm(FormValidationAction):
 
         if Conversation.user_requested_new_conversation(slot_value):
             finished_voting_slots = vote.finished_voting()
-            action_restart_slot = Conversation.force_nlu_restart(slot_value)
-            return {**finished_voting_slots, **action_restart_slot}
+            dialogue_restart_slots = Conversation.restart_dialogue(slot_value)
+            return {**finished_voting_slots, **dialogue_restart_slots}
 
         if vote.is_valid():
             custom_logger(f"POST vote to EJ API: {vote}")

@@ -54,7 +54,7 @@ class Conversation:
         return re.search(pattern, user_input)
 
     @staticmethod
-    def force_nlu_restart(user_channel_input: str):
+    def restart_dialogue(user_channel_input: str):
         """
         check if user_channel_input is a request to participant on a new conversation.
         If so, returns a dictionary with updated NLU slots.

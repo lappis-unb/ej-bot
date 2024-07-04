@@ -36,10 +36,14 @@ stories:
   # to initiate a voting for a different conversation.
   - story: participant starts a new conversation inside vote form
     steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
       - action: vote_form
-      - active_loop: null
+      - active_loop: vote_form
       - slot_was_set:
         - restart_conversation: True
+      - active_loop: null
       - action: action_get_conversation
       - action: action_introduce_ej
       - action: utter_show_topic_of_discussion
