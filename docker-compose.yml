@@ -71,6 +71,16 @@ services:
     networks:
       - bot-network
 
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD=rasa
+      - POSTGRES_USER=rasa
+      - POSTGRES_DB=rasa
+    networks:
+      - bot-network
+
 networks:
   bot-network:
     driver: bridge

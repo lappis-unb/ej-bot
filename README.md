@@ -52,12 +52,13 @@ recupere o ID da URL da conversa e guarde essa informação.
 
 Com a EJ configurada, execute os seguintes comandos:
 
+- `make run-store`. Esse comando irá subir os serviços do Redis e PostgreSQL, responsáveis por armazenar o contexto das conversas.
 - `make run-api`. Esse comando irá subir a API do Rasa para termos os endpoints de webhook definidos
 nos arquivos de `credentials`.
 - `make run-actions`. Esse comando irá subir os módulos Python responsáveis por requisitar
 nos endpoints da EJ.
 
-Ambos os comandos precisam ser executados em parelelo, para o correto funcionamento do chatbot.
+Todos os comandos precisam ser executados em parelelo para o correto funcionamento do chatbot.
 Verifique se o Rasa está rodando acessando `http://localhost:5006`.
 
 # Testando o chatbot via shell

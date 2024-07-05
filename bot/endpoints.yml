@@ -1,3 +1,10 @@
+tracker_store:
+  type: SQL
+  dialect: "postgresql"
+  url: ${POSTGRES_HOST}
+  db: ${POSTGRES_DB}
+  username: ${POSTGRES_USER} 
+  password: ${POSTGRES_PASSWORD}
 lock_store:
   type: redis
   url: ${REDIS_HOST}
