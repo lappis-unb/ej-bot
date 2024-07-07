@@ -33,12 +33,13 @@ class TestUtils:
             "refresh_token": "1234",
         }
 
-    def test_stop_voting(self):
-        assert Vote.stop_voting() == {"vote": "parar"}
-
-    def test_finished_voting(self, tracker):
+    def test_finish_voting(self, tracker):
         vote = Vote("Discordar", tracker)
-        assert vote.finished_voting() == {"vote": "discordar"}
+        assert Vote.finish_voting() == {
+            "vote": "-",
+            "comment_confirmation": "-",
+            "comment": "-",
+        }
 
     def test_user_have_comments_to_vote(self):
         statistics = {"missing_votes": 5}

@@ -79,5 +79,11 @@ class Vote:
             "refresh_token": tracker.get_slot("refresh_token"),
         }
 
-    def finished_voting(self):
+    @staticmethod
+    def finish_voting():
+        """
+        Rasa ends a form when all slots are filled. This method
+        fills the vote_form slots with '-' character,
+        forcing Rasa to stop sending comments to voting.
+        """
         return {"vote": "-", "comment_confirmation": "-", "comment": "-"}

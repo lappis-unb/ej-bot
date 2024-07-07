@@ -6,6 +6,13 @@ stories:
     intent: help
   - action: utter_help
 
+- story: User initiates dialogue without /start
+  steps:
+  - user: |
+      0
+    intent: help
+  - action: utter_help
+
 - story: User joins conversation to vote
   steps:
   - user: |
@@ -41,3 +48,22 @@ stories:
     - comment_confirmation
   - slot_was_set:
     - comment
+
+- story: User stoped voting
+  steps:
+  - user: |
+      start [5](conversation_id)
+    intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
+  - action: action_get_conversation
+  - action: action_introduce_ej
+  - action: utter_show_topic_of_discussion
+  - slot_was_set:
+    - conversation_id
+  - action: vote_form
+  - active_loop: vote_form
+  - intent: stop
+  - action: action_deactivate_loop
+  - active_loop: null
+  - checkpoint: end_dialogue

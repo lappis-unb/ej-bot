@@ -147,7 +147,7 @@ class ValidateVoteForm(FormValidationAction):
         vote = Vote(slot_value, tracker)
 
         if Conversation.user_requested_new_conversation(slot_value):
-            finished_voting_slots = vote.finished_voting()
+            finished_voting_slots = Vote.finish_voting()
             dialogue_restart_slots = Conversation.restart_dialogue(slot_value)
             return {**finished_voting_slots, **dialogue_restart_slots}
 
@@ -186,4 +186,4 @@ class ValidateVoteForm(FormValidationAction):
         else:
             dispatcher.utter_message(template="utter_voted_all_comments")
             dispatcher.utter_message(template="utter_thanks_participation")
-            return vote.finished_voting()
+            return Vote.finish_voting()

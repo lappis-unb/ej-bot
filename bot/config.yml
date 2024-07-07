@@ -17,11 +17,6 @@ pipeline:
   url: ${RASA_DUCKLING_HTTP_URL}
   locale: BR
   dimensions: ["url"]
-- name: RegexFeaturizer
-  "case_sensitive": false
-- name: RegexEntityExtractor
-  case_sensitive: false
-  use_lookup_tables: true
 
 policies:
 - name: RulePolicy
