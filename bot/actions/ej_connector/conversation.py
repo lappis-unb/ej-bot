@@ -101,7 +101,7 @@ class Conversation:
 
     @staticmethod
     def get_comment_title(comment, user_voted_comments, total_comments):
-        return f"{comment['content']} \n O que você acha disso ({user_voted_comments}/{total_comments})?"
+        return f"*{comment['content']}* \n O que você acha disso ({user_voted_comments}/{total_comments})?"
 
     @staticmethod
     def user_wants_to_stop_participation(vote_slot_value):

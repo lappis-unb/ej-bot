@@ -14,6 +14,12 @@ nlu:
       - start [2](conversation_id)
       - start [40](conversation_id)
       - start [1900](conversation_id)
+      - start [156](conversation_id)
+      - /start [156](conversation_id)
+      - /start [11](conversation_id)
+      - /start [23](conversation_id)
+      - start [11](conversation_id)
+      - start [23](conversation_id)
 
   - intent: comment_confirmation
     examples: |
@@ -51,10 +57,10 @@ nlu:
 
   - intent: help
     examples: |
-      - start
       - 0
       - 1
       - -1
+      - start
       - /start
       - começar
       - iniciar

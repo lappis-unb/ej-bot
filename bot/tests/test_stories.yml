@@ -9,7 +9,7 @@ stories:
 - story: User initiates dialogue without /start
   steps:
   - user: |
-      0
+      [0]{"entity": "conversation_id"}
     intent: help
   - action: utter_help
 
@@ -67,3 +67,28 @@ stories:
   - action: action_deactivate_loop
   - active_loop: null
   - checkpoint: end_dialogue
+
+- story: User selected a new conversation
+  steps:
+  - user: |
+      start [5](conversation_id)
+    intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
+  - action: action_get_conversation
+  - action: action_introduce_ej
+  - action: utter_show_topic_of_discussion
+  - slot_was_set:
+    - conversation_id
+  - action: vote_form
+  - active_loop: vote_form
+  - slot_was_set:
+    - restart_conversation: true
+    - vote: "-"
+    - comment_confirmation: "-"
+    - comment: "-"
+  - active_loop: null
+  - action: action_get_conversation
+  - action: action_introduce_ej
+  - action: utter_show_topic_of_discussion
+  - checkpoint: starts_voting
