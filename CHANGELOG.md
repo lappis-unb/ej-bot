@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.3.9] - Jul 4, 2024
+
+### Added
+
+- Adds PostgresSQL as TrackerStore 
+
+### Changed
+
+- Improves messages formating with bold.
+
 ## [0.3.8] - Jul 4, 2024
 
 ### Added
