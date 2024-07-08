@@ -107,6 +107,14 @@ na API da EJ a conversa de ID 50. A partir dai, o fluxo de participação é ini
 
 # Integração no WhatsApp
 
+A integração com o WhatsApp utiliza um conector customizado, disponível no módulo
+`bot/addons/custom_channel.py`. Esse módulo disponibiliza a rota `/webhooks/whatsapp/webhook`
+para que o WhatsApp e parceiros possam enviar os eventos que forem gerados durante a
+interação com o chatbot. Atualmente, a integração suporta eventos enviados tanto pelo
+WhatsApp Cloud API quanto pela API do Serpro.
+
+## WhatsApp Cloud API
+
 **1. Solicite um número de testes**
 
 A integração com o WhatsApp utiliza a [Cloud API do Meta](https://developers.facebook.com/docs/whatsapp/cloud-api/get-started#configure-webhooks).
@@ -157,6 +165,46 @@ caso contrário, mesmo enviando mensagens na conversa, a API do rasa não recebe
 Com o número de teste e o número do destinatário, teste a comunicação do WhatsApp com o
 Rasa em uma conversa entre ambos os números. Envie `/start ID-DA-CONVERSA-NA-EJ` na
 conversa e verifique se a requisição irá chegar no Rasa por meio da URL do Ngrok.
+
+## Serpro
+
+A implementação desse repositório também suporta receber eventos da [API do Serpro para
+integração com WhatsApp](https://gitlab.com/pencillabs/ej/ej-application/-/merge_requests/307).
+Essa integração é especialmente util para cenários de uso governamental, em que é necessário
+utilizar um parceiro credenciado pela Meta para acesso às API de mensagem.
+
+**1. Solicite as credenciais**
+
+Para utilizar esse modo de integração, é preciso que a equipe do Serpro envie as seguintes
+credenciais:
+
+- Client ID
+- Secret
+- Phone Number Id
+- Waba ID
+
+Com as credenciais, atualize o arquivo `variables.env`:
+```
+SERPRO_CLIENT_ID=138808512639290
+SERPRO_CLIENT_SECRET=kLaVl2fSevwX4EdESxXC8J1W462XVXLP
+SERPRO_WABA_ID=110115228401530
+```
+
+**2. Configure o Rasa para receber os eventos.**
+
+A API do Serpro irá enviar os eventos do WhatsApp para a instância do Rasa na rota
+`/webhooks/whatsapp/webhook`. Para desenvolvimento local, é possível criar um servidor
+na nuvem e realizar uma configuração de [tunelamento para o servidor](https://gist.github.com/gdamjan/4586758). 
+Em produção/homologação, o Rasa precisará estar rodando na máquina virtual que 
+responderá ao domínio de webhook.
+
+
+**3. Registre o webhook pela API do Serpro.**
+
+Com as credenciais e a infraestrutura para recebimento dos eventos disponível, é preciso
+cadastrar o webhook na API do Serpro. O método `register_webhook` do módulo
+`bot/addons/whatsapp_api_integration/serpro_api_client.py`, pode ser utilizado para
+a criação do webhook a partir das credenciais enviadas pelo Serpro.
 
 # Comandos
 

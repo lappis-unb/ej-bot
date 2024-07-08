@@ -23,6 +23,9 @@ check_style_with_black:
   stage: style
   script:
     - black --check .
+  tags:
+    - k8s
+
 
 test_domain:
   before_script:
@@ -35,6 +38,8 @@ test_domain:
   script:
     - cd bot && rasa train
     - rasa test --fail-on-prediction-errors
+  tags:
+    - k8s
 
 test_actions:
   before_script:
@@ -45,3 +50,5 @@ test_actions:
   script:
     - cd bot 
     - python3 -m pytest
+  tags:
+    - k8s
