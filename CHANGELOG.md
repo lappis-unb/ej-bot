@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.3.10] - Jul 8, 2024
+
+### Added
+
+- Adds support to receive webhook events from Serpro WhatsApp API.
+
 ## [0.3.9] - Jul 4, 2024
 
 ### Added
