@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.3.11] - Jul 19, 2024
+
+### Added
+
+- Ask the user to authenticate on an external service if EJ API has anonymous votes configured.
+- Do not ask if the user wants to add a new comment if the EJ API returns false for the participants_can_add_comments field.
+
 ## [0.3.10] - Jul 8, 2024
 
 ### Added
