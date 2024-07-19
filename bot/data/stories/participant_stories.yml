@@ -44,6 +44,7 @@ stories:
       - action: vote_form
       - active_loop: vote_form
       - slot_was_set:
+        - auth_link: null
         - comment_confirmation: Sim
       - action: utter_ask_comment
       - action: vote_form

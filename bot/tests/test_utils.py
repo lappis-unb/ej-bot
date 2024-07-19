@@ -1,8 +1,8 @@
-from bot.actions.ej_connector.comment import Comment
+from bot.actions.ej_connector.comment import Comment, CommentDialogue
 
 from bot.actions.ej_connector.constants import *
 from bot.actions.ej_connector.conversation import Conversation
-from bot.actions.ej_connector.vote import Vote
+from bot.actions.ej_connector.vote import Vote, VoteDialogue
 from bot.actions.ej_connector.user import User
 
 TOKEN = "mock_token_value"
@@ -13,9 +13,6 @@ class TestUtils:
         values = ["1", "-1", "0"]
         assert values == VALID_VOTE_VALUES
 
-    def test_stop_participation(self):
-        assert Conversation.user_wants_to_stop_participation("parar") == True
-
     def test_vote_is_valid(self, tracker):
         vote = Vote("1", tracker)
         assert vote.is_valid() == True
@@ -25,7 +22,7 @@ class TestUtils:
         assert vote.is_valid() == False
 
     def test_continue_voting(self, tracker):
-        assert Vote.continue_voting(tracker) == {
+        assert VoteDialogue.continue_voting(tracker) == {
             "vote": None,
             "comment_confirmation": None,
             "comment": None,
@@ -35,7 +32,7 @@ class TestUtils:
 
     def test_finish_voting(self, tracker):
         vote = Vote("Discordar", tracker)
-        assert Vote.finish_voting() == {
+        assert VoteDialogue.finish_voting() == {
             "vote": "-",
             "comment_confirmation": "-",
             "comment": "-",
@@ -48,7 +45,7 @@ class TestUtils:
     def test_define_vote_livechat(self):
         metadata = {"agent": "livechat"}
         message = "vote message"
-        utter = Comment.get_utter(metadata, message)
+        utter = CommentDialogue.get_utter(metadata, message)
 
         assert not "buttons" in utter
         assert "text" in utter
@@ -57,7 +54,7 @@ class TestUtils:
     def test_define_vote_channel_with_buttons(self):
         metadata = {"other_keys": " notlivechat"}
         message = "vote message"
-        utter = Comment.get_utter(metadata, message)
+        utter = CommentDialogue.get_utter(metadata, message)
 
         assert "buttons" in utter
         assert "text" in utter

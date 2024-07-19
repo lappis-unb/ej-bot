@@ -20,20 +20,30 @@ class ActionGetConversation(Action):
         return "action_get_conversation"
 
     def run(self, dispatcher, tracker, domain):
-        self.response = []
+        self.slots = []
         conversation_id = tracker.get_slot("conversation_id")
         if conversation_id:
             username = User.get_name_from_tracker_state(tracker.current_state())
             user = User(tracker, name=username)
             conversation_data = Conversation.get_by_id(conversation_id, user.tracker)
             conversation_text = conversation_data.get("text")
-            conversation = Conversation(conversation_id, conversation_text, tracker)
+            anonymous_votes_limit = conversation_data.get("anonymous_votes_limit")
+            participant_can_add_comments = conversation_data.get(
+                "participants_can_add_comments"
+            )
+            conversation = Conversation(
+                conversation_id,
+                conversation_text,
+                anonymous_votes_limit,
+                participant_can_add_comments,
+                tracker,
+            )
             user.authenticate()
-            self._set_slots_to_init_conversation(conversation, user)
+            self._set_slots(conversation, user)
         else:
             dispatcher.utter_message(template="utter_no_selected_conversation")
             return [FollowupAction("action_session_start")]
-        return self.response
+        return self.slots
 
     def _dispatch_communication_error_with_ej(self, dispatcher):
         dispatcher.utter_message(template="utter_ej_communication_error")
@@ -45,10 +55,19 @@ class ActionGetConversation(Action):
         dispatcher.utter_message(template="utter_error_try_again_later")
         return [FollowupAction("action_session_start")]
 
-    def _set_slots_to_init_conversation(self, conversation, user):
-        self.response = [
+    def _set_slots(self, conversation: Conversation, user: User):
+        self.slots = [
             SlotSet("conversation_text", conversation.title),
             SlotSet("conversation_id_cache", conversation.id),
+            SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
+            SlotSet(
+                "participant_can_add_comments",
+                conversation.participant_can_add_comments,
+            ),
+            SlotSet(
+                "has_completed_registration",
+                user.has_completed_registration,
+            ),
             SlotSet("access_token", user.tracker.get_slot("access_token")),
             SlotSet("refresh_token", user.tracker.get_slot("refresh_token")),
         ]

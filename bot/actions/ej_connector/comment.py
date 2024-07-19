@@ -12,6 +12,48 @@ from .routes import auth_headers
 logger = logging.getLogger(__name__)
 
 
+class CommentDialogue:
+
+    REFUSES_TO_ADD_COMMENT = "não"
+    WANTS_TO_ADD_COMMENT = "sim"
+
+    @staticmethod
+    def user_refuses_to_add_comment(slot_value):
+        return slot_value == CommentDialogue.REFUSES_TO_ADD_COMMENT
+
+    @staticmethod
+    def user_wants_to_add_comment(slot_value):
+        return slot_value == CommentDialogue.WANTS_TO_ADD_COMMENT
+
+    @staticmethod
+    def ask_user_to_comment(vote_option: Text):
+        return {"vote": vote_option, "comment_confirmation": None, "comment": None}
+
+    @staticmethod
+    def resume_voting(slot_value: Text):
+        return {"vote": None, "comment_confirmation": slot_value, "comment": ""}
+
+    @staticmethod
+    def get_utter(metadata, comment_title):
+        if metadata and "agent" in metadata:
+            return CommentDialogue.get_livechat_utter(comment_title)
+        return CommentDialogue.get_buttons_utter(comment_title)
+
+    @staticmethod
+    def get_livechat_utter(comment_title):
+        # channel is livechat, can't render buttons
+        return {"text": comment_title}
+
+    @staticmethod
+    def get_buttons_utter(comment_title):
+        buttons = [
+            {"title": "Concordar", "payload": "1"},
+            {"title": "Discordar", "payload": "-1"},
+            {"title": "Pular", "payload": "0"},
+        ]
+        return {"text": comment_title, "buttons": buttons}
+
+
 class Comment:
     """Comment controls commenting requests to EJ API and some validations during bot execution."""
 
@@ -39,38 +81,3 @@ class Comment:
             except Exception as e:
                 raise EJCommunicationError
             return response
-
-    @staticmethod
-    def pause_to_ask_comment(vote_option: Text):
-        return {"vote": vote_option, "comment_confirmation": None, "comment": None}
-
-    @staticmethod
-    def resume_voting(slot_value: Text):
-        return {"vote": None, "comment_confirmation": slot_value, "comment": ""}
-
-    @staticmethod
-    def get_utter(metadata, comment_title):
-        if metadata and "agent" in metadata:
-            return Comment.get_livechat_utter(comment_title)
-        return Comment.get_buttons_utter(comment_title)
-
-    @staticmethod
-    def get_livechat_utter(comment_title):
-        # channel is livechat, can't render buttons
-        return {"text": comment_title}
-
-    def is_internal(self):
-        """
-        return true if self.text is equall to '-'.
-        The '-' character is used to stop the vote form and request a new EJ conversation.
-        """
-        return str(self.text) == "-"
-
-    @staticmethod
-    def get_buttons_utter(comment_title):
-        buttons = [
-            {"title": "Concordar", "payload": "1"},
-            {"title": "Discordar", "payload": "-1"},
-            {"title": "Pular", "payload": "0"},
-        ]
-        return {"text": comment_title, "buttons": buttons}

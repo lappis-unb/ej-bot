@@ -31,7 +31,3 @@ def user_comments_route(conversation_id):
 
 def user_pending_comments_route(conversation_id):
     return f"{conversation_url(conversation_id)}user-pending-comments/"
-
-
-def webchat_domain_url(url):
-    return f"{API_URL}/rasa-conversations/integrations?domain={url}"
