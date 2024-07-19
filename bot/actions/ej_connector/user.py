@@ -1,12 +1,94 @@
+from dataclasses import dataclass
 import json
-from typing import Any, Text
-
-import requests
+from typing import Any, Text, Dict
+import hashlib
+from datetime import datetime, timezone
+from datetime import timedelta
+import jwt
 
 from actions.logger import custom_logger
 from actions.ej_connector.ej_api import EjApi
 
 from .constants import *
+
+
+TOKEN_EXPIRATION_TIME = timedelta(minutes=10)
+JWT_SECRET = os.getenv("JWT_SECRET")
+SECRET_KEY = os.getenv("SECRET_KEY")
+EXTERNAL_AUTHENTICATION_HOST = os.getenv("EXTERNAL_AUTHENTICATION_HOST", "")
+
+
+class CheckAuthenticationDialogue:
+
+    END_PARTICIPATION_SLOT = "end_participant_conversation"
+    CHECK_AUTHENTICATION_SLOT = "check_participant_authentication"
+
+    @staticmethod
+    def get_message():
+        buttons = [
+            {
+                "title": "Confirmar",
+                "payload": CheckAuthenticationDialogue.CHECK_AUTHENTICATION_SLOT,
+            },
+            {
+                "title": "Encerrar",
+                "payload": CheckAuthenticationDialogue.END_PARTICIPATION_SLOT,
+            },
+        ]
+        return {
+            "text": "Estou aguardando você se autenticar para continuar a votação. 😊",
+            "buttons": buttons,
+        }
+
+    @staticmethod
+    def restart_auth_form() -> Dict:
+        return {"check_authentication": None, "has_completed_registration": None}
+
+    @staticmethod
+    def end_auth_form() -> Dict:
+        return {
+            "check_authentication": CheckAuthenticationDialogue.END_PARTICIPATION_SLOT,
+            "has_completed_registration": False,
+        }
+
+    @staticmethod
+    def participant_refuses_to_auth(slot_value: Text):
+        return slot_value == CheckAuthenticationDialogue.END_PARTICIPATION_SLOT
+
+
+@dataclass
+class ExternalAuthorizationService:
+
+    sender_id: Text
+    secret_id: Text
+
+    def get_authentication_link(self):
+        jwt_data = self._get_jwt_authorization_data()
+        authorization_url = self._get_authorization_url()
+        return f"{authorization_url}?user_data={jwt_data}"
+
+    def _get_jwt_authorization_data(
+        self,
+        expiration_minutes=TOKEN_EXPIRATION_TIME.total_seconds(),
+    ) -> Text:
+        utc_now = datetime.now(timezone.utc)
+        expiration = utc_now + timedelta(minutes=expiration_minutes)
+        data = {
+            "user_id": self.sender_id,
+            "secret_id": self.secret_id,
+            "exp": expiration,
+        }
+        encoded_data = jwt.encode(data, JWT_SECRET, algorithm="HS256")
+        return encoded_data
+
+    def _get_authorization_url(self):
+        return f"{EXTERNAL_AUTHENTICATION_HOST}/processes/testeplanocultura/f/1192/link_external_user"
+
+    @staticmethod
+    def generate_hash(identifier):
+        hash_object = hashlib.sha256(identifier.encode())
+        hex_dig = hash_object.hexdigest()
+        return hex_dig
 
 
 class User(object):
@@ -24,9 +106,11 @@ class User(object):
         self.password_confirm = f"{self.remove_special(tracker.sender_id)}-opinion-bot"
         self.ej_api = EjApi(tracker)
         self.tracker = tracker
+        self.secret_id = ExternalAuthorizationService.generate_hash(tracker.sender_id)
+        self.has_completed_registration = tracker.get_slot("has_completed_registration")
         self._set_email()
 
-    def serialize(self):
+    def registration_data(self):
         return json.dumps(
             {
                 "name": self.name,
@@ -34,6 +118,20 @@ class User(object):
                 "password": self.password,
                 "password_confirm": self.password_confirm,
                 "email": self.email,
+                "secret_id": self.secret_id,
+                "has_completed_registration": False,
+            }
+        )
+
+    def auth_data(self):
+        return json.dumps(
+            {
+                "name": self.name,
+                "display_name": self.display_name,
+                "password": self.password,
+                "password_confirm": self.password_confirm,
+                "email": self.email,
+                "secret_id": self.secret_id,
             }
         )
 
@@ -55,28 +153,33 @@ class User(object):
         if access_token and refresh_token:
             return self.tracker
 
-        custom_logger(f"creating new user", data=self.serialize())
         response = None
         try:
-            response = self.ej_api.request(AUTH_URL, self.serialize())
-            access_token = response.json()["access_token"]
-            refresh_token = response.json()["refresh_token"]
+            custom_logger(
+                f"Requesting new token for the participant", data=self.auth_data()
+            )
+            response = self.ej_api.request(AUTH_URL, self.auth_data())
+            if response.status_code != 200:
+                custom_logger(f"EJ API ERROR", data=response.json())
+                raise Exception
         except Exception:
-            response = self.ej_api.request(REGISTRATION_URL, self.serialize())
-            access_token = response.json()["access_token"]
-            refresh_token = response.json()["refresh_token"]
-        except:
-            raise Exception("COULD NOT CREATE USER")
+            custom_logger(
+                f"Failed to request token, trying to create the participant",
+                data=self.registration_data(),
+            )
+            response = self.ej_api.request(REGISTRATION_URL, self.registration_data())
+            if response.status_code != 201:
+                custom_logger(f"EJ API ERROR", data=response.json())
+                raise Exception("COULD NOT CREATE USER")
 
-        self.tracker.slots["access_token"] = access_token
-        self.tracker.slots["refresh_token"] = refresh_token
-
-    def _get_or_create_user(self, url: Text, payload: Any) -> Any:
-        return requests.post(
-            url,
-            data=payload,
-            headers=HEADERS,
-        )
+        custom_logger(f"EJ API RESPONSE", data=response.json())
+        response_data = response.json()
+        self.tracker.slots["access_token"] = response_data["access_token"]
+        self.tracker.slots["refresh_token"] = response_data["refresh_token"]
+        self.has_completed_registration = response_data["has_completed_registration"]
+        self.tracker.slots[
+            "has_completed_registration"
+        ] = self.has_completed_registration
 
     @staticmethod
     def get_name_from_tracker_state(state: dict):

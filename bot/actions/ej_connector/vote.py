@@ -12,6 +12,32 @@ from .constants import *
 from .routes import auth_headers
 
 
+class VoteDialogue:
+    @staticmethod
+    def continue_voting(tracker: Tracker):
+        """
+        Rasa ends a form when all slots are filled. This method
+        fills the vote_form slots with None values,
+        forcing Rasa to keep sending comments to voting.
+        """
+        return {
+            "vote": None,
+            "comment_confirmation": None,
+            "comment": None,
+            "access_token": tracker.get_slot("access_token"),
+            "refresh_token": tracker.get_slot("refresh_token"),
+        }
+
+    @staticmethod
+    def finish_voting():
+        """
+        Rasa ends a form when all slots are filled. This method
+        fills the vote_form slots with '-' character,
+        forcing Rasa to stop sending comments to voting.
+        """
+        return {"vote": "-", "comment_confirmation": "-", "comment": "-"}
+
+
 @dataclass
 class Vote:
     """Vote controls voting requests to EJ API and some validations during bot execution."""
@@ -63,27 +89,3 @@ class Vote:
             except Exception as e:
                 custom_logger(f"ERROR POSTING VOTE \n {e}")
                 raise EJCommunicationError
-
-    @staticmethod
-    def continue_voting(tracker: Tracker):
-        """
-        Rasa ends a form when all slots are filled. This method
-        fills the vote_form slots with None values,
-        forcing Rasa to keep sending comments to voting.
-        """
-        return {
-            "vote": None,
-            "comment_confirmation": None,
-            "comment": None,
-            "access_token": tracker.get_slot("access_token"),
-            "refresh_token": tracker.get_slot("refresh_token"),
-        }
-
-    @staticmethod
-    def finish_voting():
-        """
-        Rasa ends a form when all slots are filled. This method
-        fills the vote_form slots with '-' character,
-        forcing Rasa to stop sending comments to voting.
-        """
-        return {"vote": "-", "comment_confirmation": "-", "comment": "-"}

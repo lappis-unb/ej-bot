@@ -17,6 +17,30 @@ intents:
 entities:
   - conversation_id
 slots:
+  anonymous_votes_limit:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  auth_link:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+    - type: custom
+  participant_can_add_comments:
+    type: bool
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  has_completed_registration:
+    type: bool
+    initial_value: null
+    influence_conversation: true
+    mappings:
+    - type: custom
   comment_text:
     type: text
     initial_value: null
@@ -90,6 +114,17 @@ slots:
     min_value: 0.0
     mappings:
     - type: custom
+  check_authentication:
+    type: categorical
+    values: 
+      - end_participant_conversation
+      - check_participant_authentication
+    influence_conversation: true
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: authentication_form
+        requested_slot: check_authentication
   vote:
     type: text
     influence_conversation: false
@@ -117,12 +152,6 @@ slots:
       conditions:
       - active_loop: vote_form
         requested_slot: comment
-  bot_whatsapp_number:
-    type: text
-    initial_value: null
-    influence_conversation: false
-    mappings:
-    - type: custom
 responses:
   utter_show_topic_of_discussion:
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n**{conversation_text}**\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
@@ -152,7 +181,7 @@ responses:
   utter_voted_all_comments:
   - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
   utter_thanks_participation:
-  - text: Sua particição irá nos ajudar a entender o que as pessoas pensam sobre esse assunto, muito obrigado 🤗🤗🤗!!
+  - text: Sua participação irá nos ajudar a entender o que as pessoas pensam sobre esse assunto, muito obrigado 🤗🤗🤗!!
   utter_stopped:
   - text: Só de você ter respondido ja me ajudou, muito obrigada!
   utter_next_conversation:
@@ -175,6 +204,18 @@ responses:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
   utter_invalid_vote_during_participation:
   - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_text}** não foi válida. Poderia responder novamente?"
+  utter_vote_limit_anonymous_reached:
+  - text: "Você já atingiu o número máximo de votos para o assunto *{conversation_text}*.\n\nPor favor, autentique-se para continuar respondendo"
+  utter_get_token:
+  - text: "Aqui está seu link para se autenticar, ele expira em 20min:\n\n {auth_link}"
+  utter_awaiting_authentication:
+  - text: "Estou aguardando você se autenticar para continuar a votação. 😊"
+  utter_authenticated:
+  - text: "Validei sua autenticação"
+  utter_error_during_authentication_validation:
+  - text: "Não consegui identificar que você se autenticou. Poderia tentar novamente?"
+
+
 actions:
 - action_introduce_ej
 - action_ask_vote
@@ -182,10 +223,21 @@ actions:
 - action_get_conversation
 - action_set_new_comment
 - action_customized_fallback
+- action_ask_check_authentication
+- validate_authentication_form
+
 forms:
+  authentication_form:
+    ignored_intents:
+      - stop
+      - start_with_conversation_id
+    required_slots:
+      - check_authentication
+      - has_completed_registration
   vote_form:
     ignored_intents:
       - stop
+      - check_authentication
     required_slots:
       - vote
       - comment_confirmation

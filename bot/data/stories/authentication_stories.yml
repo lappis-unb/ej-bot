@@ -1,0 +1,49 @@
+version: "3.1"
+
+stories:
+
+  - story: starting the authentication flow
+    steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - slot_was_set:
+          - vote
+          - comment
+          - comment_confirmation
+          - restart_conversation: false
+      - active_loop: null
+      - action: utter_vote_limit_anonymous_reached
+      - action: authentication_form
+      - active_loop: authentication_form
+      - slot_was_set:
+          - check_authentication: check_participant_authentication
+          - has_completed_registration: true
+      - active_loop: null
+      - action: utter_authenticated
+      - checkpoint: starts_voting
+
+  - story: deny authentication
+    steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - slot_was_set:
+          - vote
+          - comment
+          - comment_confirmation
+          - restart_conversation: false
+      - active_loop: null
+      - action: utter_vote_limit_anonymous_reached
+      - action: authentication_form
+      - active_loop: authentication_form
+      - slot_was_set:
+          - check_authentication: end_participant_conversation
+          - has_completed_registration: False
+      - active_loop: null
+      - action: action_deactivate_loop
+      - checkpoint: end_dialogue

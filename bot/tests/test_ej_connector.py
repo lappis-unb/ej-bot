@@ -58,7 +58,7 @@ class TestAPIClass:
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = response_value
-        conversation = Conversation(CONVERSATION_ID, "xpto", tracker)
+        conversation = Conversation(CONVERSATION_ID, "xpto", 1, False, tracker)
         response = conversation.get_next_comment()
         assert response["content"] == response_value["content"]
         assert response["id"] == "1"
@@ -67,7 +67,7 @@ class TestAPIClass:
     def test_get_random_comment_in_ej_forbidden_response(self, mock_get, tracker):
         mock_get.return_value = Mock(status=401), "forbidden"
         with pytest.raises(EJCommunicationError):
-            conversation = Conversation(CONVERSATION_ID, "xpto", tracker)
+            conversation = Conversation(CONVERSATION_ID, "xpto", 1, False, tracker)
             conversation.get_next_comment()
 
     @patch("bot.actions.ej_connector.ej_api.requests.get")
@@ -78,7 +78,7 @@ class TestAPIClass:
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = statistics_mock
-        conversation = Conversation(CONVERSATION_ID, "xpto", tracker)
+        conversation = Conversation(CONVERSATION_ID, "xpto", 1, False, tracker)
         response = conversation.get_participant_statistics()
         assert response["votes"] == statistics_mock["votes"]
         assert response["missing_votes"] == statistics_mock["missing_votes"]
@@ -87,7 +87,7 @@ class TestAPIClass:
     def test_get_user_conversation_statistics_error_status(self, mock_get, tracker):
         mock_get.return_value = Mock(status=404), "not found"
         with pytest.raises(EJCommunicationError):
-            conversation = Conversation(CONVERSATION_ID, "xpto", tracker)
+            conversation = Conversation(CONVERSATION_ID, "xpto", 1, False, tracker)
             conversation.get_participant_statistics()
 
     @patch("bot.actions.ej_connector.vote.requests.post")
@@ -126,28 +126,6 @@ class TestAPIClass:
         with pytest.raises(EJCommunicationError):
             comment = Comment(CONVERSATION_ID, "xpto", tracker)
             comment.create()
-
-    @patch("bot.actions.ej_connector.ej_api.requests.get")
-    def test_get_webchat_connection_to_conversation(self, mock_get, tracker):
-        response_value = [
-            {
-                "conversation": "This is the conversation title",
-                "links": {
-                    "conversation": "http://localhost:8000/api/v1/conversations/1/"
-                },
-            }
-        ]
-        mock_get.return_value = Mock(ok=True)
-        mock_get.return_value.json.return_value = response_value
-        response = Conversation.get_by_bot_url("http://localhost:8000")
-        assert response[0]["conversation"] == response_value[0]["conversation"]
-        assert response[0]["links"]["conversation"][-2] == "1"
-
-    @patch("bot.actions.ej_connector.ej_api.requests.get")
-    def test_get_webchat_connection_not_existing(self, mock_get):
-        mock_get.return_value = Mock(status=404), "conversation not found"
-        with pytest.raises(EJCommunicationError):
-            Conversation.get_by_bot_url("http://localhost:8000")
 
 
 class TestEjUrlsGenerationClass:

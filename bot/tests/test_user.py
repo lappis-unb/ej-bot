@@ -11,7 +11,7 @@ class TestUser:
 
     def test_serializing_user(self, tracker):
         user = User(tracker, "David")
-        user_dict = user.serialize()
+        user_dict = user.registration_data()
         assert json.loads(user_dict)["name"] == "David"
 
     def test_get_username_from_tracker(self):

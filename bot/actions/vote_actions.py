@@ -7,9 +7,9 @@ from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
 
 from .ej_connector import EJCommunicationError
-from .ej_connector.comment import Comment
+from .ej_connector.comment import Comment, CommentDialogue
 from .ej_connector.conversation import Conversation
-from .ej_connector.vote import Vote
+from .ej_connector.vote import Vote, VoteDialogue
 
 
 class ActionAskVote(Action):
@@ -28,10 +28,24 @@ class ActionAskVote(Action):
     ) -> List[EventType]:
         conversation_id = tracker.get_slot("conversation_id_cache")
         conversation_text = tracker.get_slot("conversation_text")
-        conversation = Conversation(conversation_id, conversation_text, tracker)
+        anonymous_votes_limit = int(tracker.get_slot("anonymous_votes_limit"))
+        participant_can_add_comments = tracker.get_slot("participant_can_add_comments")
+        conversation = Conversation(
+            conversation_id,
+            conversation_text,
+            anonymous_votes_limit,
+            participant_can_add_comments,
+            tracker,
+        )
         conversation_statistics = conversation.get_participant_statistics()
         if Conversation.no_comments_left_to_vote(conversation_statistics):
             return self._dispatch_user_vote_on_all_comments(dispatcher)
+
+        has_completed_registration = tracker.get_slot("has_completed_registration")
+        if Conversation.user_should_authenticate(
+            has_completed_registration, anonymous_votes_limit, conversation_statistics
+        ):
+            return self._dispatch_start_authentication_flow(dispatcher)
 
         try:
             comment = conversation.get_next_comment()
@@ -46,23 +60,29 @@ class ActionAskVote(Action):
         dispatcher.utter_message(template="utter_error_try_again_later")
         return [FollowupAction("action_session_start")]
 
+    def _dispatch_start_authentication_flow(self, dispatcher):
+        dispatcher.utter_message(template="utter_vote_limit_anonymous_reached")
+        return [
+            SlotSet("vote", "-"),
+            SlotSet("comment_confirmation", "-"),
+            SlotSet("comment", "-"),
+            FollowupAction("authentication_form"),
+        ]
+
     def _dispatch_comment_to_vote(
         self, dispatcher, tracker, conversation_statistics, next_comment
     ) -> List:
-        metadata = tracker.latest_message.get("metadata")
-
         total_comments = Conversation.get_total_comments(conversation_statistics)
         user_voted_comments = Conversation.get_user_voted_comments_counter(
             conversation_statistics
         )
-        comment_id = next_comment.get("id")
         comment_title = Conversation.get_comment_title(
             next_comment,
             user_voted_comments,
             total_comments,
         )
-
-        message = Comment.get_utter(metadata, comment_title)
+        metadata = tracker.latest_message.get("metadata")
+        message = CommentDialogue.get_utter(metadata, comment_title)
         if type(message) is str:
             dispatcher.utter_message(message)
         else:
@@ -72,7 +92,7 @@ class ActionAskVote(Action):
             SlotSet("user_voted_comments", user_voted_comments),
             SlotSet("comment_text", comment_title),
             SlotSet("number_comments", total_comments),
-            SlotSet("current_comment_id", comment_id),
+            SlotSet("current_comment_id", next_comment.get("id")),
         ]
 
     def _dispatch_user_vote_on_all_comments(self, dispatcher):
@@ -104,10 +124,10 @@ class ValidateVoteForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-        comment_confirmation_value = tracker.get_slot("comment_confirmation")
-        if comment_confirmation_value == "não":
+
+        if CommentDialogue.user_refuses_to_add_comment(slot_value):
             dispatcher.utter_message(template="utter_go_back_to_voting")
-            return Comment.resume_voting(slot_value)
+            return CommentDialogue.resume_voting(slot_value)
 
     def validate_comment(
         self,
@@ -116,17 +136,20 @@ class ValidateVoteForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-        user_comment = tracker.latest_message["text"]
+
+        user_comment = slot_value
+        if not user_comment:
+            return {}
 
         if Conversation.user_requested_new_conversation(user_comment):
-            return Comment.resume_voting("")
+            return CommentDialogue.resume_voting("")
 
         conversation_id = tracker.get_slot("conversation_id_cache")
         comment = Comment(conversation_id, user_comment, tracker)
         try:
             comment.create()
             dispatcher.utter_message(template="utter_sent_comment")
-            return Comment.resume_voting(slot_value)
+            return CommentDialogue.resume_voting(slot_value)
         except:
             dispatcher.utter_message(template="utter_send_comment_error")
 
@@ -139,15 +162,25 @@ class ValidateVoteForm(FormValidationAction):
     ) -> Dict[Text, Any]:
         """Validate vote value."""
 
+        if not slot_value:
+            return {}
+
         conversation_id = tracker.get_slot("conversation_id_cache")
         conversation_text = tracker.get_slot("conversation_text")
-        conversation = Conversation(conversation_id, conversation_text, tracker)
+        anonymous_votes_limit = tracker.get_slot("anonymous_votes_limit")
+        participant_can_add_comments = tracker.get_slot("participant_can_add_comments")
+        conversation = Conversation(
+            conversation_id,
+            conversation_text,
+            anonymous_votes_limit,
+            participant_can_add_comments,
+            tracker,
+        )
         statistics = conversation.get_participant_statistics()
-
         vote = Vote(slot_value, tracker)
 
         if Conversation.user_requested_new_conversation(slot_value):
-            finished_voting_slots = Vote.finish_voting()
+            finished_voting_slots = VoteDialogue.finish_voting()
             dialogue_restart_slots = Conversation.restart_dialogue(slot_value)
             return {**finished_voting_slots, **dialogue_restart_slots}
 
@@ -161,13 +194,13 @@ class ValidateVoteForm(FormValidationAction):
                     dispatcher, statistics, vote, tracker
                 )
             dispatcher.utter_message(template="utter_invalid_vote_during_participation")
-            return Vote.continue_voting(tracker)
+            return VoteDialogue.continue_voting(tracker)
 
-        if Conversation.time_to_ask_to_add_comment(statistics, tracker):
+        if Conversation.user_can_add_comment(statistics, tracker):
             custom_logger(
-                f"TIME TO ASK COMMENT {Comment.pause_to_ask_comment(slot_value)}"
+                f"TIME TO ASK COMMENT {CommentDialogue.ask_user_to_comment(slot_value)}"
             )
-            return Comment.pause_to_ask_comment(slot_value)
+            return CommentDialogue.ask_user_to_comment(slot_value)
 
         if vote.is_valid():
             return self._dispatch_show_next_comment(
@@ -182,7 +215,7 @@ class ValidateVoteForm(FormValidationAction):
         self, dispatcher, statistics, vote: Vote, tracker: Tracker
     ):
         if not Conversation.no_comments_left_to_vote(statistics):
-            return Vote.continue_voting(tracker)
+            return VoteDialogue.continue_voting(tracker)
         else:
             dispatcher.utter_message(template="utter_voted_all_comments")
             dispatcher.utter_message(template="utter_thanks_participation")
