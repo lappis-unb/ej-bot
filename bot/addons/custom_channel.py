@@ -50,7 +50,7 @@ class WhatsApp(InputChannel):
 
             # Send whatsapp message to Rasa NLU
             if type(whatsapp_message) is NotSupportedMessage:
-                return response.json({"status": "ok"})
+                return HTTPResponse("ok", status=200)
 
             collector = CollectingOutputChannel()
             await on_new_message(
@@ -74,8 +74,10 @@ class WhatsApp(InputChannel):
             # Send Rasa answers to WhatsApp
             wpp_client = whatsapp_event.wpp_client
             for message in wpp_answers:
-                response_text, _ = wpp_client.send_message(message)
+                response = wpp_client.send_message(message)
+                if response.status_code == 500:
+                    custom_logger("WHATSAPP EVENT ERROR", request.json())
 
-            return response.json({"status": "ok"})
+            return HTTPResponse("ok", status=200)
 
         return custom_webhook
