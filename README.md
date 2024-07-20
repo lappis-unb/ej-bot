@@ -25,7 +25,17 @@ A execução do bot depende dos pacotes docker e docker compose. Siga os passos 
 realizar a configuração do ambiente.
 **O ambiente de desenvolvimento foi homologado em distribuições Linux Debian-like**.
 
-**1. Treine o modelo NLU.**
+**1. Crie o arquivo .env a partir do arquivo .env.sample**
+
+O arquivo `.env.sample` possui todas as variáveis utilizadas pelo Chatbot.
+Essas variáveis precisam ser alteradas dependendo do ambiente em que o Chatbot será executado.
+No ambiente de desenvolvimento, por exemplo, você pode precisar que a variável `EJ_HOST` aponte para
+uma instância da EJ disponibiliada localmente.
+
+Crie um arquivo `.env` a partir do `.env.sample` e customize as variáveis de acordo com
+as suas necessidades. Esse arquivo não será versionado pelo Git.
+
+**2. Treine o modelo NLU.**
 
 Execute o comando `make prepare`. Ele é responsável por gerar a imagem base para os 
 containers do chatbot, actions e couch. 
@@ -34,7 +44,7 @@ containers do chatbot, actions e couch.
 - actions: módulos Python responsáveis por integrar a interface conversacional com a API da EJ.
 - couch: componente do Rasa responsável por gerar o modelo NLU a partir da estrutura de histórias.
 
-**2. Crie um conversa na EJ**
+**3. Crie um conversa na EJ**
 
 Altere a variável `EJ_HOST`, indicando o endereço e porta do ambiente EJ que será
 utilizado durante a pesquisa. No ambiente local, esse endereço precisa ser o IP privado do
@@ -48,7 +58,7 @@ Para interagir com o bot no ambiente local é necessário criar uma conversa na
 plataforma e adicionar comentários a serem votados. Com a conversa criada, 
 recupere o ID da URL da conversa e guarde essa informação.
 
-**3. Suba a api do Rasa e os módulos de actions.**
+**4. Execute a api do Rasa e o servidor de Actions.**
 
 Com a EJ configurada, execute os seguintes comandos:
 

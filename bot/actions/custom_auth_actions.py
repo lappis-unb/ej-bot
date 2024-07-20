@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Text
 
-from actions.ej_connector.constants import EJCommunicationError
-from actions.ej_connector.conversation import Conversation
-from actions.ej_connector.user import (
+from ej.constants import EJCommunicationError
+from ej.conversation import Conversation
+from ej.user import (
     CheckAuthenticationDialogue,
     ExternalAuthorizationService,
     User,

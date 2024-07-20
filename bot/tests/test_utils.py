@@ -1,9 +1,9 @@
-from bot.actions.ej_connector.comment import Comment, CommentDialogue
+from bot.ej.comment import Comment, CommentDialogue
 
-from bot.actions.ej_connector.constants import *
-from bot.actions.ej_connector.conversation import Conversation
-from bot.actions.ej_connector.vote import Vote, VoteDialogue
-from bot.actions.ej_connector.user import User
+from bot.ej.constants import *
+from bot.ej.conversation import Conversation
+from bot.ej.vote import Vote, VoteDialogue
+from bot.ej.user import User
 
 TOKEN = "mock_token_value"
 

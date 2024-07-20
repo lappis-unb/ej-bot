@@ -7,7 +7,7 @@ from datetime import timedelta
 import jwt
 
 from actions.logger import custom_logger
-from actions.ej_connector.ej_api import EjApi
+from ej.ej_api import EjApi
 
 from .constants import *
 
