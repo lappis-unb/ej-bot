@@ -10,3 +10,13 @@ def tracker():
     tracker.get_slot = lambda x: "1234"
     tracker.get_latest_input_channel = lambda: "whatsapp"
     return tracker
+
+
+@pytest.fixture
+def metadata():
+    return {"other_keys": " notlivechat"}
+
+
+@pytest.fixture
+def livechat_metadata():
+    return {"agent": "livechat"}

@@ -16,6 +16,11 @@ class CommentDialogue:
 
     REFUSES_TO_ADD_COMMENT = "não"
     WANTS_TO_ADD_COMMENT = "sim"
+    BUTTONS = [
+        {"title": "Concordar", "payload": "1"},
+        {"title": "Discordar", "payload": "-1"},
+        {"title": "Pular", "payload": "0"},
+    ]
 
     @staticmethod
     def user_refuses_to_add_comment(slot_value):
@@ -34,10 +39,22 @@ class CommentDialogue:
         return {"vote": None, "comment_confirmation": slot_value, "comment": ""}
 
     @staticmethod
-    def get_utter(metadata, comment_title):
+    def get_comment_message(comment_content, user_voted_comments, total_comments):
+        return (
+            f"*{comment_content}* \n O que você acha disso? \n\n"
+            f"{user_voted_comments + 1} de {total_comments} comentários."
+        )
+
+    @staticmethod
+    def get_utter_message(
+        metadata, comment_content, user_voted_comments, total_comments
+    ):
+        comment_message = CommentDialogue.get_comment_message(
+            comment_content, user_voted_comments, total_comments
+        )
         if metadata and "agent" in metadata:
-            return CommentDialogue.get_livechat_utter(comment_title)
-        return CommentDialogue.get_buttons_utter(comment_title)
+            return CommentDialogue.get_livechat_utter(comment_message)
+        return CommentDialogue.get_utter_with_buttons(comment_message)
 
     @staticmethod
     def get_livechat_utter(comment_title):
@@ -45,28 +62,23 @@ class CommentDialogue:
         return {"text": comment_title}
 
     @staticmethod
-    def get_buttons_utter(comment_title):
-        buttons = [
-            {"title": "Concordar", "payload": "1"},
-            {"title": "Discordar", "payload": "-1"},
-            {"title": "Pular", "payload": "0"},
-        ]
-        return {"text": comment_title, "buttons": buttons}
+    def get_utter_with_buttons(comment_title):
+        return {"text": comment_title, "buttons": CommentDialogue.BUTTONS}
 
 
 class Comment:
     """Comment controls commenting requests to EJ API and some validations during bot execution."""
 
-    def __init__(self, conversation_id: str, comment_text: str, tracker: Tracker):
+    def __init__(self, conversation_id: str, comment_content: str, tracker: Tracker):
         self.conversation_id = conversation_id
-        self.text = comment_text
+        self.content = comment_content
         self.token = tracker.get_slot("access_token")
 
     def create(self):
-        if len(self.text) > 3:
+        if len(self.content) > 3:
             body = json.dumps(
                 {
-                    "content": self.text,
+                    "content": self.content,
                     "conversation": self.conversation_id,
                     "status": "pending",
                 }

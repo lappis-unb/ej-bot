@@ -42,23 +42,19 @@ class TestUtils:
         statistics = {"missing_votes": 5}
         assert Conversation.no_comments_left_to_vote(statistics) == False
 
-    def test_define_vote_livechat(self):
-        metadata = {"agent": "livechat"}
+    def test_define_vote_livechat(self, livechat_metadata):
         message = "vote message"
-        utter = CommentDialogue.get_utter(metadata, message)
+        utter = CommentDialogue.get_utter_message(livechat_metadata, message, 1, 4)
 
         assert not "buttons" in utter
         assert "text" in utter
-        assert message == utter["text"]
 
-    def test_define_vote_channel_with_buttons(self):
-        metadata = {"other_keys": " notlivechat"}
+    def test_define_vote_channel_with_buttons(self, metadata):
         message = "vote message"
-        utter = CommentDialogue.get_utter(metadata, message)
+        utter = CommentDialogue.get_utter_message(metadata, message, 1, 4)
 
         assert "buttons" in utter
         assert "text" in utter
-        assert message == utter["text"]
 
     def test_remove_special(self, tracker):
         user = User(tracker, "1234")

@@ -113,9 +113,6 @@ class Conversation:
     def get_user_voted_comments_counter(statistics):
         return statistics["comments"]
 
-    @staticmethod
-    def get_comment_title(comment, user_voted_comments, total_comments):
-        return f"*{comment['content']}* \n O que você acha disso ({user_voted_comments}/{total_comments})?"
 
     @staticmethod
     def user_can_add_comment(statistics, tracker: Tracker) -> bool:

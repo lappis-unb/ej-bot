@@ -41,7 +41,7 @@ slots:
     influence_conversation: true
     mappings:
     - type: custom
-  comment_text:
+  comment_content:
     type: text
     initial_value: null
     influence_conversation: false
@@ -203,7 +203,7 @@ responses:
   utter_advise_participant_to_join_again:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
   utter_invalid_vote_during_participation:
-  - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_text}** não foi válida. Poderia responder novamente?"
+  - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_content}** não foi válida. Poderia responder novamente?"
   utter_vote_limit_anonymous_reached:
   - text: "Você já atingiu o número máximo de votos para o assunto *{conversation_text}*.\n\nPor favor, autentique-se para continuar respondendo"
   utter_get_token:

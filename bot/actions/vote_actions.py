@@ -70,19 +70,19 @@ class ActionAskVote(Action):
         ]
 
     def _dispatch_comment_to_vote(
-        self, dispatcher, tracker, conversation_statistics, next_comment
+        self, dispatcher, tracker, conversation_statistics, comment
     ) -> List:
-        total_comments = Conversation.get_total_comments(conversation_statistics)
+        conversation_total_comments = Conversation.get_total_comments(
+            conversation_statistics
+        )
         user_voted_comments = Conversation.get_user_voted_comments_counter(
             conversation_statistics
         )
-        comment_title = Conversation.get_comment_title(
-            next_comment,
-            user_voted_comments,
-            total_comments,
-        )
         metadata = tracker.latest_message.get("metadata")
-        message = CommentDialogue.get_utter(metadata, comment_title)
+        comment_content = comment["content"]
+        message = CommentDialogue.get_utter_message(
+            metadata, comment_content, user_voted_comments, conversation_total_comments
+        )
         if type(message) is str:
             dispatcher.utter_message(message)
         else:
@@ -90,9 +90,9 @@ class ActionAskVote(Action):
 
         return [
             SlotSet("user_voted_comments", user_voted_comments),
-            SlotSet("comment_text", comment_title),
-            SlotSet("number_comments", total_comments),
-            SlotSet("current_comment_id", next_comment.get("id")),
+            SlotSet("comment_content", comment_content),
+            SlotSet("number_comments", conversation_total_comments),
+            SlotSet("current_comment_id", comment.get("id")),
         ]
 
     def _dispatch_user_vote_on_all_comments(self, dispatcher):
