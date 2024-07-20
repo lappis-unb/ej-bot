@@ -95,7 +95,6 @@ class Conversation:
         has_completed_registration: bool, anonymous_votes_limit: int, statistics
     ):
         if not has_completed_registration:
-            custom_logger(f"ENTROU NA VALIDAÇÃO DE AUTENTICAÇÃO")
             comments_counter = Conversation.get_user_voted_comments_counter(statistics)
             if comments_counter == anonymous_votes_limit:
                 return True
@@ -112,7 +111,6 @@ class Conversation:
     @staticmethod
     def get_user_voted_comments_counter(statistics):
         return statistics["comments"]
-
 
     @staticmethod
     def user_can_add_comment(statistics, tracker: Tracker) -> bool:

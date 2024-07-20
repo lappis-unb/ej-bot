@@ -27,7 +27,7 @@ class TestUtils:
             "comment_confirmation": None,
             "comment": None,
             "access_token": "1234",
-            "refresh_token": "1234",
+            "refresh_token": "5678",
         }
 
     def test_finish_voting(self, tracker):
