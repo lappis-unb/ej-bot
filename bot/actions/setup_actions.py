@@ -6,8 +6,8 @@ import yaml
 from rasa_sdk import Action
 from rasa_sdk.events import FollowupAction, SlotSet
 
-from .ej_connector import Conversation
-from .ej_connector.user import User
+from ej.conversation import Conversation
+from ej.user import User
 
 
 class ActionGetConversation(Action):

@@ -6,10 +6,10 @@ from rasa_sdk.events import EventType, FollowupAction, SlotSet
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
 
-from .ej_connector import EJCommunicationError
-from .ej_connector.comment import Comment, CommentDialogue
-from .ej_connector.conversation import Conversation
-from .ej_connector.vote import Vote, VoteDialogue
+from ej.constants import EJCommunicationError
+from ej.comment import Comment, CommentDialogue
+from ej.conversation import Conversation
+from ej.vote import Vote, VoteDialogue
 
 
 class ActionAskVote(Action):

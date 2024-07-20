@@ -1,6 +1,6 @@
 import json
 
-from bot.actions.ej_connector.user import User
+from bot.ej.user import User
 
 
 class TestUser:

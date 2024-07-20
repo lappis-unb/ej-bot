@@ -2,8 +2,8 @@ from dataclasses import dataclass
 import logging
 import re
 
-from actions.ej_connector.ej_api import EjApi
-from actions.ej_connector.comment import CommentDialogue
+from ej.ej_api import EjApi
+from ej.comment import CommentDialogue
 from actions.logger import custom_logger
 from rasa_sdk import Tracker
 
