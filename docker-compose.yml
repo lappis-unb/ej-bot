@@ -48,8 +48,6 @@ services:
     volumes:
       - ./bot:/bot
     entrypoint: "make actions"
-    environment:
-      JWT_SECRET: RRrWj+H2QEqV9O7iKBrU0zuB
     networks:
       - bot-network
 

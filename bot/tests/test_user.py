@@ -1,9 +1,22 @@
 import json
+import pytest
 
 from bot.ej.user import User
 
 
 class TestUser:
+    def test_generate_password(self, tracker):
+        user = User(tracker, "David")
+        user._set_password()
+        assert user.password == user._get_password_hash()
+        assert user.password_confirm == user._get_password_hash()
+
+    def test_generate_password_raises_error(self, tracker):
+        user = User(tracker, "David")
+        user.tracker_sender_id = None
+        with pytest.raises(Exception):
+            user._set_password()
+
     def test_creating_user(self, tracker):
         user = User(tracker, "David")
         assert user.name == "David"

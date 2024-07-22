@@ -102,13 +102,23 @@ class User(object):
         self.name = name
         self.display_name = name
         self.tracker_sender_id = tracker.sender_id
-        self.password = f"{self.remove_special(tracker.sender_id)}-opinion-bot"
-        self.password_confirm = f"{self.remove_special(tracker.sender_id)}-opinion-bot"
         self.ej_api = EjApi(tracker)
         self.tracker = tracker
         self.secret_id = ExternalAuthorizationService.generate_hash(tracker.sender_id)
         self.has_completed_registration = tracker.get_slot("has_completed_registration")
+        self._set_password()
         self._set_email()
+
+    def _set_password(self):
+        password = self._get_password_hash()
+        self.password, self.password_confirm = [password, password]
+
+    def _get_password_hash(self):
+        if SECRET_KEY and self.tracker_sender_id:
+            combined = f"{self.tracker_sender_id}{SECRET_KEY}"
+            hash_object = hashlib.sha256(combined.encode())
+            return hash_object.hexdigest()
+        raise Exception("could not generate user password")
 
     def registration_data(self):
         return json.dumps(
