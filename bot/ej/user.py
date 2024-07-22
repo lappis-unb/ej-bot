@@ -1,16 +1,20 @@
 from dataclasses import dataclass
-import json
-from typing import Any, Text, Dict
-import hashlib
 from datetime import datetime, timezone
 from datetime import timedelta
+import hashlib
+import json
+from typing import Any, Dict, Text
+
 import jwt
 
 from actions.logger import custom_logger
+from dotenv import load_dotenv
 from ej.ej_api import EjApi
 
 from .constants import *
 
+
+load_dotenv()
 
 TOKEN_EXPIRATION_TIME = timedelta(minutes=10)
 JWT_SECRET = os.getenv("JWT_SECRET")

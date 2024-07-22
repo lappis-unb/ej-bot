@@ -48,6 +48,7 @@ test_actions:
     - pip install -r ./docker/development-requirements.txt -t /app
   stage: test
   script:
+    - cp .env.sample bot/.env
     - cd bot 
     - python3 -m pytest
   tags:
