@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.3.13] - Jul 20, 2024
+
+### Changed
+
+- Creates the user password using a SECRET_KEY environment variable.
+
 ## [0.3.12] - Jul 20, 2024
 
 ### Added
