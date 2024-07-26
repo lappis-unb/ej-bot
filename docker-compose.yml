@@ -1,5 +1,3 @@
-version: "3.4"
-
 x-bot-common-build: &bot-common-build
   build:
     context: .
@@ -13,8 +11,7 @@ services:
   # =============================== Coach =================================
   # All the models are trained by this coach.
   coach:
-    <<: *bot-common-build
-    <<: *bot-common
+    <<: [*bot-common-build, *bot-common]
     volumes:
       - ./bot/:/bot/
     entrypoint: "make train"
@@ -22,8 +19,7 @@ services:
   # ================================= Bot =====================================
   # Rasa open source server
   bot:
-    <<: *bot-common-build
-    <<: *bot-common
+    <<: [*bot-common-build, *bot-common]
     container_name: bot
     restart: unless-stopped
     volumes:
@@ -40,8 +36,7 @@ services:
   # ================================= Actions =================================
   # Rasa middleware used to connect with external APIs.
   actions:
-    <<: *bot-common-build
-    <<: *bot-common
+    <<: [*bot-common-build, *bot-common]
     container_name: actions
     ports:
       - 5055:5055
