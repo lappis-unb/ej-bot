@@ -1,23 +1,19 @@
+[[_TOC_]]
 
-Repositório contendo o chatbot de pesquisa de opinião do projeto Empurrando Juntas.
-Permite realizar pesquisas no Telegram e WhatsApp por meio de uma interface
-conversacional.
+<img width="128" src="https://gitlab.com/pencillabs/ej/ej-application/-/raw/develop/src/ej/static/ej/assets/img/logo/logo-dark.png?ref_type=heads" align="left" style="margin-right:15px"/>
 
-O chatbot é implementado utilizando o [Framework Rasa](https://rasa.com/). Com ele, 
-é possível criar histórias, que são sequências de interações entre o chatbot e o participante.
-Ao interagir com o chatbot, o usuário será capaz de:
+EjBot é o chatbot de pesquisa de opinião do projeto [Empurrando Juntas (EJ)](https://gitlab.com/pencillabs/ej/ej-application).
+Com ele, é possível participar em conversas da EJ no Telegram e WhatsApp. O projeto utiliza o [Framework Rasa](https://rasa.com/) para construir os fluxos conversacionais que o chatbot terá com o usuário final. Ao participar de uma conversa em um dos canais, o usuário será capaz de:
 
 - Receber uma mensagem de boas-vindas e visualizar o título da conversa.
 - Votar nos comentários da conversa.
 - Adicionar um novo comentário que será enviado para moderação.
+- Se autenticar em um sistema externo, caso a funcionalidade de votação anônima tenha sido habilitada na conversa. 
 
 | Canal          | Imagem |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | WhatsApp     | ![./img/whatsapp_sample.png](./img/whatsapp_sample.png) |
 | Telegram       | ![./img/telegram_sample.png](./img/telegram_sample.png)|
-
-
-[[_TOC_]]
 
 # Configuração do Rasa
 
@@ -215,6 +211,33 @@ Com as credenciais e a infraestrutura para recebimento dos eventos disponível, 
 cadastrar o webhook na API do Serpro. O método `register_webhook` do módulo
 `bot/addons/whatsapp_api_integration/serpro_api_client.py`, pode ser utilizado para
 a criação do webhook a partir das credenciais enviadas pelo Serpro.
+
+# Variáveis de ambiente
+
+| Variável                     | Valor padrão                                 | Descrição                                                                                                               |
+|------------------------------|----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| JWT_SECRET                   | ""                                           | Sequência de caracteres randômica que será utilizada para gerar o token de autenticação com o sistema externo ao canal. |
+| SECRET_KEY                   | qGaUJ_XjpOfomnPNpOawtft2dVN0Rsu6wKLLtNIaeKM= | Sequência de caracteres randômica que será utilizada para gerar a senha do usuário.                                     |
+| RASA_MAX_CACHE_SIZE          | 0                                            | Se for 0, desabilita o uso de cache do Rasa durante o treinamento do modelo                                             |
+| BOT_NAME                     | Default                                      | Nome do Bot que será utilizado para recuperar os textos do arquivo `messages.yml`                                       |
+| TELEGRAM_TOKEN               |                                              | Token gerado pelo `BotFather` após a criação do bot no Telegram                                                         |
+| TELEGRAM_BOT_NAME            |                                              | Nome do bot criado com o `BotFather`                                                                                    |
+| TELEGRAM_WEBHOOK_URL         |                                              | URL https do Rasa, que irá receber os webhooks do Telegram.                                                             |
+| WPP_AUTHORIZATION_TOKEN      |                                              | Token de autorização gerado no painel da Meta, para acesso à API do WhatsApp.                                           |
+| WPP_VERIFY_TOKEN             |                                              | Token de verificação cadastrado no painel da Meta.                                                                      |
+| WPP_PHONE_NUMBER_IDENTIFIER  |                                              | Identificador do número de telefone no painel da Meta.                                                                  |
+| ACTIONS_SERVER_URL           | http://actions:5055/webhook                  | URL do servidor de actions do Rasa.                                                                                     |
+| RASA_DUCKLING_HTTP_URL       | http://duck:8000                             | URL do servidor Duckling, responsável por identificar padrões nas menssagens dos usuários.                              |
+| EJ_HOST                      | http://192.168.15.133:8000                   | Endereço do HOST da EJ que será utilizado pelo chatbot para requisitar a conversa e outras informações.                 |
+| ENV                          | local                                        | Variável utilizada para decidir qual arquivo `credencials` carregar quando a API do Rasa for iniciada.                  |
+| REDIS_HOST                   | redis                                        | HOST da instância do Redis utilizada como LockStore do Rasa                                                             |
+| REDIS_PORT                   | 6379                                         | Porta da instância do Redis utilizada como LockStore do Rasa                                                            |
+| DB_HOST                      | postgres                                     | HOST da instância do PostgreSQL utilizado como TrackerStore do Rasa                                                     |
+| DB_DATABASE                  | rasa                                         | Nome do banco que será criado para armazenar os Trackers do Rasa                                                        |
+| DB_USER                      | rasa                                         | Usuário que o Rasa irá utilizar para se conectar no TrackerStore                                                        |
+| DB_PASSWORD                  | rasa                                         | Senha que o Rasa irá utilizar para se conectar no TrackerStore                                                          |
+| DB_PORT                      | 5432                                         | Porta da instância do PostgreSQL que atua como TrackerStore                                                             |
+| EXTERNAL_AUTHENTICATION_HOST | https://lab-decide.dataprev.gov.br           | URL do serviço externo que será utilizado para autenticar o usuário que participa no Telegram ou no WhatsApp.           |
 
 # Comandos
 
