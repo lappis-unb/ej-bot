@@ -214,30 +214,33 @@ a criação do webhook a partir das credenciais enviadas pelo Serpro.
 
 # Variáveis de ambiente
 
-| Variável                     | Valor padrão                                 | Descrição                                                                                                               |
-|------------------------------|----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| JWT_SECRET                   | ""                                           | Sequência de caracteres randômica que será utilizada para gerar o token de autenticação com o sistema externo ao canal. |
-| SECRET_KEY                   | qGaUJ_XjpOfomnPNpOawtft2dVN0Rsu6wKLLtNIaeKM= | Sequência de caracteres randômica que será utilizada para gerar a senha do usuário.                                     |
-| RASA_MAX_CACHE_SIZE          | 0                                            | Se for 0, desabilita o uso de cache do Rasa durante o treinamento do modelo                                             |
-| BOT_NAME                     | Default                                      | Nome do Bot que será utilizado para recuperar os textos do arquivo `messages.yml`                                       |
-| TELEGRAM_TOKEN               |                                              | Token gerado pelo `BotFather` após a criação do bot no Telegram                                                         |
-| TELEGRAM_BOT_NAME            |                                              | Nome do bot criado com o `BotFather`                                                                                    |
-| TELEGRAM_WEBHOOK_URL         |                                              | URL https do Rasa, que irá receber os webhooks do Telegram.                                                             |
-| WPP_AUTHORIZATION_TOKEN      |                                              | Token de autorização gerado no painel da Meta, para acesso à API do WhatsApp.                                           |
-| WPP_VERIFY_TOKEN             |                                              | Token de verificação cadastrado no painel da Meta.                                                                      |
-| WPP_PHONE_NUMBER_IDENTIFIER  |                                              | Identificador do número de telefone no painel da Meta.                                                                  |
-| ACTIONS_SERVER_URL           | http://actions:5055/webhook                  | URL do servidor de actions do Rasa.                                                                                     |
-| RASA_DUCKLING_HTTP_URL       | http://duck:8000                             | URL do servidor Duckling, responsável por identificar padrões nas menssagens dos usuários.                              |
-| EJ_HOST                      | http://192.168.15.133:8000                   | Endereço do HOST da EJ que será utilizado pelo chatbot para requisitar a conversa e outras informações.                 |
-| ENV                          | local                                        | Variável utilizada para decidir qual arquivo `credencials` carregar quando a API do Rasa for iniciada.                  |
-| REDIS_HOST                   | redis                                        | HOST da instância do Redis utilizada como LockStore do Rasa                                                             |
-| REDIS_PORT                   | 6379                                         | Porta da instância do Redis utilizada como LockStore do Rasa                                                            |
-| DB_HOST                      | postgres                                     | HOST da instância do PostgreSQL utilizado como TrackerStore do Rasa                                                     |
-| DB_DATABASE                  | rasa                                         | Nome do banco que será criado para armazenar os Trackers do Rasa                                                        |
-| DB_USER                      | rasa                                         | Usuário que o Rasa irá utilizar para se conectar no TrackerStore                                                        |
-| DB_PASSWORD                  | rasa                                         | Senha que o Rasa irá utilizar para se conectar no TrackerStore                                                          |
-| DB_PORT                      | 5432                                         | Porta da instância do PostgreSQL que atua como TrackerStore                                                             |
-| EXTERNAL_AUTHENTICATION_HOST | https://lab-decide.dataprev.gov.br           | URL do serviço externo que será utilizado para autenticar o usuário que participa no Telegram ou no WhatsApp.           |
+| Variável                     | Valor padrão                                 | Descrição                                                                                                                         |
+|------------------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| JWT_SECRET                   | ""                                           | Sequência de caracteres randômica que será utilizada para gerar o token de autenticação com o sistema externo ao canal.           |
+| SECRET_KEY                   | qGaUJ_XjpOfomnPNpOawtft2dVN0Rsu6wKLLtNIaeKM= | Sequência de caracteres randômica que será utilizada para gerar a senha do usuário.                                               |
+| RASA_MAX_CACHE_SIZE          | 0                                            | Se for 0, desabilita o uso de cache do Rasa durante o treinamento do modelo                                                       |
+| BOT_NAME                     | Default                                      | Nome do Bot que será utilizado para recuperar os textos do arquivo `messages.yml`                                                 |
+| TELEGRAM_TOKEN               |                                              | Token gerado pelo `BotFather` após a criação do bot no Telegram                                                                   |
+| TELEGRAM_BOT_NAME            |                                              | Nome do bot criado com o `BotFather`                                                                                              |
+| TELEGRAM_WEBHOOK_URL         |                                              | URL https do Rasa, que irá receber os webhooks do Telegram.                                                                       |
+| WPP_AUTHORIZATION_TOKEN      |                                              | Token de autorização gerado no painel da Meta, para acesso à API do WhatsApp.                                                     |
+| WPP_VERIFY_TOKEN             |                                              | Token de verificação cadastrado no painel da Meta.                                                                                |
+| WPP_PHONE_NUMBER_IDENTIFIER  |                                              | Identificador do número de telefone no painel da Meta.                                                                            |
+| ACTIONS_SERVER_URL           | http://actions:5055/webhook                  | URL do servidor de actions do Rasa.                                                                                               |
+| RASA_DUCKLING_HTTP_URL       | http://duck:8000                             | URL do servidor Duckling, responsável por identificar padrões nas menssagens dos usuários.                                        |
+| EJ_HOST                      | http://192.168.15.133:8000                   | Endereço do HOST da EJ que será utilizado pelo chatbot para requisitar a conversa e outras informações.                           |
+| ENV                          | local                                        | Variável utilizada para decidir qual arquivo `credencials` carregar quando a API do Rasa for iniciada.                            |
+| REDIS_HOST                   | redis                                        | HOST da instância do Redis utilizada como LockStore do Rasa                                                                       |
+| REDIS_PORT                   | 6379                                         | Porta da instância do Redis utilizada como LockStore do Rasa                                                                      |
+| DB_HOST                      | postgres                                     | HOST da instância do PostgreSQL utilizado como TrackerStore do Rasa                                                               |
+| DB_DATABASE                  | rasa                                         | Nome do banco que será criado para armazenar os Trackers do Rasa                                                                  |
+| DB_USER                      | rasa                                         | Usuário que o Rasa irá utilizar para se conectar no TrackerStore                                                                  |
+| DB_PASSWORD                  | rasa                                         | Senha que o Rasa irá utilizar para se conectar no TrackerStore                                                                    |
+| DB_PORT                      | 5432                                         | Porta da instância do PostgreSQL que atua como TrackerStore                                                                       |
+| EXTERNAL_AUTHENTICATION_HOST | https://lab-decide.dataprev.gov.br           | URL do serviço externo que será utilizado para autenticar o usuário que participa no Telegram ou no WhatsApp.                     |
+| BP_EJ_COMPONENT_ID           | processes/planocultura/f/184                 | Caminho para o componente de opinião da EJ configurado no Decidim. Será utilizada em conjunto com o EXTERNAL_AUTHENTICATION_HOST. |
+
+
 
 # Comandos
 

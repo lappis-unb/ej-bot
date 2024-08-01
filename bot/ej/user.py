@@ -20,6 +20,7 @@ TOKEN_EXPIRATION_TIME = timedelta(minutes=10)
 JWT_SECRET = os.getenv("JWT_SECRET")
 SECRET_KEY = os.getenv("SECRET_KEY")
 EXTERNAL_AUTHENTICATION_HOST = os.getenv("EXTERNAL_AUTHENTICATION_HOST", "")
+BP_EJ_COMPONENT_ID = os.getenv("BP_EJ_COMPONENT_ID", "")
 
 
 class CheckAuthenticationDialogue:
@@ -86,7 +87,7 @@ class ExternalAuthorizationService:
         return encoded_data
 
     def _get_authorization_url(self):
-        return f"{EXTERNAL_AUTHENTICATION_HOST}/processes/testeplanocultura/f/1192/link_external_user"
+        return f"{EXTERNAL_AUTHENTICATION_HOST}/{BP_EJ_COMPONENT_ID}/link_external_user"
 
     @staticmethod
     def generate_hash(identifier):
