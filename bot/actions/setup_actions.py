@@ -53,15 +53,6 @@ class ActionGetConversation(Action):
             return [FollowupAction("action_session_start")]
         return self.slots
 
-    def _dispatch_communication_error_with_ej(self, dispatcher):
-        dispatcher.utter_message(template="utter_ej_communication_error")
-        dispatcher.utter_message(template="utter_error_try_again_later")
-        return [FollowupAction("action_session_start")]
-
-    def _dispatch_conversation_not_found(self, dispatcher):
-        dispatcher.utter_message(template="utter_ej_connection_doesnt_exist")
-        dispatcher.utter_message(template="utter_error_try_again_later")
-        return [FollowupAction("action_session_start")]
 
     def _set_slots(self, conversation: Conversation, user: User):
         self.slots = [

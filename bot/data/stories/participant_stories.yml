@@ -80,7 +80,6 @@ stories:
       - checkpoint: end_dialogue
       - action: utter_thanks_participation
       - action: utter_next_conversation
-      - action: utter_finish
       - action: action_session_start
 
   - story: Stop bot when EJ API returns some error during participation

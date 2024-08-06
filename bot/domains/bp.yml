@@ -1,0 +1,248 @@
+version: "3.1"
+
+config:
+  store_entities_as_slots: true
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: false
+
+intents:
+  - stop
+  - comment_confirmation
+  - out_of_context
+  - help
+  - start_with_conversation_id:
+      use_entities: true
+  - add_new_comment:
+      ignore_entities:
+      - conversation_id
+
+entities:
+  - conversation_id
+
+slots:
+  ej_api_connection_error:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+    - type: custom
+  anonymous_votes_limit:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  auth_link:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+    - type: custom
+  participant_can_add_comments:
+    type: bool
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  has_completed_registration:
+    type: bool
+    initial_value: null
+    influence_conversation: true
+    mappings:
+    - type: custom
+  comment_content:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  refresh_token:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  restart_conversation:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+    - type: custom
+  access_token:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  conversation_id_cache:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  conversation_id:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: conversation_id
+  conversation_statistics:
+    type: any
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  conversation_text:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  current_comment_id:
+    type: rasa.shared.core.slots.FloatSlot
+    initial_value: null
+    influence_conversation: false
+    max_value: 1.0
+    min_value: 0.0
+    mappings:
+    - type: custom
+  number_comments:
+    type: rasa.shared.core.slots.FloatSlot
+    initial_value: null
+    influence_conversation: false
+    max_value: 1.0
+    min_value: 0.0
+    mappings:
+    - type: custom
+  user_voted_comments:
+    type: rasa.shared.core.slots.FloatSlot
+    initial_value: null
+    influence_conversation: false
+    max_value: 1.0
+    min_value: 0.0
+    mappings:
+    - type: custom
+  check_authentication:
+    type: categorical
+    values: 
+      - end_participant_conversation
+      - check_participant_authentication
+    influence_conversation: true
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: authentication_form
+        requested_slot: check_authentication
+  vote:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: vote_form
+        requested_slot: vote
+  comment_confirmation:
+    type: categorical
+    values: 
+      - Sim
+      - Não
+    influence_conversation: true
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: vote_form
+        requested_slot: comment_confirmation
+  comment:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: vote_form
+        requested_slot: comment
+
+responses:
+  utter_show_topic_of_discussion:
+  - text: "\n**{conversation_text}**\n"
+  utter_ask_comment_confirmation:
+  - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
+    buttons:
+    - title: Sim
+      payload: sim
+    - title: Não
+      payload: não
+  utter_ask_comment:
+  - text: Pode enviar seu comentário que eu anoto aqui!
+  utter_go_back_to_voting:
+  - text: Sem problemas, vou te mandar o que mais me responderam!
+  utter_vote_received:
+  - text: "Recebi sua opinião! 🙂Muito obrigada por participar. Dando sequência, você acha que.. "
+  - text: "Anotado ✍️Vou te mostrar outras frase "
+  - text: "Registrado. Me diga o que você acha sobre: 🗣️"
+  utter_out_of_context:
+  - text: Desculpe, não sei se entendi 😕
+  utter_sent_comment:
+  - text: Certo, anotei seu comentário e o enviarei para outros participantes da pesquisa. Deixa eu ver se ainda tenho outras opiniões pra te enviar.
+  utter_send_comment_error:
+  - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
+  utter_comment_fallback:
+  - text: Desculpe, não foi possível reconhecer o comentário 😕.
+  utter_voted_all_comments:
+  - text: "Obrigada por compartilhar sua opinião! Suas contribuições serão analisadas para o novo Plano Nacional de Cultura. 🎯 Estamos empenhadas em construir um plano que reflita a diversidade e as necessidades culturais do nosso país.😊 "
+  utter_thanks_participation:
+  - text: "Agradecemos sua participação! Queremos continuar ouvindo você: envie suas sugestões de metas para o Plano Nacional de Cultura no Brasil Participativo https://brasilparticipativo.presidencia.gov.br/processes/planocultura/f/184/. Sua voz é essencial para construirmos juntos uma cultura mais inclusiva e representativa! 🙌 \n Depois dessa conversa, você tem sugestões para os próximos 10 anos da política cultural? 🗣 ️ Acesse o Brasil Participativo https://brasilparticipativo.presidencia.gov.br/processes/planocultura/f/184/ e envie suas propostas!  Sua voz é essencial para construirmos juntos uma cultura mais inclusiva e representativa 👊"
+  utter_next_conversation:
+  - text: Depois conversamos mais 😘
+  utter_ej_communication_error:
+  - text: Opa, parece que não estou conseguindo acessar nosso servidor.
+  utter_error_try_again_later:
+  - text: Tive um problema técnico, por favor tente participar mais tarde.
+  utter_help:
+  - text: "Muito prazer, (nome). **Estamos ouvindo diferentes pessoas para saber o que elas pensam sobre cultura**. 🎯 Funciona assim: eu apresento uma série de frases com opiniões diversas e você me diz se concorda, discorda ou se prefere pular. É só clicar no botão correspondente. Ah, mas antes, vale uma observação: essas frases são com base em opiniões públicas e não necessariamente representam uma posição oficial do Ministério da Cultura."
+  utter_no_selected_conversation:
+  - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
+  utter_advise_participant_to_join_again:
+  - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
+  utter_invalid_vote_during_participation:
+  - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_content}** não foi válida. Poderia responder novamente?"
+  utter_vote_limit_anonymous_reached:
+  - text: "Você já atingiu o número máximo de votos para o assunto *{conversation_text}*.\n\nPor favor, autentique-se para continuar respondendo"
+  utter_get_token:
+  - text: "Aqui está seu link para se autenticar, ele expira em 20min:\n\n {auth_link}"
+  utter_awaiting_authentication:
+  - text: "Estou aguardando você se autenticar para continuar a votação. 😊"
+  utter_authenticated:
+  - text: "Validei sua autenticação"
+  utter_error_during_authentication_validation:
+  - text: "Não consegui identificar que você se autenticou. Poderia tentar novamente?"
+
+
+actions:
+- action_introduce_ej
+- action_ask_vote
+- validate_vote_form
+- action_get_conversation
+- action_set_new_comment
+- action_customized_fallback
+- action_ask_check_authentication
+- validate_authentication_form
+
+forms:
+  authentication_form:
+    ignored_intents:
+      - stop
+      - start_with_conversation_id
+    required_slots:
+      - check_authentication
+      - has_completed_registration
+  vote_form:
+    ignored_intents:
+      - stop
+      - check_authentication
+    required_slots:
+      - vote
+      - comment_confirmation
+      - comment
+e2e_actions: []

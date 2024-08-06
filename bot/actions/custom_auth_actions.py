@@ -68,11 +68,6 @@ class ValidateAuthenticationForm(FormValidationAction):
         custom_logger(f"user: {user.auth_data()}")
         return self._get_slots(user, conversation)
 
-    def _dispatch_communication_error_with_ej(self, dispatcher):
-        dispatcher.utter_message(response="utter_ej_communication_error")
-        dispatcher.utter_message(response="utter_error_try_again_later")
-        return [FollowupAction("action_session_start")]
-
     def _get_slots(self, user: User, conversation: Conversation):
         return {
             "access_token": user.tracker.get_slot("access_token"),

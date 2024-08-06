@@ -188,20 +188,12 @@ responses:
   - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
   utter_thanks_participation:
   - text: Sua participação irá nos ajudar a entender o que as pessoas pensam sobre esse assunto, muito obrigado 🤗🤗🤗!!
-  utter_stopped:
-  - text: Só de você ter respondido ja me ajudou, muito obrigada!
   utter_next_conversation:
   - text: Depois conversamos mais 😘
-  utter_finish:
-  - text: Ah quando quiser trocar uma ideia, é só me mandar um "Oi".
-  utter_goodbye:
-  - text: Pode deixar que te mantenho por dentro sobre as novidades sobre esse assunto
   utter_ej_communication_error:
   - text: Opa, parece que não estou conseguindo acessar nosso servidor.
   utter_error_try_again_later:
   - text: Tive um problema técnico, por favor tente participar mais tarde.
-  utter_ej_connection_doesnt_exist:
-  - text: Esse site ainda não está conectado com a EJ. Entre em contato com os administradores dele.
   utter_help:
   - text: Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.  Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
   utter_no_selected_conversation:
