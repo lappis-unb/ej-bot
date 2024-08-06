@@ -40,7 +40,7 @@ class TestUtils:
 
     def test_user_have_comments_to_vote(self):
         statistics = {"missing_votes": 5}
-        assert Conversation.no_comments_left_to_vote(statistics) == False
+        assert Conversation.available_comments_to_vote(statistics) == True
 
     def test_define_vote_livechat(self, livechat_metadata):
         message = "vote message"

@@ -21,4 +21,6 @@ COMMENTS_URL = f"{API_URL}/comments/"
 class EJCommunicationError(Exception):
     """Raised when request from EJ doesnt supply waited response"""
 
-    pass
+    def __init_(self, expression, message):
+        self.expression = expression
+        self.message = "Não consegui conectar na EJ"
