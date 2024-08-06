@@ -53,7 +53,6 @@ class ActionGetConversation(Action):
             return [FollowupAction("action_session_start")]
         return self.slots
 
-
     def _set_slots(self, conversation: Conversation, user: User):
         self.slots = [
             SlotSet("conversation_text", conversation.title),

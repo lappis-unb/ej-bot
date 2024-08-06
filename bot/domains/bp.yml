@@ -192,7 +192,7 @@ responses:
   utter_voted_all_comments:
   - text: "Obrigada por compartilhar sua opinião! Suas contribuições serão analisadas para o novo Plano Nacional de Cultura. 🎯 Estamos empenhadas em construir um plano que reflita a diversidade e as necessidades culturais do nosso país.😊 "
   utter_thanks_participation:
-  - text: "Agradecemos sua participação! Queremos continuar ouvindo você: envie suas sugestões de metas para o Plano Nacional de Cultura no Brasil Participativo https://brasilparticipativo.presidencia.gov.br/processes/planocultura/f/184/. Sua voz é essencial para construirmos juntos uma cultura mais inclusiva e representativa! 🙌 \n Depois dessa conversa, você tem sugestões para os próximos 10 anos da política cultural? 🗣 ️ Acesse o Brasil Participativo https://brasilparticipativo.presidencia.gov.br/processes/planocultura/f/184/ e envie suas propostas!  Sua voz é essencial para construirmos juntos uma cultura mais inclusiva e representativa 👊"
+  - text: "Agradecemos sua participação! Queremos continuar ouvindo você: envie suas sugestões de metas para o Plano Nacional de Cultura no Brasil Participativo https://brasilparticipativo.presidencia.gov.br/processes/planocultura/f/184/. Sua voz é essencial para construirmos juntos uma cultura mais inclusiva e representativa! 🙌\nDepois dessa conversa, você tem sugestões para os próximos 10 anos da política cultural? 🗣 ️ Acesse o Brasil Participativo https://brasilparticipativo.presidencia.gov.br/processes/planocultura/f/184/ e envie suas propostas!  Sua voz é essencial para construirmos juntos uma cultura mais inclusiva e representativa 👊"
   utter_next_conversation:
   - text: Depois conversamos mais 😘
   utter_ej_communication_error:
