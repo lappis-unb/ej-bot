@@ -47,6 +47,8 @@ class ActionAskVote(Action, CheckersMixin):
             ej_api_error_manager = EJApiErrorManager()
             return ej_api_error_manager.get_slots()
 
+        # If you want to add new verifications during this action call,
+        # you need to implement a new Checker
         action_chekers = self.get_checkers(
             tracker,
             dispatcher=dispatcher,
@@ -62,6 +64,9 @@ class ActionAskVote(Action, CheckersMixin):
         return self.slots
 
     def get_checkers(self, tracker, **kwargs) -> list:
+        """
+        Return a list of Checkers. They will be evaluated in sequence.
+        """
         dispatcher = kwargs["dispatcher"]
         conversation = kwargs["conversation"]
         conversation_statistics = kwargs["conversation_statistics"]
@@ -101,6 +106,7 @@ class ValidateVoteForm(FormValidationAction):
     def name(self) -> Text:
         return "validate_vote_form"
 
+    # TODO: refactors this method using the Checker architecture.
     def validate_comment_confirmation(
         self,
         slot_value: Any,
@@ -113,6 +119,7 @@ class ValidateVoteForm(FormValidationAction):
             dispatcher.utter_message(template="utter_go_back_to_voting")
             return CommentDialogue.resume_voting(slot_value)
 
+    # TODO: refactors this method using the Checker architecture.
     def validate_comment(
         self,
         slot_value: Any,
@@ -137,6 +144,7 @@ class ValidateVoteForm(FormValidationAction):
         except:
             dispatcher.utter_message(template="utter_send_comment_error")
 
+    # TODO: refactors this method using the Checker architecture.
     def validate_vote(
         self,
         slot_value: Any,

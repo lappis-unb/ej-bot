@@ -6,6 +6,10 @@ from rasa_sdk.events import SlotSet, FollowupAction
 
 @dataclass
 class EJApiErrorManager:
+    """
+    End vote_form and set ej_api_connection_error to True.
+    """
+
     def get_slots(self, as_dict=False) -> Any:
         if as_dict:
             finish_voting_slots = VoteDialogue.finish_voting()
