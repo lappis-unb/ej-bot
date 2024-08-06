@@ -69,7 +69,9 @@ class Vote:
         return str(self.vote_slot_value) == "-"
 
     def create(self, comment_id):
-        if self.is_valid():
+        import time
+
+        def _request():
             body = json.dumps(
                 {
                     "comment": comment_id,
@@ -77,15 +79,22 @@ class Vote:
                     "channel": self.channel,
                 }
             )
+            response = requests.post(
+                VOTES_URL,
+                data=body,
+                headers=auth_headers(self.token),
+            )
+            response = response.json()
+            custom_logger(f"REGISTERED VOTE", data=response)
+            return response
+
+        if self.is_valid():
             try:
-                response = requests.post(
-                    VOTES_URL,
-                    data=body,
-                    headers=auth_headers(self.token),
-                )
-                response = response.json()
-                custom_logger(f"REGISTERED VOTE", data=response)
-                return response
+                return _request()
+            except Exception as e:
+                time.sleep(2)
+            try:
+                return _request()
             except Exception as e:
                 custom_logger(f"ERROR POSTING VOTE \n {e}")
                 raise EJCommunicationError

@@ -57,17 +57,18 @@ class TestAPIClass:
             "links": {"self": "http://localhost:8000/api/v1/comments/1/"},
         }
         mock_get.return_value = Mock(ok=True)
+        mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = response_value
-        conversation = Conversation(CONVERSATION_ID, "xpto", 1, False, tracker)
+        conversation = Conversation(tracker)
         response = conversation.get_next_comment()
         assert response["content"] == response_value["content"]
         assert response["id"] == "1"
 
     @patch("bot.ej.ej_api.requests.get")
     def test_get_random_comment_in_ej_forbidden_response(self, mock_get, tracker):
-        mock_get.return_value = Mock(status=401), "forbidden"
+        mock_get.return_value.status_code = 500
         with pytest.raises(EJCommunicationError):
-            conversation = Conversation(CONVERSATION_ID, "xpto", 1, False, tracker)
+            conversation = Conversation(tracker)
             conversation.get_next_comment()
 
     @patch("bot.ej.ej_api.requests.get")
@@ -78,7 +79,7 @@ class TestAPIClass:
         }
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = statistics_mock
-        conversation = Conversation(CONVERSATION_ID, "xpto", 1, False, tracker)
+        conversation = Conversation(tracker)
         response = conversation.get_participant_statistics()
         assert response["votes"] == statistics_mock["votes"]
         assert response["missing_votes"] == statistics_mock["missing_votes"]
@@ -87,7 +88,7 @@ class TestAPIClass:
     def test_get_user_conversation_statistics_error_status(self, mock_get, tracker):
         mock_get.return_value = Mock(status=404), "not found"
         with pytest.raises(EJCommunicationError):
-            conversation = Conversation(CONVERSATION_ID, "xpto", 1, False, tracker)
+            conversation = Conversation(tracker)
             conversation.get_participant_statistics()
 
     @patch("bot.ej.vote.requests.post")

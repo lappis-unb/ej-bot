@@ -14,6 +14,7 @@ stories:
           - comment
           - comment_confirmation
           - restart_conversation: false
+          - ej_api_connection_error: false
       - active_loop: null
       - action: utter_vote_limit_anonymous_reached
       - action: authentication_form
@@ -37,6 +38,7 @@ stories:
           - comment
           - comment_confirmation
           - restart_conversation: false
+          - ej_api_connection_error: false
       - active_loop: null
       - action: utter_vote_limit_anonymous_reached
       - action: authentication_form

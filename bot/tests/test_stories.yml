@@ -84,11 +84,36 @@ stories:
   - active_loop: vote_form
   - slot_was_set:
     - restart_conversation: true
+    - ej_api_connection_error: false
     - vote: "-"
     - comment_confirmation: "-"
     - comment: "-"
+    - ej_api_connection_error: false
   - active_loop: null
   - action: action_get_conversation
   - action: action_introduce_ej
   - action: utter_show_topic_of_discussion
   - checkpoint: starts_voting
+
+
+- story: EJ API is unavailable
+  steps:
+  - user: |
+      start [5](conversation_id)
+    intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
+  - action: action_get_conversation
+  - action: action_introduce_ej
+  - action: utter_show_topic_of_discussion
+  - action: vote_form
+  - active_loop: vote_form
+  - slot_was_set:
+    - vote: "-"
+    - comment_confirmation: "-"
+    - comment: "-"
+    - ej_api_connection_error: true
+  - active_loop: null
+  - action: utter_ej_communication_error
+  - action: utter_error_try_again_later
+  - action: action_restart

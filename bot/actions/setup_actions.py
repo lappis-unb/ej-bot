@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 import yaml
+from actions.checkers.api_error_checker import EJApiErrorManager
+from ej.constants import EJCommunicationError
 
 from rasa_sdk import Action
 from rasa_sdk.events import FollowupAction, SlotSet
@@ -25,20 +27,26 @@ class ActionGetConversation(Action):
         if conversation_id:
             username = User.get_name_from_tracker_state(tracker.current_state())
             user = User(tracker, name=username)
-            conversation_data = Conversation.get_by_id(conversation_id, user.tracker)
-            conversation_text = conversation_data.get("text")
-            anonymous_votes_limit = conversation_data.get("anonymous_votes_limit")
-            participant_can_add_comments = conversation_data.get(
+
+            try:
+                conversation_data = Conversation.get_by_id(
+                    conversation_id, user.tracker
+                )
+            except EJCommunicationError:
+                ej_api_error_manager = EJApiErrorManager()
+                return ej_api_error_manager.get_slots()
+
+            tracker.slots["conversation_title"] = conversation_data.get("text")
+            tracker.slots["anonymous_votes_limit"] = conversation_data.get(
+                "anonymous_votes_limit"
+            )
+            tracker.slots["participant_can_add_comments"] = conversation_data.get(
                 "participants_can_add_comments"
             )
-            conversation = Conversation(
-                conversation_id,
-                conversation_text,
-                anonymous_votes_limit,
-                participant_can_add_comments,
-                tracker,
-            )
+
             user.authenticate()
+
+            conversation = Conversation(tracker)
             self._set_slots(conversation, user)
         else:
             dispatcher.utter_message(template="utter_no_selected_conversation")

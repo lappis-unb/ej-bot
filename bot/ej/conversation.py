@@ -3,8 +3,6 @@ import logging
 import re
 
 from ej.ej_api import EjApi
-from ej.comment import CommentDialogue
-from actions.logger import custom_logger
 from rasa_sdk import Tracker
 
 from .constants import EJCommunicationError, START_CONVERSATION_COMMAND
@@ -24,17 +22,24 @@ class Conversation:
 
     def __init__(
         self,
-        conversation_id,
-        conversation_title: str,
-        anonymous_votes_limit: int,
-        participant_can_add_comments: bool,
         tracker: Tracker,
     ):
-        self.id = conversation_id
-        self.title = conversation_title
-        self.participant_can_add_comments = participant_can_add_comments
-        self.anonymous_votes_limit = anonymous_votes_limit
-        self.ej_api = EjApi(tracker)
+        self.tracker = tracker
+        self.id = Conversation.get_id_from_tracker(self.tracker)
+        self.title = self.tracker.get_slot("conversation_title")
+        self.participant_can_add_comments = self.tracker.get_slot(
+            "participant_can_add_comments"
+        )
+        self.anonymous_votes_limit = int(self.tracker.get_slot("anonymous_votes_limit"))
+        self.ej_api = EjApi(self.tracker)
+
+    @staticmethod
+    def get_id_from_tracker(tracker):
+        return (
+            tracker.get_slot("conversation_id_cache")
+            if tracker.get_slot("conversation_id_cache")
+            else tracker.get_slot("conversation_id")
+        )
 
     @staticmethod
     def get_by_id(conversation_id, tracker: Tracker):
@@ -80,14 +85,25 @@ class Conversation:
         return response
 
     def get_next_comment(self):
-        url = conversation_random_comment_url(self.id)
-        try:
+        import time
+
+        def _request():
             response = self.ej_api.request(url)
+            if response.status_code == 500:
+                raise EJCommunicationError
             comment = response.json()
             comment_url_as_list = comment["links"]["self"].split("/")
             comment["id"] = comment_url_as_list[len(comment_url_as_list) - 2]
             return comment
-        except Exception as e:
+
+        url = conversation_random_comment_url(self.id)
+        try:
+            return _request()
+        except EJCommunicationError:
+            time.sleep(2)
+        try:
+            return _request()
+        except Exception:
             raise EJCommunicationError
 
     @staticmethod
@@ -101,8 +117,8 @@ class Conversation:
         return False
 
     @staticmethod
-    def no_comments_left_to_vote(statistics):
-        return statistics["missing_votes"] == 0
+    def available_comments_to_vote(statistics):
+        return statistics["missing_votes"] >= 1
 
     @staticmethod
     def get_total_comments(statistics):
