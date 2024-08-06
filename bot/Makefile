@@ -10,7 +10,7 @@ install:
 
 # CORE
 train:
-	rasa train -vv --domain domains/${DOMAIN}.yml
+	rasa train -vv --domain domains/${RASA_DOMAIN}.yml
 
 # TESTS
 test:
