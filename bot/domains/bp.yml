@@ -165,7 +165,7 @@ slots:
 
 responses:
   utter_show_topic_of_discussion:
-  - text: "\n**{conversation_text}**\n"
+  - text: "Muito prazer, (nome). *Estamos ouvindo diferentes pessoas para saber o que elas pensam sobre cultura.* 🎯 Funciona assim: eu apresento uma série de frases com opiniões diversas e você me diz se concorda, discorda ou se prefere pular. É só clicar no botão correspondente. Ah, mas antes, vale uma observação: essas frases são com base em opiniões públicas e não necessariamente representam uma posição oficial do Ministério da Cultura. Pronto para começar? Vamos lá!\n\n *{conversation_text}*"
   utter_ask_comment_confirmation:
   - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
     buttons:
