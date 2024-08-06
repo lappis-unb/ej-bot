@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from actions.checkers.api_error_checker import EJApiErrorManager
-from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
 from ej.comment import CommentDialogue
 from ej.conversation import Conversation
@@ -9,13 +8,30 @@ from typing import Any, List
 
 
 @dataclass
-class CheckNextCommentSlots:
+class CheckSlotsInterface:
+    """
+    Defines a common interface to verify an action slots.
+    """
 
-    tracker: Any
-    dispatcher: Any
-    conversation: Any
-    conversation_statistics: Any
+    tracker: Any = None
+    dispatcher: Any = None
+    conversation: Any = None
+    conversation_statistics: Any = None
     slots: List[Any] = field(default_factory=list)
+
+    def should_return_slots_to_rasa(self) -> bool:
+        """
+        Returns True if the dialogue slots has to be updated.
+        If True, the slots field must be updated with the corresponding SlotSet or FollowupAction.
+        """
+        raise Exception("not implemented")
+
+
+@dataclass
+class CheckNextCommentSlots(CheckSlotsInterface):
+    """
+    Request to EJ API the next comment to vote and update the user statistics slots.
+    """
 
     def should_return_slots_to_rasa(self) -> bool:
         try:
@@ -59,12 +75,10 @@ class CheckNextCommentSlots:
 
 
 @dataclass
-class CheckExternalAutenticationSlots:
-
-    tracker: Any
-    dispatcher: Any
-    conversation_statistics: Any
-    slots: List[Any] = field(default_factory=list)
+class CheckExternalAutenticationSlots(CheckSlotsInterface):
+    """
+    Test if the user has reached the anonymous vote limit and needs to authenticate.
+    """
 
     def should_return_slots_to_rasa(self) -> bool:
         has_completed_registration = self.tracker.get_slot("has_completed_registration")
@@ -92,12 +106,10 @@ class CheckExternalAutenticationSlots:
 
 
 @dataclass
-class CheckEndConversationSlots:
-
-    tracker: Any
-    dispatcher: Any
-    conversation_statistics: Any
-    slots: List[Any] = field(default_factory=list)
+class CheckEndConversationSlots(CheckSlotsInterface):
+    """
+    Test if the user has voted in all available comments.
+    """
 
     def should_return_slots_to_rasa(self):
         if not Conversation.available_comments_to_vote(self.conversation_statistics):

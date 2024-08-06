@@ -66,12 +66,21 @@ class ActionAskVote(Action, CheckersMixin):
         conversation = kwargs["conversation"]
         conversation_statistics = kwargs["conversation_statistics"]
         return [
-            CheckEndConversationSlots(tracker, dispatcher, conversation_statistics),
+            CheckEndConversationSlots(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                conversation_statistics=conversation_statistics,
+            ),
             CheckExternalAutenticationSlots(
-                tracker, dispatcher, conversation_statistics
+                tracker=tracker,
+                dispatcher=dispatcher,
+                conversation_statistics=conversation_statistics,
             ),
             CheckNextCommentSlots(
-                tracker, dispatcher, conversation, conversation_statistics
+                tracker=tracker,
+                dispatcher=dispatcher,
+                conversation=conversation,
+                conversation_statistics=conversation_statistics,
             ),
         ]
 
