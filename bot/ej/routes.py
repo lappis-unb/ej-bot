@@ -13,6 +13,10 @@ def auth_headers(token):
     return headers
 
 
+def board_url(board_id):
+    return f"{API_URL}/boards/{board_id}/"
+
+
 def conversation_url(conversation_id):
     return f"{API_URL}/conversations/{conversation_id}/"
 
