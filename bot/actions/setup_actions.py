@@ -21,6 +21,8 @@ class ActionGetConversation(Action):
     def name(self):
         return "action_get_conversation"
 
+    # TODO: refactors this method using the Checkers architecture.
+    # Use ActionAskVote as an example.
     def run(self, dispatcher, tracker, domain):
         self.slots = []
         conversation_id = tracker.get_slot("conversation_id")

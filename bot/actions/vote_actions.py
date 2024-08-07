@@ -48,7 +48,7 @@ class ActionAskVote(Action, CheckersMixin):
             return ej_api_error_manager.get_slots()
 
         # If you want to add new verifications during this action call,
-        # you need to implement a new Checker
+        # you need to implement a new Checker.
         action_chekers = self.get_checkers(
             tracker,
             dispatcher=dispatcher,
@@ -106,7 +106,8 @@ class ValidateVoteForm(FormValidationAction):
     def name(self) -> Text:
         return "validate_vote_form"
 
-    # TODO: refactors this method using the Checker architecture.
+    # TODO: refactors this method using the Checkers architecture.
+    # Use ActionAskVote as an example.
     def validate_comment_confirmation(
         self,
         slot_value: Any,
@@ -120,6 +121,7 @@ class ValidateVoteForm(FormValidationAction):
             return CommentDialogue.resume_voting(slot_value)
 
     # TODO: refactors this method using the Checker architecture.
+    # Use ActionAskVote as an example.
     def validate_comment(
         self,
         slot_value: Any,
@@ -144,7 +146,8 @@ class ValidateVoteForm(FormValidationAction):
         except:
             dispatcher.utter_message(template="utter_send_comment_error")
 
-    # TODO: refactors this method using the Checker architecture.
+    # TODO: refactors this method using the Checkers architecture.
+    # Use ActionAskVote as an example.
     def validate_vote(
         self,
         slot_value: Any,

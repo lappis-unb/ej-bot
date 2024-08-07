@@ -84,6 +84,7 @@ class Conversation:
             raise EJCommunicationError
         return response
 
+    # TODO: refactor the try/except part to be a Python decorator.
     def get_next_comment(self):
         import time
 

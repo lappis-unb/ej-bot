@@ -9,7 +9,7 @@ stories:
 - story: User initiates dialogue without /start
   steps:
   - user: |
-      [0]{"entity": "conversation_id"}
+      [0]
     intent: help
   - action: utter_help
 

@@ -212,13 +212,12 @@ cadastrar o webhook na API do Serpro. O método `register_webhook` do módulo
 `bot/addons/whatsapp_api_integration/serpro_api_client.py`, pode ser utilizado para
 a criação do webhook a partir das credenciais enviadas pelo Serpro.
 
-# Variáveis de ambiente
-
 | Variável                     | Valor padrão                                 | Descrição                                                                                                                         |
 |------------------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | JWT_SECRET                   | ""                                           | Sequência de caracteres randômica que será utilizada para gerar o token de autenticação com o sistema externo ao canal.           |
 | SECRET_KEY                   | qGaUJ_XjpOfomnPNpOawtft2dVN0Rsu6wKLLtNIaeKM= | Sequência de caracteres randômica que será utilizada para gerar a senha do usuário.                                               |
 | RASA_MAX_CACHE_SIZE          | 0                                            | Se for 0, desabilita o uso de cache do Rasa durante o treinamento do modelo                                                       |
+| RASA_DOMAIN                  | default                                      | Nome do arquivo de domínio que será utilizado para treinar o chatbot.                                                             |
 | BOT_NAME                     | Default                                      | Nome do Bot que será utilizado para recuperar os textos do arquivo `messages.yml`                                                 |
 | TELEGRAM_TOKEN               |                                              | Token gerado pelo `BotFather` após a criação do bot no Telegram                                                                   |
 | TELEGRAM_BOT_NAME            |                                              | Nome do bot criado com o `BotFather`                                                                                              |
@@ -239,7 +238,6 @@ a criação do webhook a partir das credenciais enviadas pelo Serpro.
 | DB_PORT                      | 5432                                         | Porta da instância do PostgreSQL que atua como TrackerStore                                                                       |
 | EXTERNAL_AUTHENTICATION_HOST | https://lab-decide.dataprev.gov.br           | URL do serviço externo que será utilizado para autenticar o usuário que participa no Telegram ou no WhatsApp.                     |
 | BP_EJ_COMPONENT_ID           | processes/planocultura/f/184                 | Caminho para o componente de opinião da EJ configurado no Decidim. Será utilizada em conjunto com o EXTERNAL_AUTHENTICATION_HOST. |
-
 
 
 # Comandos
