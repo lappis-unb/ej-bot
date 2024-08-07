@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 0.4.0 - Ago 07, 2024
+
+### Added
+
+- Implements the Checker architecture. It's a simpler way to verify slots during an Action call. 
+- Retries EJ API requests when it returns 500 status_code error.
+- (Rasa): Returns a friendly message when EJ API returns 500 status_code error.
+- (Rasa): Adds new domain file for Brasil Participativo.
+
 ## [0.3.13] - Jul 22, 2024
 
 ### Changed
