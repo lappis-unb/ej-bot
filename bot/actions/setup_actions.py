@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import random
+import redis
 
 import yaml
 from actions.checkers.api_error_checker import EJApiErrorManager
@@ -10,6 +12,8 @@ from rasa_sdk.events import FollowupAction, SlotSet
 
 from ej.conversation import Conversation
 from ej.user import User
+from ej.boards import Board
+from ej.redis_manager import RedisManager
 
 
 class ActionGetConversation(Action):
@@ -25,34 +29,39 @@ class ActionGetConversation(Action):
     # Use ActionAskVote as an example.
     def run(self, dispatcher, tracker, domain):
         self.slots = []
-        conversation_id = tracker.get_slot("conversation_id")
-        if conversation_id:
-            username = User.get_name_from_tracker_state(tracker.current_state())
-            user = User(tracker, name=username)
+        board_id = os.getenv("BOARD_ID", None)
+        get_random_conversation = os.getenv("GET_RANDOM_CONVERSATION", False)
 
-            try:
-                conversation_data = Conversation.get_by_id(
-                    conversation_id, user.tracker
-                )
-            except EJCommunicationError:
-                ej_api_error_manager = EJApiErrorManager()
-                return ej_api_error_manager.get_slots()
+        if not board_id:
+            dispatcher.utter_message(template="utter_no_board_id")
+            raise Exception("No board id provided.")
 
-            tracker.slots["conversation_title"] = conversation_data.get("text")
-            tracker.slots["anonymous_votes_limit"] = conversation_data.get(
-                "anonymous_votes_limit"
-            )
-            tracker.slots["participant_can_add_comments"] = conversation_data.get(
-                "participants_can_add_comments"
-            )
+        board = Board(board_id, tracker)
+        total_conversations = len(board.conversations)
 
-            user.authenticate()
+        if total_conversations == 0:
+            dispatcher.utter_message(template="utter_no_conversations")
+            raise Exception("No conversations found.")
 
-            conversation = Conversation(tracker)
-            self._set_slots(conversation, user)
-        else:
-            dispatcher.utter_message(template="utter_no_selected_conversation")
-            return [FollowupAction("action_session_start")]
+        redis_manager = RedisManager()
+
+        index = redis_manager.get_user_conversation(tracker.sender_id)
+
+        if not index:
+            if get_random_conversation:
+                index = random.randint(0, total_conversations - 1)
+            else:
+                index = 0
+
+        conversation = board.conversations[index]
+
+        username = User.get_name_from_tracker_state(tracker.current_state())
+        user = User(tracker, name=username)
+        user.authenticate()
+
+        conversation = Conversation(tracker)
+        self._set_slots(conversation, user)
+
         return self.slots
 
     def _set_slots(self, conversation: Conversation, user: User):
