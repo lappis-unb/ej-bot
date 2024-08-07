@@ -8,7 +8,6 @@ from rasa_sdk import Tracker
 from .constants import EJCommunicationError, START_CONVERSATION_COMMAND
 from .routes import (
     conversation_random_comment_url,
-    conversation_url,
     user_statistics_url,
 )
 
