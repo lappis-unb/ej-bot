@@ -210,5 +210,8 @@ class ValidateVoteForm(FormValidationAction):
             return VoteDialogue.continue_voting(tracker)
         else:
             dispatcher.utter_message(template="utter_voted_all_comments")
+            """
+            TODO: Implement a new flow to get next conversation by board.
+            """
             dispatcher.utter_message(template="utter_thanks_participation")
             return VoteDialogue.finish_voting()

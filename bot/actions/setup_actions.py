@@ -45,15 +45,23 @@ class ActionGetConversation(Action):
 
         redis_manager = RedisManager()
 
-        index = redis_manager.get_user_conversation(tracker.sender_id)
+        index = None
+        redis_id = redis_manager.get_user_conversation(tracker.sender_id)
+        if redis_id:
+            for i, conversation in enumerate(board.conversations):
+                if conversation.id == redis_id:
+                    index = i
+                    break
 
-        if not index:
+        if index is None:
             if get_random_conversation:
                 index = random.randint(0, total_conversations - 1)
             else:
                 index = 0
 
         conversation = board.conversations[index]
+
+        redis_manager.set_user_conversation(tracker.sender_id, conversation.id)
 
         username = User.get_name_from_tracker_state(tracker.current_state())
         user = User(tracker, name=username)
