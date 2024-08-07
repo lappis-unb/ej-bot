@@ -20,60 +20,17 @@ logger = logging.getLogger(__name__)
 class Conversation:
     """Conversation controls requests to EJ API and some validations during bot execution."""
 
-    def __init__(
-        self,
-        tracker: Tracker,
-    ):
+    def __init__(self, tracker, extra_data: dict = None):
         self.tracker = tracker
-        self.id = Conversation.get_id_from_tracker(self.tracker)
-        self.title = self.tracker.get_slot("conversation_title")
-        self.participant_can_add_comments = self.tracker.get_slot(
-            "participant_can_add_comments"
+        self.id = extra_data.get("id") if extra_data else None
+        self.title = extra_data.get("title") if extra_data else None
+        self.participant_can_add_comments = (
+            extra_data.get("participants_can_add_comments") if extra_data else None
         )
-        self.anonymous_votes_limit = int(self.tracker.get_slot("anonymous_votes_limit"))
+        self.anonymous_votes_limit = (
+            extra_data.get("anonymous_votes_limit") if extra_data else None
+        )
         self.ej_api = EjApi(self.tracker)
-
-    @staticmethod
-    def get_id_from_tracker(tracker):
-        return (
-            tracker.get_slot("conversation_id_cache")
-            if tracker.get_slot("conversation_id_cache")
-            else tracker.get_slot("conversation_id")
-        )
-
-    @staticmethod
-    def get_by_id(conversation_id, tracker: Tracker):
-        ej_api = EjApi(tracker)
-        try:
-            response = ej_api.request(conversation_url(conversation_id))
-            conversation = response.json()
-            if len(conversation) == 0:
-                raise EJCommunicationError
-            return conversation
-        except:
-            raise EJCommunicationError
-
-    @staticmethod
-    def user_requested_new_conversation(user_input: str):
-        """
-        return true if user_input is equal to "/START_CONVERSATION_COMMAND ID".
-        """
-        pattern = re.compile(f"^{START_CONVERSATION_COMMAND}\s\d+")
-        return re.search(pattern, user_input)
-
-    @staticmethod
-    def restart_dialogue(user_channel_input: str):
-        """
-        check if user_channel_input is a request to participate on a new conversation.
-        If so, returns a dictionary with updated NLU slots.
-        """
-        # user_channel_input must be /start <id>
-        conversation_id = user_channel_input.split(" ")[1]
-        return {
-            "restart_conversation": True,
-            "conversation_id_cache": conversation_id,
-            "conversation_id": conversation_id,
-        }
 
     def get_participant_statistics(self):
         try:
