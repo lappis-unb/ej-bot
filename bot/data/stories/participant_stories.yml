@@ -9,7 +9,7 @@ stories:
     
   - story: Start a new conversation
     steps:
-      - intent: start_with_conversation_id
+      - intent: welcome
       - slot_was_set:
         - conversation_id
       - action: action_get_conversation

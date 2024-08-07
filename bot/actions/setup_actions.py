@@ -66,6 +66,7 @@ class ActionGetConversation(Action):
 
     def _set_slots(self, conversation: Conversation, user: User):
         self.slots = [
+            SlotSet("conversation_id", conversation.id),
             SlotSet("conversation_text", conversation.title),
             SlotSet("conversation_id_cache", conversation.id),
             SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
