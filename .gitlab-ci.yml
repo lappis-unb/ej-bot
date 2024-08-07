@@ -36,8 +36,8 @@ test_domain:
   variables:
     RASA_DUCKLING_HTTP_URL: "http://duck:8000"
   script:
-    - cd bot && RASA_DOMAIN=bp rasa train
-    - RASA_DOMAIN=bp rasa test --fail-on-prediction-errors
+    - cd bot && rasa train -vv --domain domains/bp.yml
+    - rasa test --fail-on-prediction-errors
   tags:
     - k8s
 
