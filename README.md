@@ -218,7 +218,6 @@ a criação do webhook a partir das credenciais enviadas pelo Serpro.
 | SECRET_KEY                   | qGaUJ_XjpOfomnPNpOawtft2dVN0Rsu6wKLLtNIaeKM= | Sequência de caracteres randômica que será utilizada para gerar a senha do usuário.                                               |
 | RASA_MAX_CACHE_SIZE          | 0                                            | Se for 0, desabilita o uso de cache do Rasa durante o treinamento do modelo                                                       |
 | RASA_DOMAIN                  | default                                      | Nome do arquivo de domínio que será utilizado para treinar o chatbot.                                                             |
-| BOT_NAME                     | Default                                      | Nome do Bot que será utilizado para recuperar os textos do arquivo `messages.yml`                                                 |
 | TELEGRAM_TOKEN               |                                              | Token gerado pelo `BotFather` após a criação do bot no Telegram                                                                   |
 | TELEGRAM_BOT_NAME            |                                              | Nome do bot criado com o `BotFather`                                                                                              |
 | TELEGRAM_WEBHOOK_URL         |                                              | URL https do Rasa, que irá receber os webhooks do Telegram.                                                                       |
@@ -252,16 +251,6 @@ São utilizados comandos make para execução de diferentes contextos e ferramen
 | make run-api     | Executa o bot no modo API. No ambiente local, ela ficará disponível na url `http://localhost:5006` |
 | make run-actions | Executa os módulos de backend (Actions). Esses módulos implementam a comunicação dot chatbot com a API da EJ e outros serviços externos ao bot. |
 | make clean       | Remove os containers e limpa o ambiente. |
-
-# Mensagem de boas vindas
-
-O chatbot pode enviar mensagens customizadas ao usuário, dependendo de como
-a instância do Rasa foi configurada. No arquivo `messages.yml` é
-possível definir a mensagem de boas-vindas enviada ao usuário. A variável de ambiente `BOT_NAME`
-será utilizada para carregar a mensagem correta.
-
-Nas próximas releases, adicionaremos mais opções de textos para permitir uma maior customização
-do chatbot sem a necessidade de retreinar o modelo.
 
 # Testes
 

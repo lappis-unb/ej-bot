@@ -13,7 +13,7 @@ stories:
       - slot_was_set:
         - conversation_id
       - action: action_get_conversation
-      - action: action_introduce_ej
+      - action: utter_bot_introduction
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 
@@ -32,7 +32,7 @@ stories:
         - restart_conversation: true
       - active_loop: null
       - action: action_get_conversation
-      - action: action_introduce_ej
+      - action: utter_bot_introduction
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 

@@ -4,6 +4,7 @@ config:
 session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: false
+
 intents:
   - stop
   - comment_confirmation
@@ -14,9 +15,17 @@ intents:
   - add_new_comment:
       ignore_entities:
       - conversation_id
+
 entities:
   - conversation_id
+
 slots:
+  contact_name:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
   ej_api_connection_error:
     type: bool
     initial_value: false
@@ -158,7 +167,12 @@ slots:
       conditions:
       - active_loop: vote_form
         requested_slot: comment
+
 responses:
+  utter_bot_introduction:
+    - text: |
+        "Olá {contact_name}, Eu sou a Duda, a assistente virtual da Plataforma Empurrando Juntas. Meu trabalho é descobrir a opinião das pessoas sobre determinados temas e para isso eu preciso da sua ajuda.  A suas opiniões serão enviadas para a nossa plataforma, conforme o nosso termo de uso https://www.ejparticipe.org/usage/." 
+        "Caso deseje parar no meio da nossa conversa, basta digitar PARAR."
   utter_show_topic_of_discussion:
   - text: "Eu perguntei para algumas pessoas o que elas acham sobre o seguinte assunto:\n**{conversation_text}**\n\nVou te mandar o que me responderam e gostaria da sua opinião:\n"
   utter_ask_comment_confirmation:
@@ -215,7 +229,6 @@ responses:
 
 
 actions:
-- action_introduce_ej
 - action_ask_vote
 - validate_vote_form
 - action_get_conversation

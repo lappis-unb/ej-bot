@@ -21,7 +21,7 @@ stories:
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation
-  - action: action_introduce_ej
+  - action: utter_bot_introduction
   - action: utter_show_topic_of_discussion
   - slot_was_set:
     - conversation_id
@@ -36,7 +36,7 @@ stories:
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation
-  - action: action_introduce_ej
+  - action: utter_bot_introduction
   - action: utter_show_topic_of_discussion
   - slot_was_set:
     - conversation_id
@@ -57,7 +57,7 @@ stories:
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation
-  - action: action_introduce_ej
+  - action: utter_bot_introduction
   - action: utter_show_topic_of_discussion
   - slot_was_set:
     - conversation_id
@@ -76,7 +76,7 @@ stories:
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation
-  - action: action_introduce_ej
+  - action: utter_bot_introduction
   - action: utter_show_topic_of_discussion
   - slot_was_set:
     - conversation_id
@@ -91,7 +91,7 @@ stories:
     - ej_api_connection_error: false
   - active_loop: null
   - action: action_get_conversation
-  - action: action_introduce_ej
+  - action: utter_bot_introduction
   - action: utter_show_topic_of_discussion
   - checkpoint: starts_voting
 
@@ -103,8 +103,7 @@ stories:
     intent: start_with_conversation_id
   - slot_was_set:
     - conversation_id
-  - action: action_get_conversation
-  - action: action_introduce_ej
+  - action: utter_bot_introduction
   - action: utter_show_topic_of_discussion
   - action: vote_form
   - active_loop: vote_form

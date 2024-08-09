@@ -8,7 +8,7 @@ from rasa.core.channels.channel import (
     InputChannel,
     UserMessage,
 )
-from sanic import Blueprint, response
+from sanic import Blueprint
 from sanic.request import Request
 from sanic.response import HTTPResponse
 
@@ -53,12 +53,14 @@ class WhatsApp(InputChannel):
                 return HTTPResponse("ok", status=200)
 
             collector = CollectingOutputChannel()
+            custom_logger("WHATSAPP CONTACT: ", whatsapp_event.contact.name)
             await on_new_message(
                 UserMessage(
                     whatsapp_message.text,
                     collector,
-                    whatsapp_event.recipient_phone,
+                    whatsapp_event.contact.phone,
                     input_channel=self.name(),
+                    metadata={"contact_name": whatsapp_event.contact.name},
                 )
             )
 
@@ -67,13 +69,13 @@ class WhatsApp(InputChannel):
 
             # Convert Rasa answers to WhatsApp expected format
             parser = whatsapp_event.parser_class(
-                bot_answers, whatsapp_event.recipient_phone
+                bot_answers, whatsapp_event.contact.phone
             )
-            wpp_answers = parser.parse_messages()
+            wpp_messages = parser.parse_messages()
 
             # Send Rasa answers to WhatsApp
             wpp_client = whatsapp_event.wpp_client
-            for message in wpp_answers:
+            for message in wpp_messages:
                 response = wpp_client.send_message(message)
                 if response.status_code == 500:
                     custom_logger("WHATSAPP EVENT ERROR", request.json())

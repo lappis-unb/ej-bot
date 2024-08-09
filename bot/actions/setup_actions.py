@@ -1,15 +1,44 @@
-import os
-from pathlib import Path
+from typing import Any, Dict, List, Text
 
-import yaml
 from actions.checkers.api_error_checker import EJApiErrorManager
 from ej.constants import EJCommunicationError
-
-from rasa_sdk import Action
-from rasa_sdk.events import FollowupAction, SlotSet
-
 from ej.conversation import Conversation
 from ej.user import User
+from rasa_sdk import Action, Tracker
+from rasa_sdk.events import ActionExecuted, EventType, SessionStarted, SlotSet
+
+
+class ActionSessionStart(Action):
+    def name(self) -> Text:
+        return "action_session_start"
+
+    @staticmethod
+    def fetch_slots(tracker: Tracker) -> List[EventType]:
+        """Collect slots that contain the user's name and phone number."""
+
+        slots = []
+        custom_channel_metadata = tracker.events[0]["value"]
+        if custom_channel_metadata:
+            contact_name = custom_channel_metadata.get("contact_name")
+            if contact_name is not None:
+                slots.append(SlotSet(key="contact_name", value=contact_name))
+        return slots
+
+    async def run(
+        self, dispatcher, tracker: Tracker, domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+
+        # the session should begin with a `session_started` event
+        events = [SessionStarted()]
+
+        # any slots that should be carried over should come after the
+        # `session_started` event
+        events.extend(self.fetch_slots(tracker))
+
+        # an `action_listen` should be added at the end as a user message follows
+        events.append(ActionExecuted("action_listen"))
+
+        return events
 
 
 class ActionGetConversation(Action):
@@ -71,23 +100,3 @@ class ActionGetConversation(Action):
             SlotSet("access_token", user.tracker.get_slot("access_token")),
             SlotSet("refresh_token", user.tracker.get_slot("refresh_token")),
         ]
-
-
-class ActionIntroduceEj(Action):
-    def name(self):
-        return "action_introduce_ej"
-
-    def run(self, dispatcher, tracker, domain):
-        actions_path = os.path.dirname(os.path.realpath(__file__))
-        path = Path(actions_path)
-        messages = str(path.parent.absolute()) + "/messages.yml"
-        text: str = ""
-        with open(messages) as file:
-            messages = yaml.safe_load(file)
-            bot_name = os.getenv("BOT_NAME")
-            if not bot_name:
-                bot_name = "Default"
-            text = messages.get(bot_name).get("introduction")
-            dispatcher.utter_message(text=text)
-
-        return []
