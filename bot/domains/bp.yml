@@ -236,7 +236,6 @@ responses:
 
 
 actions:
-- action_session_start
 - action_ask_vote
 - validate_vote_form
 - action_get_conversation

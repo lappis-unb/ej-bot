@@ -1,61 +1,11 @@
-from typing import Any, Dict, List, Text
-import redis
+from typing import Dict
 
 from actions.checkers.api_error_checker import EJApiErrorManager
-from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
 from ej.conversation import Conversation
 from ej.user import User
-from rasa_sdk import Action, Tracker
-from rasa_sdk.events import ActionExecuted, EventType, SessionStarted, SlotSet
-from addons.whatsapp_api_integration.config import Config
-
-
-class ActionSessionStart(Action):
-    def name(self) -> Text:
-        return "action_session_start"
-
-    @staticmethod
-    def fetch_slots(tracker: Tracker) -> List[EventType]:
-        """Collect slots that contain the user's name and phone number."""
-
-        redis_client = redis.Redis(
-            host=Config.REDIS_HOST, port=Config.REDIS_PORT, decode_responses=True
-        )
-
-        sender_id = tracker.sender_id
-        contact = redis_client.hgetall(sender_id)
-        slots = []
-
-        if contact:
-            slots.append(SlotSet(key="contact_name", value=contact.get("contact_name")))
-            return slots
-
-        metadata = tracker.events[0].get("value")
-        if metadata:
-            contact_name = metadata.get("contact_name")
-            if contact_name is not None:
-                contact = redis_client.hset(
-                    sender_id, mapping={"contact_name": contact_name}
-                )
-                slots.append(SlotSet(key="contact_name", value=contact_name))
-        return slots
-
-    async def run(
-        self, dispatcher, tracker: Tracker, domain: Dict[Text, Any]
-    ) -> List[Dict[Text, Any]]:
-
-        # the session should begin with a `session_started` event
-        events = [SessionStarted()]
-
-        # any slots that should be carried over should come after the
-        # `session_started` event
-        events.extend(self.fetch_slots(tracker))
-
-        # an `action_listen` should be added at the end as a user message follows
-        events.append(ActionExecuted("action_listen"))
-
-        return events
+from rasa_sdk import Action
+from rasa_sdk.events import SlotSet
 
 
 class ActionGetConversation(Action):
@@ -95,13 +45,14 @@ class ActionGetConversation(Action):
             user.authenticate()
 
             conversation = Conversation(tracker)
-            self._set_slots(conversation, user)
+            metadata = tracker.latest_message.get("metadata")
+            self._set_slots(conversation, user, metadata)
         else:
             dispatcher.utter_message(template="utter_no_selected_conversation")
             return [FollowupAction("action_session_start")]
         return self.slots
 
-    def _set_slots(self, conversation: Conversation, user: User):
+    def _set_slots(self, conversation: Conversation, user: User, metadata: Dict):
         self.slots = [
             SlotSet("conversation_text", conversation.title),
             SlotSet("conversation_id_cache", conversation.id),
@@ -110,6 +61,7 @@ class ActionGetConversation(Action):
                 "participant_can_add_comments",
                 conversation.participant_can_add_comments,
             ),
+            SlotSet("contact_name", metadata.get("contact_name")),
             SlotSet(
                 "has_completed_registration",
                 user.has_completed_registration,
