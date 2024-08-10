@@ -206,8 +206,6 @@ responses:
   - text: Depois conversamos mais 😘
   utter_ej_communication_error:
   - text: Opa, parece que não estou conseguindo acessar nosso servidor.
-  utter_error_try_again_later:
-  - text: Tive um problema técnico, por favor tente participar mais tarde.
   utter_help:
   - text: Olá, muito prazer, eu sou a Duda! Eu sou a assistente virtual da plataforma EJ.  Comigo você pode fazer coletas de opinião ou participar de uma. Para começarmos, você precisa gerar o link de participação na plataforma https://www.ejplataform.org. Para mais informações, acesse nossa documentação em https://www.ejplatform.org/static_docs/i18n/pt-br/user-docs/tools-chatbot.html#duda-o-chatbot-oficial-da-ej
   utter_no_selected_conversation:

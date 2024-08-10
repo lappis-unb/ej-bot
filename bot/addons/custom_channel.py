@@ -52,8 +52,8 @@ class WhatsApp(InputChannel):
             if type(whatsapp_message) is NotSupportedMessage:
                 return HTTPResponse("ok", status=200)
 
+            # send message to Rasa
             collector = CollectingOutputChannel()
-            custom_logger("WHATSAPP CONTACT: ", whatsapp_event.contact.name)
             await on_new_message(
                 UserMessage(
                     whatsapp_message.text,

@@ -114,5 +114,4 @@ stories:
     - ej_api_connection_error: true
   - active_loop: null
   - action: utter_ej_communication_error
-  - action: utter_error_try_again_later
   - action: action_restart

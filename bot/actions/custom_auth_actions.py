@@ -98,5 +98,4 @@ class ActionAskHasCompletedRegistration(Action):
 
         except EJCommunicationError:
             dispatcher.utter_message(response="utter_ej_communication_error")
-            dispatcher.utter_message(response="utter_error_try_again_later")
             return []

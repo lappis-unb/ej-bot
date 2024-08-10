@@ -1,11 +1,14 @@
 from typing import Any, Dict, List, Text
+import redis
 
 from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
 from ej.conversation import Conversation
 from ej.user import User
 from rasa_sdk import Action, Tracker
 from rasa_sdk.events import ActionExecuted, EventType, SessionStarted, SlotSet
+from addons.whatsapp_api_integration.config import Config
 
 
 class ActionSessionStart(Action):
@@ -16,11 +19,25 @@ class ActionSessionStart(Action):
     def fetch_slots(tracker: Tracker) -> List[EventType]:
         """Collect slots that contain the user's name and phone number."""
 
+        redis_client = redis.Redis(
+            host=Config.REDIS_HOST, port=Config.REDIS_PORT, decode_responses=True
+        )
+
+        sender_id = tracker.sender_id
+        contact = redis_client.hgetall(sender_id)
         slots = []
-        custom_channel_metadata = tracker.events[0]["value"]
-        if custom_channel_metadata:
-            contact_name = custom_channel_metadata.get("contact_name")
+
+        if contact:
+            slots.append(SlotSet(key="contact_name", value=contact.get("contact_name")))
+            return slots
+
+        metadata = tracker.events[0].get("value")
+        if metadata:
+            contact_name = metadata.get("contact_name")
             if contact_name is not None:
+                contact = redis_client.hset(
+                    sender_id, mapping={"contact_name": contact_name}
+                )
                 slots.append(SlotSet(key="contact_name", value=contact_name))
         return slots
 
