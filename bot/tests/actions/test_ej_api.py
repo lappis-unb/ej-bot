@@ -20,10 +20,10 @@ class TestAPIClass:
     @patch("bot.ej.ej_api.requests.post")
     def test_create_user_in_ej_with_rasa_id(self, mock_post, tracker):
         mock_post.return_value = Mock(ok=True)
-        user = User(tracker, "David")
+        user = User(tracker)
         user.authenticate()
         assert user.ej_api.access_token == "1234"
-        assert user.name == "David"
+        assert user.name == "mr_davidCarlos"
 
     @patch("bot.ej.ej_api.requests.get")
     def test_get_conversation(self, mock_get, tracker):

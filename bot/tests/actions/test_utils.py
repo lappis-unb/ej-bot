@@ -57,7 +57,7 @@ class TestUtils:
         assert "text" in utter
 
     def test_remove_special(self, tracker):
-        user = User(tracker, "1234")
+        user = User(tracker)
         assert ":" not in user.remove_special("sdf:adsf")
         assert "+" not in user.remove_special("sdf+adsf")
         assert "+" not in user.remove_special("sdf+:adsf")

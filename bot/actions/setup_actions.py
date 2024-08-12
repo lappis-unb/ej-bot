@@ -23,8 +23,7 @@ class ActionGetConversation(Action):
         self.slots = []
         conversation_id = tracker.get_slot("conversation_id")
         if conversation_id:
-            username = User.get_name_from_tracker_state(tracker.current_state())
-            user = User(tracker, name=username)
+            user = User(tracker)
 
             try:
                 conversation_data = Conversation.get_by_id(
