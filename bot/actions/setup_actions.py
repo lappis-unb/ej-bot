@@ -1,6 +1,7 @@
 from typing import Dict
 
 from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
 from ej.conversation import Conversation
 from ej.user import User
@@ -44,14 +45,13 @@ class ActionGetConversation(Action):
             user.authenticate()
 
             conversation = Conversation(tracker)
-            metadata = tracker.latest_message.get("metadata")
-            self._set_slots(conversation, user, metadata)
+            self._set_slots(conversation, user)
         else:
             dispatcher.utter_message(template="utter_no_selected_conversation")
             return [FollowupAction("action_session_start")]
         return self.slots
 
-    def _set_slots(self, conversation: Conversation, user: User, metadata: Dict):
+    def _set_slots(self, conversation: Conversation, user: User):
         self.slots = [
             SlotSet("conversation_text", conversation.title),
             SlotSet("conversation_id_cache", conversation.id),
@@ -60,7 +60,7 @@ class ActionGetConversation(Action):
                 "participant_can_add_comments",
                 conversation.participant_can_add_comments,
             ),
-            SlotSet("contact_name", metadata.get("contact_name")),
+            SlotSet("contact_name", user.name),
             SlotSet(
                 "has_completed_registration",
                 user.has_completed_registration,

@@ -224,7 +224,7 @@ responses:
   utter_invalid_vote_during_participation:
   - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_content}** não foi válida. Poderia responder novamente?"
   utter_vote_limit_anonymous_reached:
-  - text: "Você está indo muito bem, {nome_usuario}!\n\nPara poder continuar votando por aqui e receber relatórios exclusivos do Brasil Participativo, autentique-se agora e aproveite! Lá você também pode votar nas frases que você pulou por aqui."
+  - text: "Você está indo muito bem, {contact_name}!\n\nPara poder continuar votando por aqui e receber relatórios exclusivos do Brasil Participativo, autentique-se agora e aproveite! Lá você também pode votar nas frases que você pulou por aqui."
   utter_get_token:
   - text: "Aqui está o link para se autenticar.\n\n{auth_link}"
   utter_awaiting_authentication:
