@@ -1,4 +1,4 @@
-FROM  rasa/rasa:3.6.6
+FROM  rasa/rasa:3.6.20
 USER root
 RUN apt update && apt install build-essential -y
 RUN python -m pip install --upgrade pip
