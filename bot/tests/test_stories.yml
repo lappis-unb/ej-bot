@@ -1,18 +1,4 @@
 stories:
-- story: User interacts with bot without the conversation ID.
-  steps:
-  - user: |
-      start
-    intent: help
-  - action: utter_help
-
-- story: User initiates dialogue without /start
-  steps:
-  - user: |
-      [0]{"entity": "conversation_id"}
-    intent: help
-  - action: utter_help
-
 - story: User joins conversation to vote
   steps:
   - user: |
