@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import random
-import redis
 
 import yaml
 from actions.checkers.api_error_checker import EJApiErrorManager
@@ -10,10 +9,11 @@ from ej.constants import EJCommunicationError
 from rasa_sdk import Action
 from rasa_sdk.events import FollowupAction, SlotSet
 
+from actions.logger import custom_logger
+
 from ej.conversation import Conversation
 from ej.user import User
 from ej.boards import Board
-from ej.redis_manager import RedisManager
 
 
 class ActionGetConversation(Action):
@@ -28,9 +28,13 @@ class ActionGetConversation(Action):
     # TODO: refactors this method using the Checkers architecture.
     # Use ActionAskVote as an example.
     def run(self, dispatcher, tracker, domain):
+        username = User.get_name_from_tracker_state(tracker.current_state())
+        user = User(tracker, name=username)
+        user.authenticate()
+        tracker = user.tracker
+
         self.slots = []
-        board_id = os.getenv("BOARD_ID", None)
-        get_random_conversation = os.getenv("GET_RANDOM_CONVERSATION", False)
+        board_id = int(os.getenv("BOARD_ID", None))
 
         if not board_id:
             dispatcher.utter_message(template="utter_no_board_id")
@@ -43,29 +47,9 @@ class ActionGetConversation(Action):
             dispatcher.utter_message(template="utter_no_conversations")
             raise Exception("No conversations found.")
 
-        redis_manager = RedisManager()
-
-        index = None
-        redis_id = redis_manager.get_user_conversation(tracker.sender_id)
-        if redis_id:
-            for i, conversation in enumerate(board.conversations):
-                if conversation.id == redis_id:
-                    index = i
-                    break
-
-        if index is None:
-            if get_random_conversation:
-                index = random.randint(0, total_conversations - 1)
-            else:
-                index = 0
+        index = 0
 
         conversation = board.conversations[index]
-
-        redis_manager.set_user_conversation(tracker.sender_id, conversation.id)
-
-        username = User.get_name_from_tracker_state(tracker.current_state())
-        user = User(tracker, name=username)
-        user.authenticate()
 
         conversation = Conversation(tracker)
         self._set_slots(conversation, user)
