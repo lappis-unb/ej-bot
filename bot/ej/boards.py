@@ -18,7 +18,7 @@ class Board:
         self.description = data.get("description")
         self.conversations = (
             [
-                Conversation(tracker, **conversation)
+                Conversation(tracker, conversation)
                 for conversation in data.get("conversations")
             ]
             if data.get("conversations")
