@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class Conversation:
     """Conversation controls requests to EJ API and some validations during bot execution."""
 
-    def __init__(self, tracker, extra_data: dict = None):
+    def __init__(self, tracker, extra_data: dict):
         self.tracker = tracker
         self.id = extra_data.get("id") if extra_data else None
         self.title = extra_data.get("title") if extra_data else None
