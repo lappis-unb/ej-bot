@@ -57,7 +57,13 @@ def comment():
 
 @pytest.fixture
 def conversation(tracker, comment):
-    conversation = Conversation(tracker)
+    extra_data = {
+        "id": "123",
+        "title": "Test Title",
+        "participants_can_add_comments": True,
+        "anonymous_votes_limit": 5,
+    }
+    conversation = Conversation(tracker, extra_data)
     conversation.get_next_comment = Mock()
     conversation.get_next_comment = lambda: comment
     return conversation
