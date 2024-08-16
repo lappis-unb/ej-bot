@@ -42,8 +42,6 @@ class WhatsApp(InputChannel):
                     return HTTPResponse("Invalid verify token", status=500)
                 return HTTPResponse(request.args.get("hub.challenge"), status=200)
 
-            custom_logger("WHATSAPP EVENT", request.json)
-
             # extracting whatsapp text message
             whatsapp_event = WhatsAppEvent(request.json)
             whatsapp_message = whatsapp_event.get_event_message()
@@ -51,6 +49,8 @@ class WhatsApp(InputChannel):
             # Send whatsapp message to Rasa NLU
             if type(whatsapp_message) is NotSupportedMessage:
                 return HTTPResponse("ok", status=200)
+
+            custom_logger("WHATSAPP EVENT", request.json)
 
             # send message to Rasa
             collector = CollectingOutputChannel()
@@ -77,8 +77,8 @@ class WhatsApp(InputChannel):
             wpp_client = whatsapp_event.wpp_client
             for message in wpp_messages:
                 response = wpp_client.send_message(message)
-                if response.status_code == 500:
-                    custom_logger("WHATSAPP EVENT ERROR", request.json())
+                if response.status_code != 200:
+                    custom_logger("WHATSAPP EVENT ERROR", response.json())
 
             return HTTPResponse("ok", status=200)
 
