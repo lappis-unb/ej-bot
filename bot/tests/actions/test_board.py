@@ -6,7 +6,6 @@ from ej.ej_api import EjApi
 
 
 class TestBoard:
-
     @patch("ej.boards.EjApi")
     def test_board_initialization(self, MockEjApi):
         tracker = MagicMock()

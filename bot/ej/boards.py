@@ -4,7 +4,6 @@ from .routes import board_url
 
 
 class Board:
-
     def __init__(self, id, tracker):
         self.id = id
         self.conversations: Conversation = []

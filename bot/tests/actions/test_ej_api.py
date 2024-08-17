@@ -4,7 +4,6 @@ from bot.ej.ej_api import EjApi
 
 
 class TestEjApi(unittest.TestCase):
-
     def setUp(self):
         self.tracker = MagicMock()
         self.tracker.get_slot.side_effect = lambda x: (

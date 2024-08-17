@@ -6,7 +6,6 @@ from ej.conversation import Conversation, EJCommunicationError
 
 
 class TestConversation(unittest.TestCase):
-
     def setUp(self):
         self.tracker = Mock(spec=Tracker)
         self.extra_data = {
