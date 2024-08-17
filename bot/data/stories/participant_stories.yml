@@ -1,11 +1,6 @@
 version: "3.1"
 
 stories:
-
-  - story: Send message without conversation_id
-    steps:
-      - intent: help
-      - action: utter_help
     
   - story: Start a new conversation
     steps:
@@ -13,7 +8,7 @@ stories:
       - slot_was_set:
         - conversation_id
       - action: action_get_conversation
-      - action: action_introduce_ej
+      - action: utter_bot_introduction
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 
@@ -32,7 +27,7 @@ stories:
         - restart_conversation: true
       - active_loop: null
       - action: action_get_conversation
-      - action: action_introduce_ej
+      - action: utter_bot_introduction
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 
@@ -96,5 +91,4 @@ stories:
         - ej_api_connection_error: true
       - active_loop: null
       - action: utter_ej_communication_error
-      - action: utter_error_try_again_later
       - action: action_restart

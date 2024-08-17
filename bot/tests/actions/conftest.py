@@ -44,9 +44,66 @@ def tracker():
     tracker.conversation_statistics = "1234"
     tracker.get_slot = lambda x: "1234"
     tracker.get_latest_input_channel = lambda: "whatsapp"
-    tracker.latest_message = {"metadata": {}}
+    tracker.latest_message = {
+        "metadata": {
+            "token": "",
+            "bot": False,
+            "channel_id": "PtSjgJqB29fcy9vFd",
+            "channel_name": "mr_davidCarlos-telegram",
+            "message_id": "f3yTeCyHAuPNDdQZv",
+            "timestamp": "2022-06-20T15:23:17.242Z",
+            "user_id": "9H7jF3P6PnStr496r",
+            "user_name": "mr_davidCarlos",
+            "text": "start 74",
+            "siteUrl": "http://localhost:3000",
+        }
+    }
     tracker.get_slot = lambda slot: slots[slot]
     tracker.set_slot = set_slot
+    return tracker
+
+
+@pytest.fixture
+def telegram_tracker(tracker):
+    tracker.latest_message = {
+        "metadata": {
+            "token": "",
+            "bot": False,
+            "channel_id": "PtSjgJqB29fcy9vFd",
+            "channel_name": "mr_davidCarlos-telegram",
+            "message_id": "f3yTeCyHAuPNDdQZv",
+            "timestamp": "2022-06-20T15:23:17.242Z",
+            "user_id": "9H7jF3P6PnStr496r",
+            "contact_name": "David Carlos",
+            "text": "start 74",
+            "siteUrl": "http://localhost:3000",
+        }
+    }
+    return tracker
+
+
+@pytest.fixture
+def anonymous_tracker(tracker):
+    tracker.latest_message = {"metadata": {}}
+    return tracker
+
+
+@pytest.fixture
+def wpp_tracker(tracker):
+    tracker.latest_message = {
+        "metadata": {
+            "token": "",
+            "bot": False,
+            "channel_id": "PtSjgJqB29fcy9vFd",
+            "channel_name": "mr_davidCarlos-telegram",
+            "message_id": "f3yTeCyHAuPNDdQZv",
+            "timestamp": "2022-06-20T15:23:17.242Z",
+            "user_id": "9H7jF3P6PnStr496r",
+            "contact_name": "David Carlos",
+            "text": "start 74",
+            "siteUrl": "http://localhost:3000",
+        }
+    }
     return tracker
 
 

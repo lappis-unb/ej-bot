@@ -42,8 +42,7 @@ class ValidateAuthenticationForm(FormValidationAction):
         if CheckAuthenticationDialogue.participant_refuses_to_auth(slot_value):
             return CheckAuthenticationDialogue.end_auth_form()
 
-        username = User.get_name_from_tracker_state(tracker.current_state())
-        user = User(tracker, name=username)
+        user = User(tracker)
         user.tracker.slots["access_token"] = ""
         user.tracker.slots["refresh_token"] = ""
         user.authenticate()
@@ -86,8 +85,7 @@ class ActionAskHasCompletedRegistration(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
         try:
-            username = User.get_name_from_tracker_state(tracker.current_state())
-            user = User(tracker, name=username)
+            user = User(tracker)
             authorization_service = ExternalAuthorizationService(
                 tracker.sender_id, user.secret_id
             )
@@ -98,5 +96,4 @@ class ActionAskHasCompletedRegistration(Action):
 
         except EJCommunicationError:
             dispatcher.utter_message(response="utter_ej_communication_error")
-            dispatcher.utter_message(response="utter_error_try_again_later")
             return []

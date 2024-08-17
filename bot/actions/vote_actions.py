@@ -130,10 +130,10 @@ class ValidateVoteForm(FormValidationAction):
         domain: DomainDict,
     ) -> Dict[Text, Any]:
 
-        user_comment = slot_value
-        if not user_comment:
-            return {}
+        if self._comment_slot_is_invalid(tracker):
+            return CommentDialogue.resume_voting("")
 
+        user_comment = slot_value
         if Conversation.user_requested_new_conversation(user_comment):
             return CommentDialogue.resume_voting("")
 
@@ -215,3 +215,11 @@ class ValidateVoteForm(FormValidationAction):
             """
             dispatcher.utter_message(template="utter_thanks_participation")
             return VoteDialogue.finish_voting()
+
+    def _comment_slot_is_invalid(self, tracker) -> bool:
+        comment_confirmation = tracker.get_slot("comment_confirmation")
+        return (
+            not comment_confirmation
+            or comment_confirmation == "não"
+            or comment_confirmation == "-"
+        )

@@ -4,4 +4,4 @@ rules:
   - rule: Show help fallback when low NLU confidence
     steps:
       - intent: nlu_fallback
-      - action: utter_help
+      - action: utter_nlu_fallback

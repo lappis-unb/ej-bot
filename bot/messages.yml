@@ -1,6 +1,0 @@
-Default:
-  introduction: "Olá, Eu sou o Bot Criado pelo desenvolvedor David Carlos para ser utilzado em ambientes de desenvolvimento, seja bem vindo! Caso deseje parar no meio da nossa conversa, basta digitar PARAR." 
-DudaEjBot:
-  introduction: "Olá, Eu sou a Duda, a assistente virtual da Plataforma Empurrando Juntas. Meu trabalho é descobrir a opinião das pessoas sobre determinados temas e para isso eu preciso da sua ajuda.  A suas opiniões serão enviadas para a nossa plataforma, conforme o nosso termo de uso https://www.ejparticipe.org/usage/.\n. Caso deseje parar no meio da nossa conversa, basta digitar PARAR."
-PlanoCulturaDevBot:
-  introduction: "Olá! Eu sou a Iara e este é um espaço de escuta do Ministério da Cultura 💬.\n\nEstamos elaborando um Plano que vai guiar as políticas culturais pelos próximos 10 anos e **queremos saber sua opinião** 📢\n\nSuas respostas serão enviadas para a nossa plataforma e todos os seus dados serão tratados conforme o termo de uso. Se não concordar com algo nos avise e embora queremos muito que vc continue, fique a vontade de parar por aqui, tá bem?"

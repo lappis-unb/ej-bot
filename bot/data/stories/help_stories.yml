@@ -1,0 +1,47 @@
+version: "3.1"
+
+stories:
+
+  - story: User asks for help
+    steps:
+      - intent: help
+      - action: utter_ask_help_topic
+      - action: help_form
+      - active_loop: help_form
+      - checkpoint: check_help_option
+
+  - story: User don't know how to participate
+    steps:
+      - checkpoint: check_help_option
+      - slot_was_set:
+        - help_topic: help_voting
+      - active_loop: null
+      - action: utter_explain_help_voting
+      - action: action_reset_help_slots
+
+  - story: User wants to know more about the participatory process
+    steps:
+      - checkpoint: check_help_option
+      - slot_was_set:
+        - help_topic: help_know_more
+      - active_loop: null
+      - action: utter_explain_help_know_more
+      - action: action_reset_help_slots
+
+  - story: User wants to know more about the participatory process
+    steps:
+      - checkpoint: check_help_option
+      - slot_was_set:
+        - help_topic: help_authentication
+      - active_loop: null
+      - action: utter_explain_help_authentication
+      - action: action_reset_help_slots
+
+  - story: User wants to know more about the participatory process
+    steps:
+      - checkpoint: check_help_option
+      - slot_was_set:
+        - help_topic: help_lgpd
+      - active_loop: null
+      - action: utter_explain_help_lgpd
+      - action: action_reset_help_slots

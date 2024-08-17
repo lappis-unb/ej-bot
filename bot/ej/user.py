@@ -104,12 +104,12 @@ class User(object):
     ANONYMOUS_USER_NAME = "Participante anônimo"
 
     def __init__(self, tracker: Any, name=ANONYMOUS_USER_NAME):
-        self.name = name
-        self.display_name = name
-        self.tracker_sender_id = tracker.sender_id
-        self.ej_api = EjApi(tracker)
         self.tracker = tracker
-        self.secret_id = ExternalAuthorizationService.generate_hash(tracker.sender_id)
+        self.name = self._get_name_from_tracker()
+        self.display_name = self.name
+        self.sender_id = self.tracker.sender_id
+        self.ej_api = EjApi(self.tracker)
+        self.secret_id = ExternalAuthorizationService.generate_hash(self.sender_id)
         self.has_completed_registration = tracker.get_slot("has_completed_registration")
         self._set_password()
         self._set_email()
@@ -119,8 +119,8 @@ class User(object):
         self.password, self.password_confirm = [password, password]
 
     def _get_password_hash(self):
-        if SECRET_KEY and self.tracker_sender_id:
-            combined = f"{self.tracker_sender_id}{SECRET_KEY}"
+        if SECRET_KEY and self.sender_id:
+            combined = f"{self.sender_id}{SECRET_KEY}"
             hash_object = hashlib.sha256(combined.encode())
             return hash_object.hexdigest()
         raise Exception("could not generate user password")
@@ -153,9 +153,7 @@ class User(object):
     def _set_email(self):
         if self.name != User.ANONYMOUS_USER_NAME:
             self.email = f"{self.name}-opinion-bot@mail.com"
-        self.email = (
-            f"{self.remove_special(self.tracker_sender_id)}-opinion-bot@mail.com"
-        )
+        self.email = f"{self.remove_special(self.sender_id)}-opinion-bot@mail.com"
 
     def authenticate(self):
         """
@@ -196,12 +194,13 @@ class User(object):
             "has_completed_registration"
         ] = self.has_completed_registration
 
-    @staticmethod
-    def get_name_from_tracker_state(state: dict):
-        latest_message = state["latest_message"]
-        metadata = latest_message["metadata"]
+    def _get_name_from_tracker(self):
+        metadata = self.tracker.latest_message.get("metadata")
         if metadata:
-            return metadata.get("user_name")
+            if metadata.get("user_name"):
+                return metadata.get("user_name")
+            elif metadata.get("contact_name"):
+                return metadata.get("contact_name")
         return User.ANONYMOUS_USER_NAME
 
     def remove_special(self, line):

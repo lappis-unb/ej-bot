@@ -1,9 +1,10 @@
 import os
 from pathlib import Path
 import random
+from typing import Dict
 
-import yaml
 from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
 
 from rasa_sdk import Action
@@ -11,9 +12,23 @@ from rasa_sdk.events import FollowupAction, SlotSet
 
 from actions.logger import custom_logger
 
+from ej.boards import Board
 from ej.conversation import Conversation
 from ej.user import User
-from ej.boards import Board
+from rasa_sdk import Action
+from rasa_sdk.events import SlotSet
+
+
+class ResetHelpFormSlots(Action):
+    """
+    Rest help_form slots to allows the user to request the help_form again.
+    """
+
+    def name(self):
+        return "action_reset_help_slots"
+
+    def run(self, dispatcher, tracker, domain):
+        return [SlotSet("help_topic", None)]
 
 
 class ActionGetConversation(Action):
@@ -66,6 +81,7 @@ class ActionGetConversation(Action):
                 "participant_can_add_comments",
                 conversation.participant_can_add_comments,
             ),
+            SlotSet("contact_name", user.name),
             SlotSet(
                 "has_completed_registration",
                 user.has_completed_registration,
@@ -73,23 +89,3 @@ class ActionGetConversation(Action):
             SlotSet("access_token", user.tracker.get_slot("access_token")),
             SlotSet("refresh_token", user.tracker.get_slot("refresh_token")),
         ]
-
-
-class ActionIntroduceEj(Action):
-    def name(self):
-        return "action_introduce_ej"
-
-    def run(self, dispatcher, tracker, domain):
-        actions_path = os.path.dirname(os.path.realpath(__file__))
-        path = Path(actions_path)
-        messages = str(path.parent.absolute()) + "/messages.yml"
-        text: str = ""
-        with open(messages) as file:
-            messages = yaml.safe_load(file)
-            bot_name = os.getenv("BOT_NAME")
-            if not bot_name:
-                bot_name = "Default"
-            text = messages.get(bot_name).get("introduction")
-            dispatcher.utter_message(text=text)
-
-        return []

@@ -56,21 +56,23 @@ nlu:
 
   - intent: help
     examples: |
-      - 0
-      - 1
-      - -1
-      - start
-      - /start
-      - começar
-      - iniciar
       - ajuda
       - ajudar
       - how it works
-      - como funciona
+      - como funciona?
+      - como faz?
       - help
       - comandos disponíveis
       - quais comandos posso usar?
       - participar
+      - quero ajuda
+      - preciso de ajuda
+      - poderia me ajudar?
+      - quero saber mais
+      - não entendi
+      - o que preciso fazer
+      - mais informações
+      - informações
 
   - intent: add_new_comment
     examples: |

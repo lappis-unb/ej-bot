@@ -22,6 +22,12 @@ entities:
   - conversation_id
 
 slots:
+  contact_name:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
   ej_api_connection_error:
     type: bool
     initial_value: false
@@ -163,12 +169,37 @@ slots:
       conditions:
       - active_loop: vote_form
         requested_slot: comment
+  help_topic:
+    type: categorical
+    values: 
+      - help_voting
+      - help_know_more
+      - help_authentication
+      - help_lgpd
+    influence_conversation: true
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: help_form
+        requested_slot: help_topic
 
 responses:
+  utter_bot_introduction:
+  - text: |
+        Olá! Eu sou a *Iara* e este é um espaço de escuta do *Ministério da Cultura* 💬.
+        Estamos elaborando um Plano que vai guiar as políticas culturais pelos próximos 10 anos e *queremos saber sua opinião* 📢.
+        Ao continuar essa conversa, você concorda com o nosso termo de uso. Nós nos comprometemos a tratar esses dados de forma conjunta e não divulgá-los para terceiros.
+        https://brasilparticipativo.presidencia.gov.br/processes/brasilparticipativo/f/78
   utter_show_topic_of_discussion:
-  - text: "Muito prazer, (nome). *Estamos ouvindo diferentes pessoas para saber o que elas pensam sobre cultura.* 🎯 Funciona assim: eu apresento uma série de frases com opiniões diversas e você me diz se concorda, discorda ou se prefere pular. É só clicar no botão correspondente. Ah, mas antes, vale uma observação: essas frases são com base em opiniões públicas e não necessariamente representam uma posição oficial do Ministério da Cultura. Pronto para começar? Vamos lá!\n\n *{conversation_text}*"
+  - text: |
+        Muito prazer, {contact_name}. *Estamos ouvindo diferentes pessoas para saber o que elas pensam sobre cultura.* 🎯
+        Funciona assim: eu apresento uma série de frases com opiniões diversas e você me diz se concorda, discorda ou se prefere pular. É só clicar no botão correspondente. Ah, mas antes, vale uma observação: essas frases são com base em opiniões públicas e não necessariamente representam uma posição oficial do Ministério da Cultura. Pronto para começar?
+        Se precisar de ajuda durante a sua participação, é só escrever *ajuda*. Vamos lá!
+
+        *{conversation_text}*
   utter_ask_comment_confirmation:
-  - text: Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
+  - text: |
+      Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
     buttons:
     - title: Sim
       payload: sim
@@ -179,9 +210,9 @@ responses:
   utter_go_back_to_voting:
   - text: Sem problemas, vou te mandar o que mais me responderam!
   utter_vote_received:
-  - text: "Recebi sua opinião! 🙂Muito obrigada por participar. Dando sequência, você acha que.. "
-  - text: "Anotado ✍️Vou te mostrar outras frase "
-  - text: "Registrado. Me diga o que você acha sobre: 🗣️"
+  - text: Recebi sua opinião! 🙂Muito obrigada por participar. Dando sequência, você acha que..
+  - text: Anotado ✍️Vou te mostrar outras frases
+  - text: Registrado. Recebi sua opinião!🙂 Muito obrigada por participar. Dando sequência, você acha que...
   utter_out_of_context:
   - text: Desculpe, não sei se entendi 😕
   utter_sent_comment:
@@ -191,17 +222,42 @@ responses:
   utter_comment_fallback:
   - text: Desculpe, não foi possível reconhecer o comentário 😕.
   utter_voted_all_comments:
-  - text: "Obrigada por compartilhar sua opinião! Suas contribuições serão analisadas para o novo Plano Nacional de Cultura. 🎯 Estamos empenhadas em construir um plano que reflita a diversidade e as necessidades culturais do nosso país.😊 "
+  - text: "{contact_name}, parabéns! Você respondeu às perguntas que tinha aqui."
   utter_thanks_participation:
-  - text: "Agradecemos sua participação! Queremos continuar ouvindo você: envie suas sugestões de metas para o Plano Nacional de Cultura no Brasil Participativo https://brasilparticipativo.presidencia.gov.br/processes/planocultura/f/184/. Sua voz é essencial para construirmos juntos uma cultura mais inclusiva e representativa! 🙌\nDepois dessa conversa, você tem sugestões para os próximos 10 anos da política cultural? 🗣 ️ Acesse o Brasil Participativo https://brasilparticipativo.presidencia.gov.br/processes/planocultura/f/184/ e envie suas propostas!  Sua voz é essencial para construirmos juntos uma cultura mais inclusiva e representativa 👊"
+  - text: "Você tem alguma sugestão para o novo Plano Nacional de Cultura? Estamos ouvindo o que a população deseja como metas para os próximos 10 anos da política cultural. Acesse o Brasil Participativo e envie sua proposta. Sua voz é essencial."
   utter_next_conversation:
   - text: Depois conversamos mais 😘
   utter_ej_communication_error:
-  - text: Opa, parece que não estou conseguindo acessar nosso servidor.
+  - text: Ops! Nossos sistemas estão passando por uma manutenção e estão temporariamente indisponíveis. Estimamos que o serviço estará normalizado em alguns minutos. Pedimos desculpas por qualquer inconveniente.
   utter_error_try_again_later:
   - text: Tive um problema técnico, por favor tente participar mais tarde.
-  utter_help:
-  - text: "Muito prazer, (nome). **Estamos ouvindo diferentes pessoas para saber o que elas pensam sobre cultura**. 🎯 Funciona assim: eu apresento uma série de frases com opiniões diversas e você me diz se concorda, discorda ou se prefere pular. É só clicar no botão correspondente. Ah, mas antes, vale uma observação: essas frases são com base em opiniões públicas e não necessariamente representam uma posição oficial do Ministério da Cultura."
+  utter_ask_help_topic:
+  - text: "Olá! Eu sou a Iara! Como posso te ajudar hoje? Escolha uma das opções abaixo:"
+    buttons:
+    - title: ✅Votar em propostas
+      payload: help_voting
+    - title: ℹ️ Saber mais sobre o processo
+      payload: help_know_more
+    - title: 🔑 Ajuda com autenticação
+      payload: help_authentication
+    - title: 🛡️ Segurança dos dados
+      payload: help_lgpd
+  utter_nlu_fallback:
+    - text: |
+          Opa, fiquei um pouco confusa com a sua mensagem. 
+          Mas não tem problema, me manda uma mensagem com o texto 'ajuda' que te envio o que eu sei sobre essa pesquisa realizada pelo Ministério da Cultura.
+  utter_explain_help_voting:
+    - text: |
+          Nessa conversa, você verá frases que dialogam diretamente com os conteúdos do Plano Nacional de Cultura. Você pode concordar, discordar ou pular cada uma delas, conforme sua opinião. Para isso, é só clicar nos botões correspondentes.
+  utter_explain_help_know_more:
+    - text: |
+          O Plano Nacional de Cultura é um instrumento fundamental para o planejamento das políticas culturais do Brasil. O processo de construção do novo Plano Nacional de Cultura é colaborativo e conta com a participação de pessoas como você. Aqui, em oficinas e no Brasil Participativo, estamos coletando ideias e propostas para os próximos 10 anos da cultura no Brasil. Sua voz é fundamental para moldar um futuro cultural mais inclusivo e vibrante!
+  utter_explain_help_authentication:
+    - text: |
+          Para garantir que suas contribuições sejam válidas e seguras, precisamos que você faça uma autenticação simples.  Isso ajuda a verificar sua identidade. O processo é rápido e fácil! Você vai receber um link para acessar o Brasil Participativo e pode fazer o login com o seu gov.br. Se precisar de ajuda, estou aqui para orientar você.
+  utter_explain_help_lgpd:
+    - text: |
+          A segurança dos seus dados é nossa prioridade. Todas as informações coletadas são armazenadas de forma segura e utilizadas para o desenvolvimento e mobilização do novo Plano Nacional de Cultura. Seguimos rigorosamente as normas de proteção de dados para garantir que sua privacidade seja preservada.
   utter_no_selected_conversation:
   - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_advise_participant_to_join_again:
@@ -209,19 +265,19 @@ responses:
   utter_invalid_vote_during_participation:
   - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_content}** não foi válida. Poderia responder novamente?"
   utter_vote_limit_anonymous_reached:
-  - text: "Você já atingiu o número máximo de votos para o assunto *{conversation_text}*.\n\nPor favor, autentique-se para continuar respondendo"
+  - text: "Você está indo muito bem, {contact_name}!\n\nPara poder continuar votando por aqui e receber relatórios exclusivos do Brasil Participativo, autentique-se agora e aproveite! Lá você também pode votar nas frases que você pulou por aqui."
   utter_get_token:
-  - text: "Aqui está seu link para se autenticar, ele expira em 20min:\n\n {auth_link}"
+  - text: "Aqui está o link para se autenticar.\n\n{auth_link}"
   utter_awaiting_authentication:
   - text: "Estou aguardando você se autenticar para continuar a votação. 😊"
   utter_authenticated:
-  - text: "Validei sua autenticação"
+  - text: "Muito obrigado! Validei sua autenticação, podemos continuar."
   utter_error_during_authentication_validation:
   - text: "Não consegui identificar que você se autenticou. Poderia tentar novamente?"
 
 
 actions:
-- action_introduce_ej
+- action_reset_help_slots
 - action_ask_vote
 - validate_vote_form
 - action_get_conversation
@@ -231,6 +287,9 @@ actions:
 - validate_authentication_form
 
 forms:
+  help_form:
+    required_slots:
+      - help_topic
   authentication_form:
     ignored_intents:
       - stop
