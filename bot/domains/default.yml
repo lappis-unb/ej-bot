@@ -85,6 +85,12 @@ slots:
     mappings:
     - type: from_entity
       entity: conversation_id
+  conversation_title:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
   conversation_statistics:
     type: any
     initial_value: null

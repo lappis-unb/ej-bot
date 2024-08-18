@@ -51,7 +51,6 @@ class ActionGetConversation(Action):
 
         conversation = board.conversations[index]
 
-        conversation = Conversation(tracker)
         self._set_slots(conversation, user)
 
         return self.slots
@@ -59,6 +58,7 @@ class ActionGetConversation(Action):
     def _set_slots(self, conversation: Conversation, user: User):
         self.slots = [
             SlotSet("conversation_id", conversation.id),
+            SlotSet("conversation_title", conversation.title),
             SlotSet("conversation_text", conversation.title),
             SlotSet("conversation_id_cache", conversation.id),
             SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
