@@ -19,15 +19,25 @@ logger = logging.getLogger(__name__)
 class Conversation:
     """Conversation controls requests to EJ API and some validations during bot execution."""
 
-    def __init__(self, tracker, extra_data: dict):
+    def __init__(self, tracker, extra_data: dict = None):
         self.tracker = tracker
-        self.id = extra_data.get("id") if extra_data else None
-        self.title = extra_data.get("title") if extra_data else None
+        self.id = (
+            extra_data.get("id") if extra_data else tracker.get_slot("conversation_id")
+        )
+        self.title = (
+            extra_data.get("title")
+            if extra_data
+            else tracker.get_slot("conversation_title")
+        )
         self.participant_can_add_comments = (
-            extra_data.get("participants_can_add_comments") if extra_data else None
+            extra_data.get("participants_can_add_comments")
+            if extra_data
+            else tracker.get_slot("participant_can_add_comments")
         )
         self.anonymous_votes_limit = (
-            extra_data.get("anonymous_votes_limit") if extra_data else None
+            extra_data.get("anonymous_votes_limit")
+            if extra_data
+            else tracker.get_slot("anonymous_votes_limit")
         )
         self.ej_api = EjApi(self.tracker)
 
