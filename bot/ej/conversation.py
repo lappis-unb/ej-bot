@@ -96,6 +96,14 @@ class Conversation:
         return statistics["comments"]
 
     @staticmethod
+    def get_send_profile_questions(statistics):
+        return statistics["send_profile_questions"]
+
+    @staticmethod
+    def get_votes_to_send_profile_questions(statistics):
+        return statistics["votes_to_send_profile_questions"]
+
+    @staticmethod
     def user_can_add_comment(statistics, tracker: Tracker) -> bool:
         participant_can_add_comments = tracker.get_slot("participant_can_add_comments")
         if not participant_can_add_comments:

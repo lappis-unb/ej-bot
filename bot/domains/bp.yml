@@ -34,6 +34,24 @@ slots:
     influence_conversation: true
     mappings:
     - type: custom
+  send_profile_questions:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+    - type: custom
+  votes_to_send_profile_questions:
+    type: rasa.shared.core.slots.FloatSlot
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+  sended_profile_question:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+    - type: custom
   anonymous_votes_limit:
     type: text
     initial_value: null
@@ -188,6 +206,17 @@ slots:
       conditions:
       - active_loop: help_form
         requested_slot: help_topic
+  profile_question:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: custom
+  profile_question_id:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
 
 responses:
   utter_bot_introduction:
@@ -211,6 +240,8 @@ responses:
       payload: sim
     - title: Não
       payload: não
+  utter_profile_intro:
+  - text: Para personalizar essa experiência, gostaríamos de saber um pouquinho mais sobre você. Tudo bem?
   utter_ask_comment:
   - text: Pode enviar seu comentário que eu anoto aqui!
   utter_go_back_to_voting:
@@ -311,4 +342,7 @@ forms:
       - vote
       - comment_confirmation
       - comment
+  profile_form:
+    required_slots:
+      - profile_question
 e2e_actions: []

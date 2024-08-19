@@ -3,6 +3,7 @@ from actions.checkers.api_error_checker import EJApiErrorManager
 from ej.constants import EJCommunicationError
 from ej.comment import CommentDialogue
 from ej.conversation import Conversation
+from ej.profile import Profile
 from rasa_sdk.events import FollowupAction, SlotSet
 from typing import Any, List
 
@@ -63,6 +64,16 @@ class CheckNextCommentSlots(CheckSlotsInterface):
             self.conversation_statistics
         )
 
+        send_profile_questions = Conversation.get_send_profile_questions(
+            self.conversation_statistics
+        )
+
+        votes_to_send_profile_questions = (
+            Conversation.get_votes_to_send_profile_questions(
+                self.conversation_statistics
+            )
+        )
+
         self._dispatch_messages(
             comment, user_voted_comments, conversation_total_comments
         )
@@ -71,7 +82,46 @@ class CheckNextCommentSlots(CheckSlotsInterface):
             SlotSet("comment_content", comment["content"]),
             SlotSet("number_comments", conversation_total_comments),
             SlotSet("current_comment_id", comment.get("id")),
+            SlotSet("send_profile_questions", send_profile_questions),
+            SlotSet("votes_to_send_profile_questions", votes_to_send_profile_questions),
         ]
+
+
+class CheckNeedToAskAboutProfile(CheckSlotsInterface):
+    """
+    Verify if the user needs to answer profile questions.
+    """
+
+    def should_return_slots_to_rasa(self) -> bool:
+
+        profile = Profile(self.tracker)
+
+        if profile.need_to_ask_about_profile(
+            self.conversation_statistics, self.tracker
+        ):
+            self._dispatch_messages(profile)
+            self.set_slots()
+            return True
+        self.set_slots(False)
+        return False
+
+    def _dispatch_messages(self, profile):
+        if len(profile.remaining_questions) == len(profile.questions):
+            self.dispatcher.utter_message(template="utter_profile_intro")
+
+    def set_slots(self, should=True):
+        self.slots = [SlotSet("sended_profile_question", should)]
+
+        if should:
+            self.slots.append(
+                [
+                    SlotSet("vote", "-"),
+                    SlotSet("comment_confirmation", "-"),
+                    SlotSet("comment", "-"),
+                    SlotSet("profile_question", None),
+                    FollowupAction("profile_form"),
+                ]
+            )
 
 
 @dataclass
