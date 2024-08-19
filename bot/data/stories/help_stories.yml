@@ -27,7 +27,7 @@ stories:
       - action: utter_explain_help_know_more
       - action: action_reset_help_slots
 
-  - story: User wants to know more about the participatory process
+  - story: User wants to know more about authentication
     steps:
       - checkpoint: check_help_option
       - slot_was_set:
@@ -36,7 +36,7 @@ stories:
       - action: utter_explain_help_authentication
       - action: action_reset_help_slots
 
-  - story: User wants to know more about the participatory process
+  - story: User wants to know more about data protection
     steps:
       - checkpoint: check_help_option
       - slot_was_set:
