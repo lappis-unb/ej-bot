@@ -1,0 +1,139 @@
+{
+    "questions": [
+        {
+            "id": 0,
+            "body": "Seu gênero é:",
+            "change": "Gender",
+            "options": [
+                {
+                    "payload": 1,
+                    "title": "Feminino",
+                    "description": ""
+                },
+                {
+                    "payload": 2,
+                    "title": "Masculino",
+                    "description": ""
+                },
+                {
+                    "payload": 3,
+                    "title": "Não-binário",
+                    "description": "Se identifica fora do binário de gênero"
+                },
+                {
+                    "payload": 0,
+                    "title": "Prefiro não dizer",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "body": "Você se autodeclara como pessoa:",
+            "change": "Ethnicity",
+            "options": [
+                {
+                    "payload": 1,
+                    "title": "Indígena",
+                    "description": ""
+                },
+                {
+                    "payload": 2,
+                    "title": "Preta",
+                    "description": ""
+                },
+                {
+                    "payload": 3,
+                    "title": "Parda",
+                    "description": ""
+                },
+                {
+                    "payload": 4,
+                    "title": "Branca",
+                    "description": ""
+                },
+                {
+                    "payload": 5,
+                    "title": "Amarela",
+                    "description": ""
+                },
+                {
+                    "payload": 6,
+                    "title": "Prefiro não dizer",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "body": "Você vive na região:",
+            "change": "Region",
+            "options": [
+                {
+                    "payload": 1,
+                    "title": "Norte",
+                    "description": ""
+                },
+                {
+                    "payload": 2,
+                    "title": "Nordeste",
+                    "description": ""
+                },
+                {
+                    "payload": 3,
+                    "title": "Centro-Oeste",
+                    "description": ""
+                },
+                {
+                    "payload": 4,
+                    "title": "Sudeste",
+                    "description": ""
+                },
+                {
+                    "payload": 5,
+                    "title": "Sul",
+                    "description": ""
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "body": "Você tem:",
+            "change": "AgeRange",
+            "options": [
+                {
+                    "payload": 1,
+                    "title": "Menos de 17 anos",
+                    "description": ""
+                },
+                {
+                    "payload": 2,
+                    "title": "Entre 17-20 anos",
+                    "description": ""
+                },
+                {
+                    "payload": 3,
+                    "title": "Entre 21-29 anos",
+                    "description": ""
+                },
+                {
+                    "payload": 4,
+                    "title": "Entre 30-45 anos",
+                    "description": ""
+                },
+                {
+                    "payload": 5,
+                    "title": "Entre 45-60 anos",
+                    "description": ""
+                },
+                {
+                    "payload": 6,
+                    "title": "Acima de 60 anos",
+                    "description": ""
+                }
+            ]
+        }
+    ],
+    "button_text": "Selecione uma opção",
+    "random_questions": false
+}
