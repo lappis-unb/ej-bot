@@ -43,8 +43,7 @@ class ActionGetConversation(Action):
     # TODO: refactors this method using the Checkers architecture.
     # Use ActionAskVote as an example.
     def run(self, dispatcher, tracker, domain):
-        username = User.get_name_from_tracker_state(tracker.current_state())
-        user = User(tracker, name=username)
+        user = User(tracker)
         user.authenticate()
         tracker = user.tracker
 
