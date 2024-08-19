@@ -54,7 +54,12 @@ class ActionGetConversation(Action):
             dispatcher.utter_message(template="utter_no_board_id")
             raise Exception("No board id provided.")
 
-        board = Board(board_id, tracker)
+        try:
+            board = Board(board_id, tracker)
+        except EJCommunicationError:
+            ej_api_error_manager = EJApiErrorManager()
+            return ej_api_error_manager.get_slots()
+            
         total_conversations = len(board.conversations)
 
         if total_conversations == 0:
