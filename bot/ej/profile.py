@@ -1,11 +1,12 @@
-from enum import IntEnum
 import random
+import json
+from enum import IntEnum
 from .ej_api import EjApi
 from .conversation import Conversation
-from rasa_sdk.events import SlotSet
-import json
+from .constants import PROFILE
+from actions.logger import custom_logger
 
-PATH_PROFILE_QUESTIONS = "../profile-questions.json"
+PATH_PROFILE_QUESTIONS = "/bot/profile-questions.json"
 
 
 class Profile:
@@ -20,7 +21,7 @@ class Profile:
         """
         get profile by ej-api
         """
-        response = self.ej_api.request_profile()
+        response = self.ej_api.request(PROFILE)
         data = response.json()
         return UserProfile(data)
 
@@ -28,24 +29,27 @@ class Profile:
         """
         set remaining questions
         """
+        remaining_questions = []
         if self.user_profile.age_range == AgeRange.NOT_FILLED:
-            self.remaining_questions.append(
-                q for q in self.questions if q.change == AgeRange
+            remaining_questions.extend(
+                [q for q in self.questions if q.change == AgeRange]
             )
         if self.user_profile.ethnicity_choices == Ethnicity.NOT_FILLED:
-            self.remaining_questions.append(
-                q for q in self.questions if q.change == Ethnicity
+            remaining_questions.extend(
+                [q for q in self.questions if q.change == Ethnicity]
             )
         if self.user_profile.gender == Gender.NOT_FILLED:
-            self.remaining_questions.append(
-                q for q in self.questions if q.change == Gender
+            remaining_questions.extend(
+                [q for q in self.questions if q.change == Gender]
             )
         if self.user_profile.region == Region.NOT_FILLED:
-            self.remaining_questions.append(
-                q for q in self.questions if q.change == Region
+            remaining_questions.extend(
+                [q for q in self.questions if q.change == Region]
             )
 
-        self.remaining_questions.sort(key=lambda x: x.id)
+        # sort by id
+        remaining_questions.sort(key=lambda x: x.id)
+        return remaining_questions
 
     def set_attributes(self):
         with open(PATH_PROFILE_QUESTIONS) as f:
@@ -60,19 +64,23 @@ class Profile:
         """
         questions: Question = []
 
-        for question in data:
+        custom_logger(f"data: {data}")
+
+        for question in data["questions"]:
+            custom_logger("question: ", question)
+            custom_logger(question)
             id = question["id"]
             body = question["body"]
             answers = question["answers"]
             tmp_change = question["change"]
 
-            if tmp_change == Ethnicity.name:
+            if tmp_change == "Ethnicity":
                 change = Ethnicity
-            elif tmp_change == Region.name:
+            elif tmp_change == "Region":
                 change = Region
-            elif tmp_change == Gender.name:
+            elif tmp_change == "Gender":
                 change = Gender
-            elif tmp_change == AgeRange.name:
+            elif tmp_change == "AgeRange":
                 change = AgeRange
 
             questions.append(Question(id, body, answers, change))
@@ -82,6 +90,7 @@ class Profile:
         """
         get next question
         """
+        custom_logger("get_next_question")
         if len(self.remaining_questions) == 0:
             raise Exception("No more questions to ask")
 
@@ -92,15 +101,20 @@ class Profile:
         # remaining_questions is sorted by id
         next_question = self.remaining_questions.pop(0)
 
-        message = {"text": next_question.body, "buttons": next_question.answers}
+        message = {
+            "text": next_question.body,
+            "buttons": next_question.answers,
+        }
         id = next_question.id
-
+        custom_logger("get_next_question: message: ", message)
+        custom_logger("get_next_question: id: ", id)
         return message, id
 
     def need_to_ask_about_profile(self, conversation_statistics, tracker):
         """
         check if need to ask about profile
         """
+        custom_logger("need_to_ask_about_profile")
         if len(self.remaining_questions) == 0:
             return False
 
@@ -117,7 +131,9 @@ class Profile:
                 )
             )
             if current_votes >= votes_to_send_profile_questions:
+                custom_logger("need_to_ask_about_profile: True")
                 return True
+        custom_logger("need_to_ask_about_profile: False")
         return False
 
     def is_valid_answer(self, answer, id_question):

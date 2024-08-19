@@ -93,9 +93,12 @@ class CheckNeedToAskAboutProfile(CheckSlotsInterface):
     """
 
     def should_return_slots_to_rasa(self) -> bool:
-
-        profile = Profile(self.tracker)
-
+        try:
+            profile = Profile(self.tracker)
+        except EJCommunicationError:
+            ej_api_error_manager = EJApiErrorManager()
+            self.slots = ej_api_error_manager.get_slots()
+            return True
         if profile.need_to_ask_about_profile(
             self.conversation_statistics, self.tracker
         ):
@@ -107,7 +110,11 @@ class CheckNeedToAskAboutProfile(CheckSlotsInterface):
 
     def _dispatch_messages(self, profile):
         if len(profile.remaining_questions) == len(profile.questions):
-            self.dispatcher.utter_message(template="utter_profile_intro")
+            self.dispatcher.utter_message(
+                {
+                    "text": "Vamos começar com algumas perguntas para te conhecer melhor. 🤗"
+                }
+            )
 
     def set_slots(self, should=True):
         self.slots = [SlotSet("sended_profile_question", should)]

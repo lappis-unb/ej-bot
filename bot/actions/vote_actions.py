@@ -4,6 +4,7 @@ from actions.checkers.vote_actions_checkers import (
     CheckEndConversationSlots,
     CheckExternalAutenticationSlots,
     CheckNextCommentSlots,
+    CheckNeedToAskAboutProfile,
 )
 from actions.logger import custom_logger
 from actions.checkers.api_error_checker import EJApiErrorManager
@@ -79,6 +80,12 @@ class ActionAskVote(Action, CheckersMixin):
             CheckExternalAutenticationSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
+                conversation_statistics=conversation_statistics,
+            ),
+            CheckNeedToAskAboutProfile(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                conversation=conversation,
                 conversation_statistics=conversation_statistics,
             ),
             CheckNextCommentSlots(
