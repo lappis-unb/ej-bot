@@ -194,7 +194,7 @@ responses:
         Muito prazer, {contact_name}. *Estamos ouvindo diferentes pessoas para saber o que elas pensam sobre cultura.* 🎯
         Funciona assim: eu apresento uma série de frases com opiniões diversas e você me diz se concorda, discorda ou se prefere pular. É só clicar no botão correspondente. Ah, mas antes, vale uma observação: essas frases são com base em opiniões públicas e não necessariamente representam uma posição oficial do Ministério da Cultura. Pronto para começar?
 
-        Se precisar de ajuda durante a sua participação, é só escrever *ajuda*. Vamos lá!
+        Se precisar de ajuda durante a sua participação, é só escrever *ajuda*. Caso queira encerrar sua participação, pode me pedir para *parar*. Vamos lá!
 
         *{conversation_text}*
   utter_ask_comment_confirmation:
@@ -263,7 +263,12 @@ responses:
   utter_advise_participant_to_join_again:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
   utter_invalid_vote_during_participation:
-  - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_content}** não foi válida. Poderia responder novamente?"
+  - text: | 
+        Você ainda está participando da conversa *{conversation_text}* e a sua resposta no comentário *{comment_content}* não foi válida. Poderia responder novamente? 
+
+        Caso esteja com problemas, você pode parar essas conversa e em seguida me pedir ajuda!
+
+        Vou te reenviar o comentário dessa pesquisa.
   utter_vote_limit_anonymous_reached:
   - text: "Você está indo muito bem, {contact_name}!\n\nPara poder continuar votando por aqui e receber relatórios exclusivos do Brasil Participativo, autentique-se agora e aproveite! Lá você também pode votar nas frases que você pulou por aqui."
   utter_get_token:

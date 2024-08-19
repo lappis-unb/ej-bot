@@ -4,7 +4,6 @@ stories:
   - user: |
       ajuda
     intent: help
-  - action: utter_ask_help_topic
   - action: help_form
   - active_loop: help_form
   - slot_was_set:
@@ -18,7 +17,6 @@ stories:
   - user: |
       ajuda
     intent: help
-  - action: utter_ask_help_topic
   - action: help_form
   - active_loop: help_form
   - slot_was_set:
@@ -32,7 +30,6 @@ stories:
   - user: |
       ajuda
     intent: help
-  - action: utter_ask_help_topic
   - action: help_form
   - active_loop: help_form
   - slot_was_set:
@@ -46,7 +43,6 @@ stories:
   - user: |
       ajuda
     intent: help
-  - action: utter_ask_help_topic
   - action: help_form
   - active_loop: help_form
   - slot_was_set:

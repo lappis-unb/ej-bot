@@ -67,14 +67,14 @@ class WhatsApp(InputChannel):
             # Retrieve Rasa answers
             bot_answers = collector.messages
 
-            # Convert Rasa answers to WhatsApp expected format
+            # Convert Rasa answers to WhatsApp API expected format
             parser = whatsapp_event.parser_class(
                 bot_answers, whatsapp_event.contact.phone
             )
+            wpp_client = whatsapp_event.wpp_client
             wpp_messages = parser.parse_messages()
 
             # Send Rasa answers to WhatsApp
-            wpp_client = whatsapp_event.wpp_client
             for message in wpp_messages:
                 response = wpp_client.send_message(message)
                 if response.status_code != 200:
