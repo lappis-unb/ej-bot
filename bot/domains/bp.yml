@@ -253,15 +253,26 @@ responses:
   utter_explain_help_voting:
     - text: |
           Nessa conversa, você verá frases que dialogam diretamente com os conteúdos do Plano Nacional de Cultura. Você pode concordar, discordar ou pular cada uma delas, conforme sua opinião. Para isso, é só clicar nos botões correspondentes.
+
+          Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_explain_help_know_more:
     - text: |
           O Plano Nacional de Cultura é um instrumento fundamental para o planejamento das políticas culturais do Brasil. O processo de construção do novo Plano Nacional de Cultura é colaborativo e conta com a participação de pessoas como você. Aqui, em oficinas e no Brasil Participativo, estamos coletando ideias e propostas para os próximos 10 anos da cultura no Brasil. Sua voz é fundamental para moldar um futuro cultural mais inclusivo e vibrante!
+
+
+          Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_explain_help_authentication:
     - text: |
           Para garantir que suas contribuições sejam válidas e seguras, precisamos que você faça uma autenticação simples.  Isso ajuda a verificar sua identidade. O processo é rápido e fácil! Você vai receber um link para acessar o Brasil Participativo e pode fazer o login com o seu gov.br. Se precisar de ajuda, estou aqui para orientar você.
+
+
+          Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_explain_help_lgpd:
     - text: |
           A segurança dos seus dados é nossa prioridade. Todas as informações coletadas são armazenadas de forma segura e utilizadas para o desenvolvimento e mobilização do novo Plano Nacional de Cultura. Seguimos rigorosamente as normas de proteção de dados para garantir que sua privacidade seja preservada.
+
+
+          Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_no_selected_conversation:
   - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_advise_participant_to_join_again:
