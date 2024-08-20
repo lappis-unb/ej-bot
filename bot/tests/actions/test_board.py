@@ -7,8 +7,7 @@ from ej.ej_api import EjApi
 
 class TestBoard:
     @patch("ej.boards.EjApi")
-    def test_board_initialization(self, MockEjApi):
-        tracker = MagicMock()
+    def test_board_initialization(self, MockEjApi, tracker):
         mock_api_instance = MockEjApi.return_value
         mock_api_instance.request.return_value.json.return_value = {
             "title": "Test Board",
@@ -26,8 +25,7 @@ class TestBoard:
 
     @patch("ej.boards.EjApi")
     @patch("ej.boards.Conversation")
-    def test_set_board(self, MockConversation, MockEjApi):
-        tracker = MagicMock()
+    def test_set_board(self, MockConversation, MockEjApi, tracker):
         mock_api_instance = MockEjApi.return_value
         mock_api_instance.request.return_value.json.return_value = {
             "title": "Test Board",
