@@ -65,15 +65,27 @@ stories:
         - conversation_id
       - action: vote_form
       - active_loop: vote_form
-      - intent: stop
-      - action: action_deactivate_loop
-      - active_loop: null
       - checkpoint: end_dialogue
+
+  - story: Starts participation, than asks for help.
+    steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - intent: help
+      - active_loop: null
+      - action: help_form
+      - checkpoint: check_help_option
 
   - story: End dialogue
     steps:
       - checkpoint: end_dialogue
+      - intent: stop
       - action: utter_thanks_participation
+      - action: action_deactivate_loop
+      - active_loop: null
       - action: utter_next_conversation
       - action: action_restart
 

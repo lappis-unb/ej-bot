@@ -224,7 +224,10 @@ responses:
   utter_voted_all_comments:
   - text: "{contact_name}, parabéns! Você respondeu às perguntas que tinha aqui."
   utter_thanks_participation:
-  - text: "Você tem alguma sugestão para o novo Plano Nacional de Cultura? Estamos ouvindo o que a população deseja como metas para os próximos 10 anos da política cultural. Acesse o Brasil Participativo e envie sua proposta. Sua voz é essencial."
+  - text: |
+        Você tem alguma sugestão para o novo Plano Nacional de Cultura? Estamos ouvindo o que a população deseja como metas para os próximos 10 anos da política cultural. Acesse o Brasil Participativo e envie sua proposta. Sua voz é essencial.
+
+        Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_next_conversation:
   - text: Depois conversamos mais 😘
   utter_ej_communication_error:
@@ -232,7 +235,8 @@ responses:
   utter_error_try_again_later:
   - text: Tive um problema técnico, por favor tente participar mais tarde.
   utter_ask_help_topic:
-  - text: "Olá! Eu sou a Iara! Como posso te ajudar hoje? Escolha uma das opções a seguir:"
+  - text: |
+        Olá! Eu sou a Iara! Como posso te ajudar hoje? Escolha uma das opções a seguir:
     buttons:
     - title: Votar em propostas
       payload: help_voting
@@ -295,6 +299,9 @@ forms:
   help_form:
     required_slots:
       - help_topic
+    ignored_intents:
+      - stop
+      - start_with_conversation_id
   authentication_form:
     ignored_intents:
       - stop
@@ -306,6 +313,7 @@ forms:
     ignored_intents:
       - stop
       - check_authentication
+      - help
     required_slots:
       - vote
       - comment_confirmation
