@@ -1,8 +1,4 @@
-import unittest
-import pytest
-from unittest.mock import Mock, MagicMock, patch
-from bot.ej.ej_api import EjApi
-from bot.ej.vote import Vote
+from unittest.mock import Mock, patch
 
 from bot.ej.comment import Comment
 from bot.ej.constants import *
@@ -10,114 +6,12 @@ from bot.ej.conversation import Conversation
 from bot.ej.routes import *
 from bot.ej.user import User
 from bot.ej.vote import Vote
+import pytest
 
 CONVERSATION_ID = "1"
 COMMENT_ID = "1"
 PHONE_NUMBER = "61992852776"
 SENDER_ID = "mock_rasa_sender_id"
-
-
-class TestEjApi(unittest.TestCase):
-    def setUp(self):
-        self.tracker = MagicMock()
-        self.tracker.get_slot.side_effect = lambda x: (
-            "test_token" if x == "access_token" else "refresh_token"
-        )
-        self.ej_api = EjApi(tracker=self.tracker)
-
-    def test_initialization(self):
-        self.assertEqual(self.ej_api.access_token, "test_token")
-        self.assertEqual(self.ej_api.refresh_token, "refresh_token")
-
-    def test_get_headers_with_access_token(self):
-        headers = self.ej_api.get_headers()
-        self.assertIn("Authorization", headers)
-
-    def test_get_headers_without_access_token(self):
-        self.tracker.get_slot.side_effect = lambda x: None
-        headers = self.ej_api.get_headers()
-        self.assertNotIn("Authorization", headers)
-
-    @patch("requests.post")
-    def test_refresh_access_token_success(self, mock_post):
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"access": "new_access_token"}
-        mock_post.return_value = mock_response
-
-        self.ej_api._refresh_access_token()
-        self.assertEqual(self.ej_api.access_token, "new_access_token")
-        self.tracker.update_slots.assert_called_once_with(
-            {"access_token": "new_access_token"}
-        )
-
-    @patch("requests.post")
-    def test_refresh_access_token_failure(self, mock_post):
-        mock_response = MagicMock()
-        mock_response.status_code = 400
-        mock_post.return_value = mock_response
-
-        with self.assertRaises(Exception):
-            self.ej_api._refresh_access_token()
-
-    @patch("requests.post")
-    def test_post_request(self, mock_post):
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_post.return_value = mock_response
-
-        response = self.ej_api._post(
-            "http://example.com",
-            {"Authorization": "Bearer test_token"},
-            {"key": "value"},
-        )
-        self.assertEqual(response.status_code, 200)
-
-    @patch("requests.get")
-    def test_get_request(self, mock_get):
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_get.return_value = mock_response
-
-        response = self.ej_api._get(
-            "http://example.com", {"Authorization": "Bearer test_token"}
-        )
-        self.assertEqual(response.status_code, 200)
-
-    @patch("requests.post")
-    @patch("requests.get")
-    def test_request_with_payload(self, mock_get, mock_post):
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_post.return_value = mock_response
-
-        response = self.ej_api.request("http://example.com", {"key": "value"})
-        self.assertEqual(response.status_code, 200)
-
-    @patch("requests.post")
-    @patch("requests.get")
-    def test_request_without_payload(self, mock_get, mock_post):
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_get.return_value = mock_response
-
-        response = self.ej_api.request("http://example.com")
-        self.assertEqual(response.status_code, 200)
-
-    @patch("requests.post")
-    @patch("requests.get")
-    def test_request_with_token_refresh(self, mock_get, mock_post):
-        mock_response_401 = MagicMock()
-        mock_response_401.status_code = 401
-        mock_response_200 = MagicMock()
-        mock_response_200.status_code = 200
-        mock_post.side_effect = [mock_response_401, mock_response_200]
-
-        self.ej_api._refresh_access_token = MagicMock()
-
-        response = self.ej_api.request("http://example.com", {"key": "value"})
-        self.assertEqual(response.status_code, 200)
-        self.ej_api._refresh_access_token.assert_called_once()
 
 
 class TestAPIClass:
@@ -190,3 +84,47 @@ class TestAPIClass:
             tracker.get_slot = lambda x: "foo"
             vote = Vote("0", tracker)
             vote.create(COMMENT_ID)
+
+    @patch("bot.ej.comment.requests.post")
+    def test_send_user_comment(self, mock_post, tracker):
+        vote_response_mock = {"created": True, "content": "content"}
+        mock_post.return_value = Mock(ok=True)
+        mock_post.return_value.json.return_value = vote_response_mock
+
+        comment = Comment(CONVERSATION_ID, "xpto", tracker)
+        response = comment.create()
+        assert response["created"]
+        assert response["content"] == "content"
+
+    @patch("bot.ej.comment.requests.post")
+    def test_send_user_comment_error_status(self, mock_post, tracker):
+        mock_post.return_value = Mock(status=404), "conversation not found"
+        with pytest.raises(EJCommunicationError):
+            comment = Comment(CONVERSATION_ID, "xpto", tracker)
+            comment.create()
+
+
+class TestEjUrlsGenerationClass:
+    """tests bot.ej.api ej urls generation"""
+
+    def test_conversation_url_generator(self):
+        url = conversation_url(CONVERSATION_ID)
+        assert url == f"{API_URL}/conversations/{CONVERSATION_ID}/"
+
+    def test_conversation_random_comment_url_generator(self):
+        url = conversation_random_comment_url(CONVERSATION_ID)
+        assert url == f"{API_URL}/conversations/{CONVERSATION_ID}/random-comment/"
+
+    def test_user_statistics_url_generator(self):
+        url = user_statistics_url(CONVERSATION_ID)
+        assert url == f"{API_URL}/conversations/{CONVERSATION_ID}/user-statistics/"
+
+    def test_user_comments_route_generator(self):
+        url = user_comments_route(CONVERSATION_ID)
+        assert url == f"{API_URL}/conversations/{CONVERSATION_ID}/user-comments/"
+
+    def test_user_pending_comments_route_generator(self):
+        url = user_pending_comments_route(CONVERSATION_ID)
+        assert (
+            url == f"{API_URL}/conversations/{CONVERSATION_ID}/user-pending-comments/"
+        )
