@@ -59,7 +59,7 @@ class ActionGetConversation(Action):
         except EJCommunicationError:
             ej_api_error_manager = EJApiErrorManager()
             return ej_api_error_manager.get_slots()
-            
+
         total_conversations = len(board.conversations)
 
         if total_conversations == 0:
