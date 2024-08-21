@@ -200,7 +200,8 @@ responses:
   - text: |
         Muito prazer, {contact_name}. *Estamos ouvindo diferentes pessoas para saber o que elas pensam sobre cultura.* 🎯
         Funciona assim: eu apresento uma série de frases com opiniões diversas e você me diz se concorda, discorda ou se prefere pular. É só clicar no botão correspondente. Ah, mas antes, vale uma observação: essas frases são com base em opiniões públicas e não necessariamente representam uma posição oficial do Ministério da Cultura. Pronto para começar?
-        Se precisar de ajuda durante a sua participação, é só escrever *ajuda*. Vamos lá!
+
+        Se precisar de ajuda durante a sua participação, é só escrever *ajuda*. Caso queira encerrar sua participação, pode me pedir para *parar*. Vamos lá!
 
         *{conversation_text}*
   utter_ask_comment_confirmation:
@@ -230,7 +231,10 @@ responses:
   utter_voted_all_comments:
   - text: "{contact_name}, parabéns! Você respondeu às perguntas que tinha aqui."
   utter_thanks_participation:
-  - text: "Você tem alguma sugestão para o novo Plano Nacional de Cultura? Estamos ouvindo o que a população deseja como metas para os próximos 10 anos da política cultural. Acesse o Brasil Participativo e envie sua proposta. Sua voz é essencial."
+  - text: |
+        Você tem alguma sugestão para o novo Plano Nacional de Cultura? Estamos ouvindo o que a população deseja como metas para os próximos 10 anos da política cultural. Acesse o Brasil Participativo e envie sua proposta. Sua voz é essencial.
+
+        Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_next_conversation:
   - text: Depois conversamos mais 😘
   utter_ej_communication_error:
@@ -238,15 +242,16 @@ responses:
   utter_error_try_again_later:
   - text: Tive um problema técnico, por favor tente participar mais tarde.
   utter_ask_help_topic:
-  - text: "Olá! Eu sou a Iara! Como posso te ajudar hoje? Escolha uma das opções abaixo:"
+  - text: |
+        Olá! Eu sou a Iara! Como posso te ajudar hoje? Escolha uma das opções a seguir:
     buttons:
-    - title: ✅Votar em propostas
+    - title: Votar em propostas
       payload: help_voting
-    - title: ℹ️ Saber mais sobre o processo
+    - title: Sobre o processo
       payload: help_know_more
-    - title: 🔑 Ajuda com autenticação
+    - title: Ajuda com autenticação
       payload: help_authentication
-    - title: 🛡️ Segurança dos dados
+    - title: Segurança dos dados
       payload: help_lgpd
   utter_nlu_fallback:
     - text: |
@@ -255,21 +260,37 @@ responses:
   utter_explain_help_voting:
     - text: |
           Nessa conversa, você verá frases que dialogam diretamente com os conteúdos do Plano Nacional de Cultura. Você pode concordar, discordar ou pular cada uma delas, conforme sua opinião. Para isso, é só clicar nos botões correspondentes.
+
+          Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_explain_help_know_more:
     - text: |
           O Plano Nacional de Cultura é um instrumento fundamental para o planejamento das políticas culturais do Brasil. O processo de construção do novo Plano Nacional de Cultura é colaborativo e conta com a participação de pessoas como você. Aqui, em oficinas e no Brasil Participativo, estamos coletando ideias e propostas para os próximos 10 anos da cultura no Brasil. Sua voz é fundamental para moldar um futuro cultural mais inclusivo e vibrante!
+
+
+          Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_explain_help_authentication:
     - text: |
           Para garantir que suas contribuições sejam válidas e seguras, precisamos que você faça uma autenticação simples.  Isso ajuda a verificar sua identidade. O processo é rápido e fácil! Você vai receber um link para acessar o Brasil Participativo e pode fazer o login com o seu gov.br. Se precisar de ajuda, estou aqui para orientar você.
+
+
+          Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_explain_help_lgpd:
     - text: |
           A segurança dos seus dados é nossa prioridade. Todas as informações coletadas são armazenadas de forma segura e utilizadas para o desenvolvimento e mobilização do novo Plano Nacional de Cultura. Seguimos rigorosamente as normas de proteção de dados para garantir que sua privacidade seja preservada.
+
+
+          Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
   utter_no_selected_conversation:
   - text: Nenhuma conversa foi selecionada. Você deve utilizar o comando de seleção de conversa ou participar de alguma que alguém já criou.
   utter_advise_participant_to_join_again:
   - text: "Não consegui salvar o seu voto. Clique no link de participação novamente, para retomarmos nossa conversa.\n"
   utter_invalid_vote_during_participation:
-  - text: "Você ainda está participando da conversa **{conversation_text}** e a sua resposta no comentário **{comment_content}** não foi válida. Poderia responder novamente?"
+  - text: | 
+        Você ainda está participando da conversa *{conversation_text}* e a sua resposta no comentário *{comment_content}* não foi válida. Poderia responder novamente? 
+
+        Caso esteja com problemas, você pode parar essas conversa e em seguida me pedir ajuda!
+
+        Vou te reenviar o comentário dessa pesquisa.
   utter_vote_limit_anonymous_reached:
   - text: "Você está indo muito bem, {contact_name}!\n\nPara poder continuar votando por aqui e receber relatórios exclusivos do Brasil Participativo, autentique-se agora e aproveite! Lá você também pode votar nas frases que você pulou por aqui."
   utter_get_token:
@@ -296,6 +317,9 @@ forms:
   help_form:
     required_slots:
       - help_topic
+    ignored_intents:
+      - stop
+      - start_with_conversation_id
   authentication_form:
     ignored_intents:
       - stop
@@ -307,6 +331,7 @@ forms:
     ignored_intents:
       - stop
       - check_authentication
+      - help
     required_slots:
       - vote
       - comment_confirmation

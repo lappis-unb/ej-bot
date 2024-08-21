@@ -45,7 +45,7 @@ stories:
       - active_loop: authentication_form
       - slot_was_set:
           - check_authentication: end_participant_conversation
-          - has_completed_registration: False
-      - active_loop: null
+          - has_completed_registration: false
       - action: action_deactivate_loop
+      - active_loop: null
       - checkpoint: end_dialogue
