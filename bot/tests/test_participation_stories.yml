@@ -1,0 +1,106 @@
+stories:
+- story: User joins conversation to vote
+  steps:
+  - user: |
+      start [56](conversation_id)
+    intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
+  - action: action_get_conversation
+  - action: utter_bot_introduction
+  - action: utter_show_topic_of_discussion
+  - slot_was_set:
+    - conversation_id
+  - action: vote_form
+  - active_loop: vote_form
+
+- story: User voted in all comments
+  steps:
+  - user: |
+      start [5](conversation_id)
+    intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
+  - action: action_get_conversation
+  - action: utter_bot_introduction
+  - action: utter_show_topic_of_discussion
+  - slot_was_set:
+    - conversation_id
+  - action: vote_form
+  - active_loop: vote_form
+  - slot_was_set:
+    - vote
+  - slot_was_set:
+    - comment_confirmation
+  - slot_was_set:
+    - comment
+
+- story: User stoped voting
+  steps:
+  - user: |
+      start [5](conversation_id)
+    intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
+  - action: action_get_conversation
+  - action: utter_bot_introduction
+  - action: utter_show_topic_of_discussion
+  - slot_was_set:
+    - conversation_id
+  - action: vote_form
+  - active_loop: vote_form
+  - intent: stop
+  - action: utter_thanks_participation
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: utter_next_conversation
+  - action: action_restart
+
+- story: User selected a new conversation
+  steps:
+  - user: |
+      start [5](conversation_id)
+    intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
+  - action: action_get_conversation
+  - action: utter_bot_introduction
+  - action: utter_show_topic_of_discussion
+  - slot_was_set:
+    - conversation_id
+  - action: vote_form
+  - active_loop: vote_form
+  - slot_was_set:
+    - restart_conversation: true
+    - ej_api_connection_error: false
+    - vote: "-"
+    - comment_confirmation: "-"
+    - comment: "-"
+    - ej_api_connection_error: false
+  - active_loop: null
+  - action: action_get_conversation
+  - action: utter_bot_introduction
+  - action: utter_show_topic_of_discussion
+  - checkpoint: starts_voting
+
+
+- story: EJ API is unavailable
+  steps:
+  - user: |
+      start [5](conversation_id)
+    intent: start_with_conversation_id
+  - slot_was_set:
+    - conversation_id
+  - action: action_get_conversation
+  - action: utter_bot_introduction
+  - action: utter_show_topic_of_discussion
+  - action: vote_form
+  - active_loop: vote_form
+  - slot_was_set:
+    - vote: "-"
+    - comment_confirmation: "-"
+    - comment: "-"
+    - ej_api_connection_error: true
+  - active_loop: null
+  - action: utter_ej_communication_error
+  - action: action_restart
