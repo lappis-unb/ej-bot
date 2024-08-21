@@ -2,8 +2,8 @@ stories:
 - story: User joins conversation to vote
   steps:
   - user: |
-      start [56](conversation_id)
-    intent: start_with_conversation_id
+      ola
+    intent: welcome
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation
@@ -17,8 +17,8 @@ stories:
 - story: User voted in all comments
   steps:
   - user: |
-      start [5](conversation_id)
-    intent: start_with_conversation_id
+      ola
+    intent: welcome
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation
@@ -38,8 +38,8 @@ stories:
 - story: User stoped voting
   steps:
   - user: |
-      start [5](conversation_id)
-    intent: start_with_conversation_id
+      ola
+    intent: welcome
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation
@@ -59,8 +59,8 @@ stories:
 - story: User selected a new conversation
   steps:
   - user: |
-      start [5](conversation_id)
-    intent: start_with_conversation_id
+      oi
+    intent: welcome
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation
@@ -87,8 +87,8 @@ stories:
 - story: EJ API is unavailable
   steps:
   - user: |
-      start [5](conversation_id)
-    intent: start_with_conversation_id
+      eae
+    intent: welcome
   - slot_was_set:
     - conversation_id
   - action: action_get_conversation

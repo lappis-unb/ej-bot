@@ -26,31 +26,6 @@ class TestAPIClass:
         assert user.name == "mr_davidCarlos"
 
     @patch("bot.ej.ej_api.requests.get")
-    def test_get_conversation(self, mock_get, tracker):
-        response_value = {
-            "text": "This is the conversation title",
-            "links": {"self": "http://localhost:8000/api/v1/conversations/1/"},
-        }
-        mock_get.return_value = Mock(ok=True)
-        mock_get.return_value.json.return_value = response_value
-        response = Conversation.get_by_id(CONVERSATION_ID, tracker)
-        assert response.get("text") == response_value["text"]
-
-    @patch("bot.ej.ej_api.requests.get")
-    def test_get_conversation_in_ej_invalid_response(self, mock_get, tracker):
-        response_value = {}
-        mock_get.return_value = Mock(ok=True)
-        mock_get.return_value.json.return_value = response_value
-        with pytest.raises(EJCommunicationError):
-            Conversation.get_by_id(CONVERSATION_ID, tracker)
-
-    @patch("bot.ej.ej_api.requests.get")
-    def test_get_conversation_in_ej_forbidden_response(self, mock_get, tracker):
-        mock_get.return_value = Mock(status=401), "forbidden"
-        with pytest.raises(EJCommunicationError):
-            Conversation.get_by_id(CONVERSATION_ID, tracker)
-
-    @patch("bot.ej.ej_api.requests.get")
     def test_get_random_comment_in_ej(self, mock_get, tracker):
         response_value = {
             "content": "This is the comment text",

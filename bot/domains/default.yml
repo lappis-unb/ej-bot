@@ -6,6 +6,7 @@ session_config:
   carry_over_slots_to_new_session: false
 
 intents:
+  - welcome
   - stop
   - comment_confirmation
   - out_of_context
@@ -93,6 +94,12 @@ slots:
     mappings:
     - type: from_entity
       entity: conversation_id
+  conversation_title:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
   conversation_statistics:
     type: any
     initial_value: null

@@ -168,10 +168,6 @@ class ValidateVoteForm(FormValidationAction):
             return ej_api_error_manager.get_slots(as_dict=True)
 
         vote = Vote(slot_value, tracker)
-        if Conversation.user_requested_new_conversation(slot_value):
-            finished_voting_slots = VoteDialogue.finish_voting()
-            dialogue_restart_slots = Conversation.restart_dialogue(slot_value)
-            return {**finished_voting_slots, **dialogue_restart_slots}
 
         if vote.is_valid():
             custom_logger(f"POST vote to EJ API: {vote}")
@@ -210,6 +206,9 @@ class ValidateVoteForm(FormValidationAction):
             return VoteDialogue.continue_voting(tracker)
         else:
             dispatcher.utter_message(template="utter_voted_all_comments")
+            """
+            TODO: Implement a new flow to get next conversation by board.
+            """
             dispatcher.utter_message(template="utter_thanks_participation")
             return VoteDialogue.finish_voting()
 

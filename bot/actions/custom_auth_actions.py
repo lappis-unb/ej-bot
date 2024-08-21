@@ -53,18 +53,7 @@ class ValidateAuthenticationForm(FormValidationAction):
             )
             return CheckAuthenticationDialogue.restart_auth_form()
 
-        conversation_id = Conversation.get_id_from_tracker(user.tracker)
-        conversation_data = Conversation.get_by_id(conversation_id, user.tracker)
-        user.tracker.slots["conversation_text"] = conversation_data.get("text")
-        user.tracker.slots["anonymous_votes_limit"] = conversation_data.get(
-            "anonymous_votes_limit"
-        )
-        user.tracker.slots["participant_can_add_comments"] = conversation_data.get(
-            "participants_can_add_comments"
-        )
         conversation = Conversation(user.tracker)
-
-        custom_logger(f"user: {user.auth_data()}")
         return self._get_slots(user, conversation)
 
     def _get_slots(self, user: User, conversation: Conversation):

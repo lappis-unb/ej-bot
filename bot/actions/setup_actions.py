@@ -1,8 +1,11 @@
-from typing import Dict
-
+import os
 from actions.checkers.api_error_checker import EJApiErrorManager
-from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
+
+from rasa_sdk import Action
+from rasa_sdk.events import SlotSet
+
+from ej.boards import Board
 from ej.conversation import Conversation
 from ej.user import User
 from rasa_sdk import Action
@@ -33,38 +36,41 @@ class ActionGetConversation(Action):
     # TODO: refactors this method using the Checkers architecture.
     # Use ActionAskVote as an example.
     def run(self, dispatcher, tracker, domain):
+        user = User(tracker)
+        user.authenticate()
+        tracker = user.tracker
+
         self.slots = []
-        conversation_id = tracker.get_slot("conversation_id")
-        if conversation_id:
-            user = User(tracker)
+        board_id = int(os.getenv("BOARD_ID", None))
 
-            try:
-                conversation_data = Conversation.get_by_id(
-                    conversation_id, user.tracker
-                )
-            except EJCommunicationError:
-                ej_api_error_manager = EJApiErrorManager()
-                return ej_api_error_manager.get_slots()
+        if not board_id:
+            dispatcher.utter_message(template="utter_no_board_id")
+            raise Exception("No board id provided.")
 
-            tracker.slots["conversation_title"] = conversation_data.get("text")
-            tracker.slots["anonymous_votes_limit"] = conversation_data.get(
-                "anonymous_votes_limit"
-            )
-            tracker.slots["participant_can_add_comments"] = conversation_data.get(
-                "participants_can_add_comments"
-            )
+        try:
+            board = Board(board_id, tracker)
+        except EJCommunicationError:
+            ej_api_error_manager = EJApiErrorManager()
+            return ej_api_error_manager.get_slots()
 
-            user.authenticate()
+        total_conversations = len(board.conversations)
 
-            conversation = Conversation(tracker)
-            self._set_slots(conversation, user)
-        else:
-            dispatcher.utter_message(template="utter_no_selected_conversation")
-            return [FollowupAction("action_session_start")]
+        if total_conversations == 0:
+            dispatcher.utter_message(template="utter_no_conversations")
+            raise Exception("No conversations found.")
+
+        index = 0
+
+        conversation = board.conversations[index]
+
+        self._set_slots(conversation, user)
+
         return self.slots
 
     def _set_slots(self, conversation: Conversation, user: User):
         self.slots = [
+            SlotSet("conversation_id", conversation.id),
+            SlotSet("conversation_title", conversation.title),
             SlotSet("conversation_text", conversation.title),
             SlotSet("conversation_id_cache", conversation.id),
             SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
