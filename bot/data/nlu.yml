@@ -1,25 +1,24 @@
 version: "3.1"
 nlu:
-  - intent: start_with_conversation_id
+  - intent: welcome
     examples: |
-      - /start [1](conversation_id)
-      - /start [50](conversation_id)
-      - /start [100](conversation_id)
-      - start [1](conversation_id)
-      - start [50](conversation_id)
-      - start [100](conversation_id)
-      - /start [2](conversation_id)
-      - /start [40](conversation_id)
-      - /start [1900](conversation_id)
-      - start [2](conversation_id)
-      - start [40](conversation_id)
-      - start [1900](conversation_id)
-      - start [156](conversation_id)
-      - /start [156](conversation_id)
-      - /start [11](conversation_id)
-      - /start [23](conversation_id)
-      - start [11](conversation_id)
-      - start [23](conversation_id)
+      - ola
+      - oi
+      - eae
+      - iae
+      - iai
+      - olaa
+      - oii
+      - bom dia
+      - boa tarde
+      - boa noite
+      - oi tudo bem
+      - oi como vai
+      - oi tudo bem com voce
+      - oi como voce esta
+      - oi como voce esta
+      - oi como voce vai
+
 
   - intent: comment_confirmation
     examples: |

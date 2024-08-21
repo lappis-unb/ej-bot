@@ -1,5 +1,5 @@
 from unittest.mock import Mock
-
+from rasa_sdk import Tracker
 import pytest
 
 from bot.ej.conversation import Conversation
@@ -113,8 +113,18 @@ def comment():
 
 
 @pytest.fixture
-def conversation(tracker, comment):
-    conversation = Conversation(tracker)
+def extra_data():
+    return {
+        "id": "123",
+        "title": "Test Title",
+        "participants_can_add_comments": True,
+        "anonymous_votes_limit": 5,
+    }
+
+
+@pytest.fixture
+def conversation(tracker, comment, extra_data):
+    conversation = Conversation(tracker, extra_data)
     conversation.get_next_comment = Mock()
     conversation.get_next_comment = lambda: comment
     return conversation
