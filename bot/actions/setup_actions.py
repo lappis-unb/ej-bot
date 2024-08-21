@@ -1,16 +1,9 @@
 import os
-from pathlib import Path
-import random
-from typing import Dict
-
 from actions.checkers.api_error_checker import EJApiErrorManager
-from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
 
 from rasa_sdk import Action
-from rasa_sdk.events import FollowupAction, SlotSet
-
-from actions.logger import custom_logger
+from rasa_sdk.events import SlotSet
 
 from ej.boards import Board
 from ej.conversation import Conversation

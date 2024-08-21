@@ -234,7 +234,7 @@ responses:
   - text: |
         Você tem alguma sugestão para o novo Plano Nacional de Cultura? Estamos ouvindo o que a população deseja como metas para os próximos 10 anos da política cultural. Acesse o Brasil Participativo e envie sua proposta. Sua voz é essencial.
 
-        Caso queira retomar a pesquisa, basta me mandar */start {conversation_id_cache}*
+        Caso queira retomar a pesquisa, basta me mandar um oi.
   utter_next_conversation:
   - text: Depois conversamos mais 😘
   utter_ej_communication_error:
