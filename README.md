@@ -213,11 +213,12 @@ cadastrar o webhook na API do Serpro. O método `register_webhook` do módulo
 a criação do webhook a partir das credenciais enviadas pelo Serpro.
 
 | Variável                     | Valor padrão                                 | Descrição                                                                                                                         |
-|------------------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | JWT_SECRET                   | ""                                           | Sequência de caracteres randômica que será utilizada para gerar o token de autenticação com o sistema externo ao canal.           |
 | SECRET_KEY                   | qGaUJ_XjpOfomnPNpOawtft2dVN0Rsu6wKLLtNIaeKM= | Sequência de caracteres randômica que será utilizada para gerar a senha do usuário.                                               |
 | RASA_MAX_CACHE_SIZE          | 0                                            | Se for 0, desabilita o uso de cache do Rasa durante o treinamento do modelo                                                       |
 | RASA_DOMAIN                  | default                                      | Nome do arquivo de domínio que será utilizado para treinar o chatbot.                                                             |
+| BOARD_ID                     | 1                                            | Identificador do board da EJ que será utilizado para apresentar as conversas ao participante.                                     |
 | TELEGRAM_TOKEN               |                                              | Token gerado pelo `BotFather` após a criação do bot no Telegram                                                                   |
 | TELEGRAM_BOT_NAME            |                                              | Nome do bot criado com o `BotFather`                                                                                              |
 | TELEGRAM_WEBHOOK_URL         |                                              | URL https do Rasa, que irá receber os webhooks do Telegram.                                                                       |
