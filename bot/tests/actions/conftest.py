@@ -116,7 +116,7 @@ def comment():
 def extra_data():
     return {
         "id": "123",
-        "title": "Test Title",
+        "text": "Test Title",
         "participants_can_add_comments": True,
         "anonymous_votes_limit": 5,
     }

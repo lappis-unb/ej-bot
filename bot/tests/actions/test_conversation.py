@@ -1,8 +1,5 @@
-import pytest
-from unittest.mock import Mock, patch
 from ej.ej_api import EjApi
-from rasa_sdk import Tracker
-from ej.conversation import Conversation, EJCommunicationError
+from ej.conversation import Conversation
 
 
 class TestConversation:

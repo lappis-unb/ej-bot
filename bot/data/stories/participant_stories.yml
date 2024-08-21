@@ -65,6 +65,7 @@ stories:
         - conversation_id
       - action: vote_form
       - active_loop: vote_form
+      - intent: stop
       - checkpoint: end_dialogue
 
   - story: Starts participation, than asks for help.
@@ -82,7 +83,6 @@ stories:
   - story: End dialogue
     steps:
       - checkpoint: end_dialogue
-      - intent: stop
       - action: utter_thanks_participation
       - action: action_deactivate_loop
       - active_loop: null

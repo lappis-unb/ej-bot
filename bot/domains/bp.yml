@@ -292,7 +292,7 @@ responses:
 
         Vou te reenviar o comentário dessa pesquisa.
   utter_vote_limit_anonymous_reached:
-  - text: "Você está indo muito bem, {contact_name}!\n\nPara poder continuar votando por aqui e receber relatórios exclusivos do Brasil Participativo, autentique-se agora e aproveite! Lá você também pode votar nas frases que você pulou por aqui."
+  - text: "Você está indo muito bem, {contact_name}!\n\nPara continuar votando por aqui e receber relatórios exclusivos do Brasil Participativo, autentique-se agora e aproveite! Lá você também pode votar nas frases que você pulou por aqui."
   utter_get_token:
   - text: "Aqui está o link para se autenticar.\n\n{auth_link}"
   utter_awaiting_authentication:
@@ -320,6 +320,7 @@ forms:
     ignored_intents:
       - stop
       - start_with_conversation_id
+      - check_authentication
   authentication_form:
     ignored_intents:
       - stop

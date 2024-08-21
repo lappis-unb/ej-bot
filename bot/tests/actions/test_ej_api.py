@@ -1,12 +1,13 @@
 from unittest.mock import Mock, patch
 
+import pytest
+
 from bot.ej.comment import Comment
 from bot.ej.constants import *
-from bot.ej.conversation import Conversation
+from bot.ej.conversation import Conversation, EJCommunicationError
 from bot.ej.routes import *
 from bot.ej.user import User
 from bot.ej.vote import Vote
-import pytest
 
 CONVERSATION_ID = "1"
 COMMENT_ID = "1"
