@@ -5,7 +5,11 @@ from ej.ej_api import EjApi
 from rasa_sdk import Tracker
 
 from .constants import EJCommunicationError
-from .routes import conversation_random_comment_url, user_statistics_url
+from .routes import (
+    conversation_random_comment_url,
+    conversation_url,
+    user_statistics_url,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -15,17 +19,33 @@ logger = logging.getLogger(__name__)
 class Conversation:
     """Conversation controls requests to EJ API and some validations during bot execution."""
 
-    def __init__(self, tracker: Tracker, extra_data: dict = {}):
+    def __init__(self, tracker: Tracker, ej_conversation: dict = {}):
         self.tracker = tracker
-        self.id = extra_data.get("id") or tracker.get_slot("conversation_id")
-        self.title = extra_data.get("text") or tracker.get_slot("conversation_title")
-        self.participant_can_add_comments = extra_data.get(
+        self.id = ej_conversation.get("id") or tracker.get_slot("conversation_id")
+        self.title = ej_conversation.get("text") or tracker.get_slot(
+            "conversation_title"
+        )
+        self.participant_can_add_comments = ej_conversation.get(
             "participants_can_add_comments"
         ) or tracker.get_slot("participant_can_add_comments")
-        self.anonymous_votes_limit = extra_data.get(
+        self.anonymous_votes_limit = ej_conversation.get(
             "anonymous_votes_limit"
         ) or tracker.get_slot("anonymous_votes_limit")
         self.ej_api = EjApi(self.tracker)
+
+    @staticmethod
+    def get(conversation_id: int, tracker: Tracker):
+        ej_api = EjApi(tracker)
+        try:
+            response = ej_api.request(conversation_url(conversation_id))
+            conversation = response.json()
+            if len(conversation) == 0:
+                raise EJCommunicationError
+            if not conversation.get("id"):
+                conversation["id"] = conversation_id
+            return conversation
+        except:
+            raise EJCommunicationError
 
     def get_participant_statistics(self):
         try:

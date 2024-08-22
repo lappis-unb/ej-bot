@@ -1,5 +1,6 @@
 import os
 from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
 
 from rasa_sdk import Action
@@ -38,17 +39,27 @@ class ActionGetConversation(Action):
     def run(self, dispatcher, tracker, domain):
         user = User(tracker)
         user.authenticate()
-        tracker = user.tracker
 
         self.slots = []
         board_id = int(os.getenv("BOARD_ID", None))
+        conversation_id = int(os.getenv("CONVERSATION_ID", 0))
+
+        if conversation_id:
+            try:
+                conversation_data = Conversation.get(conversation_id, user.tracker)
+                conversation = Conversation(user.tracker, conversation_data)
+                self._set_slots(conversation, user)
+                return self.slots
+            except EJCommunicationError:
+                ej_api_error_manager = EJApiErrorManager()
+                return ej_api_error_manager.get_slots()
 
         if not board_id:
             dispatcher.utter_message(template="utter_no_board_id")
             raise Exception("No board id provided.")
 
         try:
-            board = Board(board_id, tracker)
+            board = Board(board_id, user.tracker)
         except EJCommunicationError:
             ej_api_error_manager = EJApiErrorManager()
             return ej_api_error_manager.get_slots()
@@ -59,8 +70,6 @@ class ActionGetConversation(Action):
             dispatcher.utter_message(template="utter_no_conversations")
             raise Exception("No conversations found.")
 
-        index = 0
-
         conversation = board.conversations[index]
 
         self._set_slots(conversation, user)
@@ -70,9 +79,7 @@ class ActionGetConversation(Action):
     def _set_slots(self, conversation: Conversation, user: User):
         self.slots = [
             SlotSet("conversation_id", conversation.id),
-            SlotSet("conversation_title", conversation.title),
             SlotSet("conversation_text", conversation.title),
-            SlotSet("conversation_id_cache", conversation.id),
             SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
             SlotSet(
                 "participant_can_add_comments",
