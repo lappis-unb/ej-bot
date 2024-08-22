@@ -65,15 +65,12 @@ class ActionGetConversation(Action):
             return ej_api_error_manager.get_slots()
 
         total_conversations = len(board.conversations)
-
         if total_conversations == 0:
             dispatcher.utter_message(template="utter_no_conversations")
             raise Exception("No conversations found.")
 
         conversation = board.conversations[index]
-
         self._set_slots(conversation, user)
-
         return self.slots
 
     def _set_slots(self, conversation: Conversation, user: User):
