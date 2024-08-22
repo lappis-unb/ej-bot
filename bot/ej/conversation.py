@@ -19,19 +19,34 @@ logger = logging.getLogger(__name__)
 class Conversation:
     """Conversation controls requests to EJ API and some validations during bot execution."""
 
-    def __init__(self, tracker: Tracker, ej_conversation: dict = {}):
+    def __init__(self, tracker: Tracker, data: dict = {}):
         self.tracker = tracker
-        self.id = ej_conversation.get("id") or tracker.get_slot("conversation_id")
-        self.title = ej_conversation.get("text") or tracker.get_slot(
-            "conversation_title"
-        )
-        self.participant_can_add_comments = ej_conversation.get(
-            "participants_can_add_comments"
-        ) or tracker.get_slot("participant_can_add_comments")
-        self.anonymous_votes_limit = ej_conversation.get(
-            "anonymous_votes_limit"
-        ) or tracker.get_slot("anonymous_votes_limit")
+        self.data = data
+        self.id = self._get_id()
+        self.title = self._get_title()
+        self.participant_can_add_comments = self._get_participants_can_add_comments()
+        self.anonymous_votes_limit = self._get_anonymous_votes_limit()
         self.ej_api = EjApi(self.tracker)
+
+    def _get_id(self):
+        if self.data and "id" in self.data.keys():
+            return self.data.get("id")
+        return self.tracker.get_slot("conversation_id")
+
+    def _get_title(self):
+        if self.data and "text" in self.data.keys():
+            return self.data.get("text")
+        return self.tracker.get_slot("conversation_title")
+
+    def _get_anonymous_votes_limit(self):
+        if self.data and "anonymous_votes_limit" in self.data.keys():
+            return self.data.get("anonymous_votes_limit")
+        return self.tracker.get_slot("anonymous_votes_limit")
+
+    def _get_participants_can_add_comments(self):
+        if self.data and "participants_can_add_comments" in self.data.keys():
+            return self.data.get("participants_can_add_comments")
+        return self.tracker.get_slot("participant_can_add_comments")
 
     @staticmethod
     def get(conversation_id: int, tracker: Tracker):

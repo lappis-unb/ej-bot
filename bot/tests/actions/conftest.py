@@ -24,6 +24,48 @@ def dispatcher():
 
 
 @pytest.fixture
+def empty_tracker():
+    slots = {
+        "has_completed_registration": None,
+        "participants_can_add_comments": None,
+        "anonymous_votes_limit": None,
+        "access_token": None,
+        "refresh_token": None,
+        "conversation_id": None,
+        "conversation_title": None,
+    }
+
+    def set_slot(slot, value):
+        slots[slot] = value
+
+    def get_slot(slot):
+        return slots[slot]
+
+    tracker = Mock()
+    tracker.sender_id = None
+    tracker.conversation_statistics = None
+    tracker.get_slot = lambda x: None
+    tracker.get_latest_input_channel = lambda: None
+    tracker.latest_message = {
+        "metadata": {
+            "token": "",
+            "bot": False,
+            "channel_id": "PtSjgJqB29fcy9vFd",
+            "channel_name": "mr_davidCarlos-telegram",
+            "message_id": "f3yTeCyHAuPNDdQZv",
+            "timestamp": "2022-06-20T15:23:17.242Z",
+            "user_id": "9H7jF3P6PnStr496r",
+            "user_name": "mr_davidCarlos",
+            "text": "start 74",
+            "siteUrl": "http://localhost:3000",
+        }
+    }
+    tracker.get_slot = get_slot
+    tracker.set_slot = set_slot
+    return tracker
+
+
+@pytest.fixture
 def tracker():
     slots = {
         "has_completed_registration": False,
@@ -38,6 +80,9 @@ def tracker():
 
     def set_slot(slot, value):
         slots[slot] = value
+
+    def get_slot(slot):
+        return slots[slot]
 
     tracker = Mock()
     tracker.sender_id = "1234"
@@ -58,7 +103,7 @@ def tracker():
             "siteUrl": "http://localhost:3000",
         }
     }
-    tracker.get_slot = lambda slot: slots[slot]
+    tracker.get_slot = get_slot
     tracker.set_slot = set_slot
     return tracker
 

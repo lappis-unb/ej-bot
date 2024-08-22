@@ -21,6 +21,25 @@ class TestConversation:
         assert conversation.anonymous_votes_limit == 5
         assert isinstance(conversation.ej_api, EjApi)
 
+    def test_create_conversation_without_api_data(self, tracker):
+        conversation = Conversation(tracker)
+        assert conversation.anonymous_votes_limit == tracker.get_slot(
+            "anonymous_votes_limit"
+        )
+        assert conversation.participant_can_add_comments == tracker.get_slot(
+            "participant_can_add_comments"
+        )
+        assert conversation.id == tracker.get_slot("conversation_id")
+        assert conversation.title == tracker.get_slot("conversation_title")
+
+    def test_create_conversation_with_empty_tracker(self, empty_tracker):
+        data = {"anonymous_votes_limit": 0, "participants_can_add_comments": False}
+        empty_tracker.set_slot("participants_can_add_comments", True)
+        conversation = Conversation(empty_tracker, data)
+        assert conversation.anonymous_votes_limit is not None
+        assert conversation.anonymous_votes_limit == 0
+        assert not conversation.participant_can_add_comments
+
     def test_user_should_authenticate(self):
         statistics = {"comments": 5}
         assert Conversation.user_should_authenticate(False, 5, statistics)
