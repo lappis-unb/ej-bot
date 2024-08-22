@@ -14,3 +14,4 @@ models
 results/
 train_test_split
 .env
+bot/addons/whatsapp_api_integration
