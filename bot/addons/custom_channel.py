@@ -45,6 +45,7 @@ class WhatsApp(InputChannel):
             # extracting whatsapp text message
             whatsapp_event = WhatsAppEvent(request.json)
             whatsapp_message = whatsapp_event.get_event_message()
+            custom_logger(f"WHATSAPP_MESSAGE: {whatsapp_message}")
 
             # Send whatsapp message to Rasa NLU
             if type(whatsapp_message) is NotSupportedMessage:

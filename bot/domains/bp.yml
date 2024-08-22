@@ -182,6 +182,24 @@ slots:
       conditions:
       - active_loop: help_form
         requested_slot: help_topic
+  sended_profile_question:
+    type: bool
+    initial_value: false
+    influence_conversation: false
+    mappings:
+    - type: custom
+  profile_question:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: custom
+  profile_question_id:
+    type: text
+    initial_value: null
+    influence_conversation: false
+    mappings:
+    - type: custom
+
 
 responses:
   utter_bot_introduction:
@@ -296,11 +314,24 @@ responses:
   utter_error_during_authentication_validation:
   - text: "Não consegui identificar que você se autenticou. Poderia tentar novamente?"
 
+  # PROFILE SECTION
+  utter_profile_intro:
+  - text: Para personalizar essa experiência, gostaríamos de saber um pouquinho mais sobre você. Tudo bem?
+  utter_profile_received:
+  - text: Obrigada por responder! 😊
+  - text: Anotado! 😊
+  - text: Recebido! 😊
+  - text: Anotei! 😊
+  utter_profile_fallback:
+  - text: Desculpe, não consegui entender o que você disse. Clique em uma das opções para que eu entenda melhor.
+
 
 actions:
 - action_reset_help_slots
 - action_ask_vote
 - validate_vote_form
+- action_ask_profile_question
+- validate_profile_form
 - action_get_conversation
 - action_set_new_comment
 - action_customized_fallback
@@ -331,4 +362,8 @@ forms:
       - vote
       - comment_confirmation
       - comment
+  profile_form:
+    required_slots:
+      - profile_question
+
 e2e_actions: []

@@ -3,7 +3,7 @@ import logging
 
 from ej.ej_api import EjApi
 from rasa_sdk import Tracker
-
+from actions.logger import custom_logger
 from .constants import EJCommunicationError
 from .routes import (
     conversation_random_comment_url,
@@ -98,9 +98,13 @@ class Conversation:
     def user_should_authenticate(
         has_completed_registration: bool, anonymous_votes_limit: int, statistics
     ):
+        custom_logger("Checking if user should authenticate")
         if not has_completed_registration:
             comments_counter = Conversation.get_user_voted_comments_counter(statistics)
             if comments_counter == anonymous_votes_limit:
+                custom_logger("User should authenticate")
+                custom_logger(f"Anonymous votes limit: {anonymous_votes_limit}")
+                custom_logger(f"Comments counter: {comments_counter}")
                 return True
         return False
 
@@ -115,6 +119,14 @@ class Conversation:
     @staticmethod
     def get_user_voted_comments_counter(statistics):
         return statistics["comments"]
+
+    @staticmethod
+    def get_send_profile_questions(statistics):
+        return statistics["send_profile_questions"]
+
+    @staticmethod
+    def get_votes_to_send_profile_questions(statistics):
+        return statistics["votes_to_send_profile_questions"]
 
     @staticmethod
     def user_can_add_comment(statistics, tracker: Tracker) -> bool:

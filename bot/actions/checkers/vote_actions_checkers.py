@@ -3,8 +3,10 @@ from actions.checkers.api_error_checker import EJApiErrorManager
 from ej.constants import EJCommunicationError
 from ej.comment import CommentDialogue
 from ej.conversation import Conversation
+from ej.profile import Profile
 from rasa_sdk.events import FollowupAction, SlotSet
 from typing import Any, List
+from actions.logger import custom_logger
 
 
 @dataclass
@@ -72,6 +74,46 @@ class CheckNextCommentSlots(CheckSlotsInterface):
             SlotSet("number_comments", conversation_total_comments),
             SlotSet("current_comment_id", comment.get("id")),
         ]
+
+
+class CheckNeedToAskAboutProfile(CheckSlotsInterface):
+    """
+    Verify if the user needs to answer profile questions.
+    """
+
+    def should_return_slots_to_rasa(self) -> bool:
+        try:
+            profile = Profile(self.tracker)
+        except EJCommunicationError:
+            ej_api_error_manager = EJApiErrorManager()
+            self.slots = ej_api_error_manager.get_slots()
+            return True
+        if profile.need_to_ask_about_profile(
+            self.conversation_statistics, self.tracker
+        ):
+            self._dispatch_messages(profile)
+            self.set_slots()
+            return True
+        self.set_slots(False)
+        return False
+
+    def _dispatch_messages(self, profile: Profile):
+        if len(profile.remaining_questions) == len(profile.questions):
+            self.dispatcher.utter_message(
+                "Vamos começar com algumas perguntas para te conhecer melhor. 🤗"
+            )
+
+    def set_slots(self, should=True):
+        self.slots = [SlotSet("sended_profile_question", should)]
+
+        if should:
+            self.slots += [
+                SlotSet("vote", "-"),
+                SlotSet("comment_confirmation", "-"),
+                SlotSet("comment", "-"),
+                SlotSet("profile_question", None),
+                FollowupAction("profile_form"),
+            ]
 
 
 @dataclass
