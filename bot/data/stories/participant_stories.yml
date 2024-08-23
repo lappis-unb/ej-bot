@@ -12,25 +12,6 @@ stories:
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 
-
-  # This story will cover the cenary where the participant was voting on some
-  # conversation and, for some reason, typed /start ID 
-  # to initiate a voting for a different conversation.
-  - story: Starts participation, than starts a new conversation inside vote form.
-    steps:
-      - checkpoint: starts_voting
-      - slot_was_set:
-        - conversation_id
-      - action: vote_form
-      - active_loop: vote_form
-      - slot_was_set:
-        - restart_conversation: true
-      - active_loop: null
-      - action: action_get_conversation
-      - action: utter_bot_introduction
-      - action: utter_show_topic_of_discussion
-      - checkpoint: starts_voting
-
   - story: Starts participation, than adds a new comment
     steps:
       - checkpoint: starts_voting
