@@ -41,10 +41,10 @@ class ActionGetConversation(Action):
         user.authenticate()
 
         self.slots = []
-        board_id = int(os.getenv("BOARD_ID", None))
+        board_id = int(os.getenv("BOARD_ID", 0))
         conversation_id = int(os.getenv("CONVERSATION_ID", 0))
 
-        if conversation_id:
+        if conversation_id != 0:
             try:
                 conversation_data = Conversation.get(conversation_id, user.tracker)
                 conversation = Conversation(user.tracker, conversation_data)
@@ -54,7 +54,7 @@ class ActionGetConversation(Action):
                 ej_api_error_manager = EJApiErrorManager()
                 return ej_api_error_manager.get_slots()
 
-        if not board_id:
+        if board_id == 0:
             dispatcher.utter_message(template="utter_no_board_id")
             raise Exception("No board id provided.")
 
@@ -69,6 +69,7 @@ class ActionGetConversation(Action):
             dispatcher.utter_message(template="utter_no_conversations")
             raise Exception("No conversations found.")
 
+        index = 0
         conversation = board.conversations[index]
         self._set_slots(conversation, user)
         return self.slots
