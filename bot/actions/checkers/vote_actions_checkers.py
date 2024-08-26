@@ -88,32 +88,29 @@ class CheckNeedToAskAboutProfile(CheckSlotsInterface):
             ej_api_error_manager = EJApiErrorManager()
             self.slots = ej_api_error_manager.get_slots()
             return True
-        if profile.need_to_ask_about_profile(
+        response, next = profile.need_to_ask_about_profile(
             self.conversation_statistics, self.tracker
-        ):
+        )
+        if response:
             self._dispatch_messages(profile)
-            self.set_slots()
+            self.set_slots(next=next)
             return True
-        self.set_slots(False)
         return False
 
     def _dispatch_messages(self, profile: Profile):
         if len(profile.remaining_questions) == len(profile.questions):
-            self.dispatcher.utter_message(
-                "Vamos começar com algumas perguntas para te conhecer melhor. 🤗"
-            )
+            self.dispatcher.utter_message(response="utter_profile_intro")
 
-    def set_slots(self, should=True):
-        self.slots = [SlotSet("sended_profile_question", should)]
-
-        if should:
-            self.slots += [
-                SlotSet("vote", "-"),
-                SlotSet("comment_confirmation", "-"),
-                SlotSet("comment", "-"),
-                SlotSet("profile_question", None),
-                FollowupAction("profile_form"),
-            ]
+    def set_slots(self, next):
+        self.slots = [
+            SlotSet("vote", "-"),
+            SlotSet("comment_confirmation", "-"),
+            SlotSet("comment", "-"),
+            SlotSet("need_to_ask_profile_question", True),
+            SlotSet("next_count_to_send_profile_question", str(next)),
+            SlotSet("profile_question", None),
+            FollowupAction("profile_form"),
+        ]
 
 
 @dataclass

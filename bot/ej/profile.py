@@ -3,7 +3,7 @@ import json
 from enum import IntEnum
 from .ej_api import EjApi
 from .conversation import Conversation
-from .constants import PROFILE
+from .constants import PROFILE, PUT_PROFILE
 from actions.logger import custom_logger
 
 PATH_PROFILE_QUESTIONS = "/bot/profile-questions.json"
@@ -65,10 +65,11 @@ class Profile:
         questions: Question = []
 
         for question in data["questions"]:
-            id = question["id"]
+            id = int(question["id"])
             body = question["body"]
             answers = question["answers"]
             tmp_change = question["change"]
+            put_payload = question["put_payload"]
 
             if tmp_change == "Ethnicity":
                 change = Ethnicity
@@ -79,7 +80,7 @@ class Profile:
             elif tmp_change == "AgeRange":
                 change = AgeRange
 
-            questions.append(Question(id, body, answers, change))
+            questions.append(Question(id, body, answers, change, put_payload))
         return questions
 
     def get_next_question(self):
@@ -107,10 +108,8 @@ class Profile:
         """
         custom_logger("need_to_ask_about_profile")
         if len(self.remaining_questions) == 0:
-            return False
-
-        if tracker.get_slot("sended_profile_question"):
-            return False
+            custom_logger("NO MORE QUESTIONS")
+            return False, -1
 
         if Conversation.get_send_profile_questions(conversation_statistics):
             current_votes = Conversation.get_user_voted_comments_counter(
@@ -121,30 +120,92 @@ class Profile:
                     conversation_statistics
                 )
             )
-            if current_votes >= votes_to_send_profile_questions:
+            next_value_to_send_profile_questions = tracker.get_slot(
+                "next_count_to_send_profile_question"
+            )
+
+            if not next_value_to_send_profile_questions:
+                next_value_to_send_profile_questions = current_votes
+            else:
+                next_value_to_send_profile_questions = int(
+                    next_value_to_send_profile_questions
+                )
+
+            if (
+                current_votes >= votes_to_send_profile_questions
+                and next_value_to_send_profile_questions == current_votes
+            ):
                 custom_logger("need_to_ask_about_profile: True")
-                return True
+                next_value_to_send_profile_questions += 1
+                return True, next_value_to_send_profile_questions
         custom_logger("need_to_ask_about_profile: False")
-        return False
+        return False, -1
 
     def is_valid_answer(self, answer, id_question):
         """
         check if answer is valid
         """
-        question = [self.questions for q in self.questions if q.id == id_question]
+        question: Question = None
+        for q in self.questions:
+            if q.id == id_question:
+                question = q
+                break
+        err = None
+        if question:
+            try:
+                answer = int(answer)
+            except ValueError as err:
+                custom_logger(f"Answer {answer} is not a valid integer")
+                return False, err
 
-        if len(question) == 1:
-            return answer in question[0].answers
-        else:
-            return False
+            for a in question.answers:
+                if a["payload"] == answer:
+                    response = self.send_answer(answer, question)
+                    if response.status_code == 200:
+                        return True, err
+                    else:
+                        err = response.status_code
+                        return False, err
+        return False, err
+
+    def send_answer(self, answer, question):
+        """
+        send answer to ej-api
+        """
+        data = {question.put_payload: answer}
+        custom_logger(f"Sending answer {data} to ej-api")
+        json_data = json.dumps(data)
+        response = self.ej_api.request(self.put_url(), json_data, put=True)
+        custom_logger(f"Response: {response.json()}")
+        return response
+
+    def put_url(self):
+        return f"{PUT_PROFILE}{self.user_profile.user}/"
+
+    @staticmethod
+    def finish_profile(slot_value: str):
+        """
+        Rasa ends a form when all slots are filled. This method
+        fills the profile_form slots with slot_value,
+        forcing Rasa to stop sending comments to voting.
+        """
+        return {"profile_question": slot_value, "need_to_ask_profile_question": False}
+
+    @staticmethod
+    def continue_profile():
+        """
+        Rasa continues the profile form.
+        """
+        return {"profile_question": None}
 
 
 class Question:
-    def __init__(self, id, body, answers, change):
+    def __init__(self, id, body, answers, change, put_payload):
         self.id = id
         self.body = body
         self.answers = answers
         self.change = change
+        self.put_payload = put_payload
 
 
 class UserProfile:

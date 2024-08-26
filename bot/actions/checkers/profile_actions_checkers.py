@@ -3,9 +3,8 @@ from actions.checkers.api_error_checker import EJApiErrorManager
 from ej.constants import EJCommunicationError
 from ej.vote import VoteDialogue
 from ej.profile import Profile
-from rasa_sdk.events import FollowupAction, SlotSet
+from rasa_sdk.events import SlotSet
 from typing import Any, List
-from actions.logger import custom_logger
 
 
 @dataclass
@@ -55,7 +54,7 @@ class CheckNextProfileQuestionSlots(CheckSlotsInterface):
     def _set_slots(self, id):
         self.slots = [
             SlotSet("profile_question_id", id),
-            SlotSet("profile_question", "-"),
+            SlotSet("profile_question", None),
         ]
 
 
@@ -64,13 +63,21 @@ class CheckValidateProfileQuestion(CheckSlotsInterface):
     def should_return_slots_to_rasa(self) -> bool:
         profile = Profile(self.tracker)
         profile_question_id = self.tracker.get_slot("profile_question_id")
+        if profile_question_id:
+            profile_question_id = int(profile_question_id)
 
-        if not profile.is_valid_answer(self.slot_value, profile_question_id):
-            message = {
-                "response": "utter_profile_fallback",
-            }
-            self._dispatch_messages(message)
-            self._set_slots(is_valid=False)
+        response, err = profile.is_valid_answer(self.slot_value, profile_question_id)
+
+        if not response:
+            if err:
+                ej_api_error_manager = EJApiErrorManager()
+                self.slots = ej_api_error_manager.get_slots(as_dict=True)
+            else:
+                message = {
+                    "response": "utter_profile_fallback",
+                }
+                self._dispatch_messages(message)
+                self._set_slots(is_valid=False)
         else:
             message = {
                 "response": "utter_profile_received",
@@ -88,12 +95,11 @@ class CheckValidateProfileQuestion(CheckSlotsInterface):
 
     def _set_slots(self, is_valid=True):
         if is_valid:
-            self.slots = [
-                VoteDialogue.continue_voting(self.tracker),
-                SlotSet("profile_question", self.slot_value),
-                FollowupAction("vote_form"),
-            ]
+            self.slots = {
+                **VoteDialogue.continue_voting(self.tracker),
+                **Profile.finish_profile(self.slot_value),
+            }
         else:
-            self.slots = [
-                SlotSet("profile_question", None),
-            ]
+            self.slots = {
+                **Profile.continue_profile(),
+            }
