@@ -7,10 +7,11 @@ from actions.checkers.profile_actions_checkers import (
     CheckNextProfileQuestionSlots,
     CheckValidateProfileQuestion,
 )
-from rasa_sdk import Action, FormValidationAction, Tracker
+from rasa_sdk import Action, Tracker
 from rasa_sdk.events import EventType, SlotSet, FollowupAction
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
+from rasa_sdk.forms import FormValidationAction
 
 
 class ActionAskProfileQuestion(Action):
@@ -62,8 +63,12 @@ class ValidateProfileForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-        custom_logger("validate_profile_form")
+        custom_logger("validate_profile_question")
         custom_logger(f"slot_value: {slot_value}")
+
+        if not slot_value:
+            return {}
+
         action_checkers = self.get_checkers(
             tracker, dispatcher=dispatcher, slot_value=slot_value
         )
