@@ -4,6 +4,7 @@
             "id": 0,
             "body": "Seu gênero é:",
             "change": "Gender",
+            "put_payload": "gender",
             "answers": [
                 {
                     "payload": 1,
@@ -31,6 +32,7 @@
             "id": 1,
             "body": "Você se autodeclara como pessoa:",
             "change": "Ethnicity",
+            "put_payload": "ethnicity_choices",
             "answers": [
                 {
                     "payload": 1,
@@ -68,6 +70,7 @@
             "id": 2,
             "body": "Você vive na região:",
             "change": "Region",
+            "put_payload": "region",
             "answers": [
                 {
                     "payload": 1,
@@ -100,6 +103,7 @@
             "id": 3,
             "body": "Você tem:",
             "change": "AgeRange",
+            "put_payload": "age_range",
             "answers": [
                 {
                     "payload": 1,
