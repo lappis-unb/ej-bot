@@ -1,8 +1,8 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from rasa_sdk import Tracker
 import pytest
-
 from bot.ej.conversation import Conversation
+from bot.ej.profile import Profile
 
 
 @pytest.fixture
@@ -13,6 +13,8 @@ def conversation_statistics():
         "participation_ratio": 0.0,
         "total_comments": 20,
         "comments": 0,
+        "send_profile_questions": True,
+        "votes_to_send_profile_questions": 1,
     }
 
 
@@ -33,6 +35,7 @@ def empty_tracker():
         "refresh_token": None,
         "conversation_id": None,
         "conversation_title": None,
+        "next_count_to_send_profile_question": 0,
     }
 
     def set_slot(slot, value):
@@ -183,3 +186,33 @@ def metadata():
 @pytest.fixture
 def livechat_metadata():
     return {"agent": "livechat"}
+
+
+@pytest.fixture
+def mock_ej_api_response():
+    return {
+        "user": 1,
+        "phone_number": "123456789",
+        "ethnicity_choices": 0,
+        "gender": 0,
+        "age_range": 0,
+        "region": 0,
+    }
+
+
+@pytest.fixture
+def mock_profile(mock_ej_api_response, tracker):
+    with patch("bot.ej.profile.EjApi.request") as mock_request, patch(
+        "bot.ej.profile.Profile.send_answer"
+    ) as mock_send_answer, patch(
+        "bot.ej.ej_api.EjApi._refresh_access_token"
+    ) as mock_refresh_token:
+
+        mock_request.return_value.json.return_value = mock_ej_api_response
+        mock_request.return_value.status_code = 200
+        mock_send_answer.return_value = Mock(status_code=200)
+        mock_refresh_token.return_value = None
+
+        mock_profile = Profile(tracker)
+        mock_profile.ej_api.access_token = "mock_access_token"
+        return mock_profile
