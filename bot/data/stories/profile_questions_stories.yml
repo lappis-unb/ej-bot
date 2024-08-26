@@ -15,24 +15,12 @@ stories:
           - comment_confirmation
           - restart_conversation: false
           - ej_api_connection_error: false
+          - need_to_ask_profile_question: true
       - active_loop: null
       - action: profile_form
       - active_loop: profile_form
       - slot_was_set:
           - profile_question
-      - active_loop: null
-      - action: vote_form
-      - active_loop: vote_form
-      - slot_was_set:
-          - vote
-          - comment
-          - comment_confirmation
-          - restart_conversation: false
-          - ej_api_connection_error: false
-      - active_loop: null
-      - action: profile_form
-      - active_loop: profile_form
-      - slot_was_set:
-          - profile_question
+          - need_to_ask_profile_question: false
       - active_loop: null
       - checkpoint: starts_voting

@@ -182,17 +182,25 @@ slots:
       conditions:
       - active_loop: help_form
         requested_slot: help_topic
-  sended_profile_question:
+  next_count_to_send_profile_question:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: custom
+  need_to_ask_profile_question:
     type: bool
     initial_value: false
-    influence_conversation: false
+    influence_conversation: true
     mappings:
     - type: custom
   profile_question:
     type: text
     influence_conversation: true
     mappings:
-    - type: custom
+    - type: from_text
+      conditions:
+      - active_loop: profile_form
+        requested_slot: profile_question
   profile_question_id:
     type: text
     initial_value: null
