@@ -5,12 +5,14 @@ from actions.checkers.vote_actions_checkers import (
     CheckEndConversationSlots,
     CheckExternalAutenticationSlots,
     CheckNextCommentSlots,
+    CheckNeedToAskAboutProfile,
 )
 from actions.logger import custom_logger
 from ej.comment import Comment, CommentDialogue
 from ej.constants import EJCommunicationError
 from ej.conversation import Conversation
 from ej.vote import Vote, VoteDialogue
+from ej.profile import Profile
 from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType
 from rasa_sdk.executor import CollectingDispatcher
@@ -40,7 +42,6 @@ class ActionAskVote(Action, CheckersMixin):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
         conversation = Conversation(tracker)
-
         try:
             conversation_statistics = conversation.get_participant_statistics()
         except EJCommunicationError:
@@ -79,6 +80,12 @@ class ActionAskVote(Action, CheckersMixin):
             CheckExternalAutenticationSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
+                conversation_statistics=conversation_statistics,
+            ),
+            CheckNeedToAskAboutProfile(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                conversation=conversation,
                 conversation_statistics=conversation_statistics,
             ),
             CheckNextCommentSlots(

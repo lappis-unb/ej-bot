@@ -41,12 +41,12 @@ class ActionGetConversation(Action):
         user.authenticate()
 
         self.slots = []
-        board_id = int(os.getenv("BOARD_ID", None))
-        conversation_id = int(os.getenv("CONVERSATION_ID", 0))
+        board_id = os.getenv("BOARD_ID", None)
+        conversation_id = os.getenv("CONVERSATION_ID", None)
 
-        if conversation_id:
+        if conversation_id is not None:
             try:
-                conversation_data = Conversation.get(conversation_id, user.tracker)
+                conversation_data = Conversation.get(int(conversation_id), user.tracker)
                 conversation = Conversation(user.tracker, conversation_data)
                 self._set_slots(conversation, user)
                 return self.slots
@@ -54,12 +54,12 @@ class ActionGetConversation(Action):
                 ej_api_error_manager = EJApiErrorManager()
                 return ej_api_error_manager.get_slots()
 
-        if not board_id:
+        if board_id is None:
             dispatcher.utter_message(template="utter_no_board_id")
             raise Exception("No board id provided.")
 
         try:
-            board = Board(board_id, user.tracker)
+            board = Board(int(board_id), user.tracker)
         except EJCommunicationError:
             ej_api_error_manager = EJApiErrorManager()
             return ej_api_error_manager.get_slots()
@@ -69,6 +69,7 @@ class ActionGetConversation(Action):
             dispatcher.utter_message(template="utter_no_conversations")
             raise Exception("No conversations found.")
 
+        index = 0
         conversation = board.conversations[index]
         self._set_slots(conversation, user)
         return self.slots
@@ -81,6 +82,11 @@ class ActionGetConversation(Action):
             SlotSet(
                 "participant_can_add_comments",
                 conversation.participant_can_add_comments,
+            ),
+            SlotSet("send_profile_questions", conversation.send_profile_question),
+            SlotSet(
+                "votes_to_send_profile_questions",
+                conversation.votes_to_send_profile_questions,
             ),
             SlotSet("contact_name", user.name),
             SlotSet(
