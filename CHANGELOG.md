@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 0.4.4 - Ago 27, 2024
+
+### Added
+
+- Removes the /start Rasa intent. From now on, the bot will respond after any user message.
+
+### Changed
+
+- Reimplements the ability to request an EJ conversation by ID.
+
 ## 0.4.3 - Ago 21, 2024
 
 ### Added
