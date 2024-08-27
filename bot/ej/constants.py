@@ -16,6 +16,8 @@ AUTH_URL = f"{API_URL}/token/"
 REFRESH_TOKEN_URL = f"{API_URL}/refresh-token/"
 VOTES_URL = f"{API_URL}/votes/"
 COMMENTS_URL = f"{API_URL}/comments/"
+PROFILE = f"{API_URL}/profiles/me/"
+PUT_PROFILE = f"{API_URL}/profiles/"
 
 
 class EJCommunicationError(Exception):

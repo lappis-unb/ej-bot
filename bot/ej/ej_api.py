@@ -55,21 +55,34 @@ class EjApi:
             headers=headers,
         )
 
+    def _put(self, url: str, headers: Dict, payload=None):
+        return requests.put(
+            url,
+            payload,
+            headers=headers,
+        )
+
     def _get(self, url: str, headers: Dict):
         return requests.get(url, headers=headers)
 
-    def request(self, url: str, payload=None):
+    def request(self, url: str, payload=None, put=False):
         """
         Send a HTTP request to the EJ API endpoints.
         """
         response: Any
         headers = self.get_headers()
-        if payload:
+        if payload and not put:
             response = self._post(url, headers, payload)
             if response.status_code == 401:
                 self._refresh_access_token()
                 headers = self.get_headers()
                 response = self._post(url, headers, payload)
+        elif payload and put:
+            response = self._put(url, headers, payload)
+            if response.status_code == 401:
+                self._refresh_access_token()
+                headers = self.get_headers()
+                response = self._put(url, headers, payload)
         else:
             response = self._get(url, headers)
             if response.status_code == 401:

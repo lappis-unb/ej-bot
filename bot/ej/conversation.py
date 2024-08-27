@@ -3,7 +3,7 @@ import logging
 
 from ej.ej_api import EjApi
 from rasa_sdk import Tracker
-
+from actions.logger import custom_logger
 from .constants import EJCommunicationError
 from .routes import (
     conversation_random_comment_url,
@@ -27,6 +27,24 @@ class Conversation:
         self.participant_can_add_comments = self._get_participants_can_add_comments()
         self.anonymous_votes_limit = self._get_anonymous_votes_limit()
         self.ej_api = EjApi(self.tracker)
+        self.send_profile_question = self._get_send_profile_question()
+        self.votes_to_send_profile_questions = int(
+            self._get_votes_to_send_profile_questions()
+        )
+
+    def _get_votes_to_send_profile_questions(self):
+        if self.data and "votes_to_send_profile_question" in self.data.keys():
+            return self.data.get("votes_to_send_profile_question")
+        return (
+            self.tracker.get_slot("votes_to_send_profile_questions")
+            if self.tracker.get_slot("votes_to_send_profile_questions")
+            else 0
+        )
+
+    def _get_send_profile_question(self):
+        if self.data and "send_profile_question" in self.data.keys():
+            return self.data.get("send_profile_question")
+        return self.tracker.get_slot("send_profile_questions")
 
     def _get_id(self):
         if self.data and "id" in self.data.keys():
