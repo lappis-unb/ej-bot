@@ -210,7 +210,22 @@ responderá ao domínio de webhook.
 Com as credenciais e a infraestrutura para recebimento dos eventos disponível, é preciso
 cadastrar o webhook na API do Serpro. O método `register_webhook` do módulo
 `bot/addons/whatsapp_api_integration/serpro_api_client.py`, pode ser utilizado para
-a criação do webhook a partir das credenciais enviadas pelo Serpro.
+a criação do webhook a partir das credenciais enviadas pelo Serpro. 
+
+Para registrar um novo Webhook, primeiro exporte a variável `RASA_WEBHOOK_URL` com a URL
+da instância do Rasa que irá receber os eventos do Serpro, por exemplo:
+
+    export RASA_WEBHOOK_URL=https://hml-ej-rasa-api.lappis.rocks/webhooks/whatsapp/webhook
+
+Em seguida, acesse o diretório `bot/addons` e execute no shell do Python:
+
+    from whatsapp_api_integration.clients.serpro_api_client import SerproApiClient
+    client = SerproApiClient()
+    client.register_webhook()
+
+Caso você já tenha um webhook registrado, recomendamos que o remova antes de registrar
+um novo. Para remove-lo, basta enviar uma requisição de DELETE na URL
+[https://api.whatsapp.serpro.gov.br/client/%7BfromPhoneNumberId%7D/v2/webhook](https://api.whatsapp.serpro.gov.br/client/%7BfromPhoneNumberId%7D/v2/webhook). Essa requisição exige autenticação.
 
 | Variável                     | Valor padrão                                 | Descrição                                                                                                                         |
 |------------------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|

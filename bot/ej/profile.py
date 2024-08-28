@@ -1,12 +1,13 @@
-import random
-import json
 from enum import IntEnum
-from .ej_api import EjApi
-from .conversation import Conversation
-from .constants import PROFILE, PUT_PROFILE
+import json
+import os
+import random
+
 from actions.logger import custom_logger
 
-PATH_PROFILE_QUESTIONS = "/bot/profile-questions.json"
+from .constants import PROFILE, PUT_PROFILE
+from .conversation import Conversation
+from .ej_api import EjApi
 
 
 class Profile:
@@ -57,7 +58,10 @@ class Profile:
         return remaining_questions
 
     def set_attributes(self):
-        with open(PATH_PROFILE_QUESTIONS) as f:
+        questions_file = (
+            f"{str(os.path.dirname(os.path.realpath(__file__)))}/profile-questions.json"
+        )
+        with open(questions_file) as f:
             data = json.load(f)
             self.questions = self.get_questions(data)
             self.random_questions = data["random_questions"]
