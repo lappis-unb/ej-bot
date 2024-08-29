@@ -44,7 +44,7 @@ class EjApi:
         if response.status_code == 200:
             data = response.json()
             self.access_token = data.get("access")
-            self.tracker.update_slots({"access_token": self.access_token})
+            self.tracker.slots["access_token"] = self.access_token
         else:
             raise Exception("could not refresh access token on EJ API.")
 
