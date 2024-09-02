@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any, List
 
+from ej.user import User
+
 
 class CheckersMixin:
     def __init__(self):
@@ -22,6 +24,7 @@ class CheckSlotsInterface:
     conversation_statistics: Any = None
     slots: List[Any] = field(default_factory=list)
     slot_value: Any = ""
+    user: User = field(default_factory=lambda: User(None))
 
     def should_return_slots_to_rasa(self) -> bool:
         """

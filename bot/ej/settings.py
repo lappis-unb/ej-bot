@@ -15,6 +15,8 @@ JWT_SECRET = os.getenv("JWT_SECRET")
 SECRET_KEY = os.getenv("SECRET_KEY")
 EXTERNAL_AUTHENTICATION_HOST = os.getenv("EXTERNAL_AUTHENTICATION_HOST", "")
 BP_EJ_COMPONENT_ID = os.getenv("BP_EJ_COMPONENT_ID", "")
+BOARD_ID = os.getenv("BOARD_ID", None)
+CONVERSATION_ID = os.getenv("CONVERSATION_ID", None)
 
 
 class EJCommunicationError(Exception):

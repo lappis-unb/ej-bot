@@ -93,7 +93,7 @@ class ExternalAuthorizationService:
         return hex_dig
 
 
-class User(object):
+class User:
     """
     For telegram channel, tracker_sender_id is the unique ID from the user talking with the bot.
     """
@@ -102,14 +102,15 @@ class User(object):
 
     def __init__(self, tracker: Any, name=ANONYMOUS_USER_NAME):
         self.tracker = tracker
-        self.name = self._get_name_from_tracker()
-        self.display_name = self.name
-        self.sender_id = self.tracker.sender_id
-        self.ej_api = EjApi(self.tracker)
-        self.secret_id = ExternalAuthorizationService.generate_hash(self.sender_id)
-        self.has_completed_registration = tracker.get_slot("has_completed_registration")
-        self._set_password()
-        self._set_email()
+        if self.tracker:
+            self.name = self._get_name_from_tracker()
+            self.display_name = self.name
+            self.sender_id = self.tracker.sender_id
+            self.ej_api = EjApi(self.tracker)
+            self.secret_id = ExternalAuthorizationService.generate_hash(self.sender_id)
+            self.has_completed_registration = tracker.get_slot("has_completed_registration")
+            self._set_password()
+            self._set_email()
 
     def _set_password(self):
         password = self._get_password_hash()
