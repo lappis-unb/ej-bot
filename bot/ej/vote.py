@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 import json
 from typing import Text
 
@@ -38,6 +39,12 @@ class VoteDialogue:
         return {"vote": "-", "comment_confirmation": "-", "comment": "-"}
 
 
+class VoteChoices(Enum):
+    AGREE = "1"
+    DISAGREE = "-1"
+    SKIP = "0"
+
+
 @dataclass
 class Vote:
     """Vote controls voting requests to EJ API and some validations during bot execution."""
@@ -59,7 +66,10 @@ class Vote:
         """
         return true if vote_slot_value is equal to on of VALID_VOTE_VALUES values.
         """
-        return str(self.vote_slot_value) in VALID_VOTE_VALUES
+        try:
+            return VoteChoices(self.vote_slot_value)
+        except Exception as e:
+            return False
 
     def is_internal(self):
         """

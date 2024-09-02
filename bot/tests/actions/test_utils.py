@@ -15,7 +15,7 @@ class TestUtils:
 
     def test_vote_is_valid(self, tracker):
         vote = Vote("1", tracker)
-        assert vote.is_valid() == True
+        assert vote.is_valid()
 
     def test_vote_is_invalid(self, tracker):
         vote = Vote("xpto", tracker)
