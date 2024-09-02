@@ -220,7 +220,6 @@ slots:
     mappings:
     - type: custom
 
-
 responses:
   utter_bot_introduction:
   - text: |
@@ -236,7 +235,7 @@ responses:
         *{conversation_text}*
   utter_ask_comment_confirmation:
   - text: |
-      Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
+        Gostaria de dar sua opinião sobre o tema para que eu possa enviá-la aos outros participantes da coleta?
     buttons:
     - title: Sim
       payload: sim
@@ -247,9 +246,40 @@ responses:
   utter_go_back_to_voting:
   - text: Sem problemas, vou te mandar o que mais me responderam!
   utter_vote_received:
-  - text: Recebi sua opinião! 🙂Muito obrigada por participar. Dando sequência, você acha que..
-  - text: Anotado ✍️Vou te mostrar outras frases
-  - text: Registrado. Recebi sua opinião!🙂 Muito obrigada por participar. Dando sequência, você acha que...
+  - text: |
+        Anotado ✍️Vou te mostrar outras frases
+  - text: |
+        🙂 Recebi sua opinião! Dando sequência:
+  - text: |
+        Contribuição recebida! 🌟 Avançando para mais...
+  - text: |
+        ✅ Confirmado! Próxima pergunta:
+  - text: |
+        Resposta recebida. 📢 Além da enquete, estamos coletando propostas para o futuro da cultura no Brasil! Você pode participar no Brasil Participativo! Avançando:
+  - text: |
+        Sucesso! 👍 Mais uma pergunta:
+  - text: |
+        📦 Recebi! Mais uma questão importante:
+  - text: |
+        💡Confirmado! Suas respostas serão analisadas pelo Ministério da Cultura para o novo Plano Nacional de Cultura. Próxima:
+  - text: |
+        📋 Anotei! Dando sequência:
+  - text: |
+        📬 Opinião recebida com sucesso! Continuando:
+  - text: |
+        📡 Resposta acolhida! Estamos chegando ao fim. Mais uma pergunta:
+  - text: |
+        Confirmado! 💡 Tem uma proposta para o futuro da cultura? Continue essa participação no Brasil Participativo! Próxima pergunta:
+  - text: |
+        📝 Resposta registrada! Falta pouco! Mais uma pergunta:
+  - text: |
+        Sua participação é valiosa! 📊 Vamos para o próximo tópico?
+  - text: |
+        🧮 Feito! (símbolo) Última pergunta:
+  - text: |
+        Pronto! ✅ Adiante:
+  - text: |
+        Sua voz foi ouvida! 🎙️ Vamos para outro ponto?
   utter_out_of_context:
   - text: Desculpe, não sei se entendi 😕
   utter_sent_comment:
@@ -350,7 +380,8 @@ responses:
   - text: Anotei! 😊
   utter_profile_fallback:
   - text: Desculpe, não consegui entender o que você disse. Clique em uma das opções para que eu entenda melhor.
-
+  utter_return_from_help:
+  - text: Olá, {contact_name} vamos continuar a enquete? Estamos ouvindo diferentes pessoas para saber o que elas pensam sobre cultura. 🎯
 
 actions:
 - action_reset_help_slots
