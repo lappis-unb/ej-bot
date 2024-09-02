@@ -17,6 +17,7 @@ stories:
       - active_loop: null
       - action: utter_explain_help_voting
       - action: action_reset_help_slots
+      - checkpoint: go_back_to_vote
 
   - story: User wants to know more about the participatory process
     steps:
@@ -26,6 +27,7 @@ stories:
       - active_loop: null
       - action: utter_explain_help_know_more
       - action: action_reset_help_slots
+      - checkpoint: go_back_to_vote
 
   - story: User wants to know more about authentication
     steps:
@@ -35,6 +37,7 @@ stories:
       - active_loop: null
       - action: utter_explain_help_authentication
       - action: action_reset_help_slots
+      - checkpoint: go_back_to_vote
 
   - story: User wants to know more about data protection
     steps:
@@ -44,3 +47,12 @@ stories:
       - active_loop: null
       - action: utter_explain_help_lgpd
       - action: action_reset_help_slots
+      - checkpoint: go_back_to_vote
+
+  - story: User wants to go back to vote
+    steps:
+      - checkpoint: go_back_to_vote
+      - intent: welcome
+      - action: utter_return_from_help
+      - action: utter_show_topic_of_discussion
+      - checkpoint: starts_voting
