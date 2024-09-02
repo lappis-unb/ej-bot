@@ -1,6 +1,5 @@
 import os
 from actions.checkers.api_error_checker import EJApiErrorManager
-from actions.logger import custom_logger
 from ej.constants import EJCommunicationError
 
 from rasa_sdk import Action
@@ -8,7 +7,7 @@ from rasa_sdk.events import SlotSet
 
 from ej.boards import Board
 from ej.conversation import Conversation
-from ej.user import User
+from ej.user import ExternalAuthorizationService, User
 from rasa_sdk import Action
 from rasa_sdk.events import SlotSet
 
@@ -75,7 +74,13 @@ class ActionGetConversation(Action):
         return self.slots
 
     def _set_slots(self, conversation: Conversation, user: User):
+        authorization_service = ExternalAuthorizationService(
+            user.tracker.sender_id, user.secret_id
+        )
+        auth_link = authorization_service.get_authentication_link()
+
         self.slots = [
+            SlotSet("auth_link", auth_link),
             SlotSet("conversation_id", conversation.id),
             SlotSet("conversation_text", conversation.title),
             SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
