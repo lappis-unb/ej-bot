@@ -148,7 +148,7 @@ class Profile:
                 and next_value_to_send_profile_questions == current_votes
             ):
                 custom_logger("need_to_ask_about_profile: True")
-                next_value_to_send_profile_questions += 1
+                next_value_to_send_profile_questions += 2
                 return True, next_value_to_send_profile_questions
         custom_logger("need_to_ask_about_profile: False")
         return False, -1
