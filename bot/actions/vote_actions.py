@@ -1,17 +1,17 @@
 from typing import Any, Dict, List, Text
 
+from actions.base_actions import CheckersMixin
 from actions.checkers.api_error_checker import EJApiErrorManager
 from actions.checkers.vote_actions_checkers import (
     CheckEndConversationSlots,
     CheckExternalAutenticationSlots,
-    CheckNextCommentSlots,
     CheckNeedToAskAboutProfile,
+    CheckNextCommentSlots,
 )
 from actions.logger import custom_logger
-from actions.base_actions import CheckersMixin
 from ej.comment import Comment, CommentDialogue
-from ej.settings import EJCommunicationError
 from ej.conversation import Conversation
+from ej.settings import EJCommunicationError
 from ej.vote import Vote, VoteDialogue
 from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType

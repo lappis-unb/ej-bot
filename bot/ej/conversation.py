@@ -3,13 +3,13 @@ import logging
 
 from ej.ej_api import EjApi
 from rasa_sdk import Tracker
-from actions.logger import custom_logger
-from .settings import EJCommunicationError
+
 from .routes import (
     conversation_random_comment_url,
     conversation_url,
-    user_statistics_url,
+    user_statistics_route,
 )
+from .settings import EJCommunicationError
 
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class Conversation:
 
     def get_participant_statistics(self):
         try:
-            url = user_statistics_url(self.id)
+            url = user_statistics_route(self.id)
             response = self.ej_api.request(url)
             response = response.json()
         except:

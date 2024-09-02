@@ -2,7 +2,7 @@ from bot.ej.comment import Comment, CommentDialogue
 
 from bot.ej.settings import *
 from bot.ej.conversation import Conversation
-from bot.ej.vote import Vote, VoteDialogue
+from bot.ej.vote import Vote, VoteChoices, VoteDialogue
 from bot.ej.user import User
 
 TOKEN = "mock_token_value"
@@ -11,7 +11,9 @@ TOKEN = "mock_token_value"
 class TestUtils:
     def test_vote_values_list(self):
         values = ["1", "-1", "0"]
-        assert values == VALID_VOTE_VALUES
+        assert VoteChoices(values[0])
+        assert VoteChoices(values[1])
+        assert VoteChoices(values[2])
 
     def test_vote_is_valid(self, tracker):
         vote = Vote("1", tracker)

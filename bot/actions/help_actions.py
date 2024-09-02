@@ -1,11 +1,12 @@
+from enum import Enum
 from typing import Any, Dict, Text
+
 from actions.base_actions import CheckersMixin
 from rasa_sdk import Action, FormValidationAction
+from rasa_sdk import Action, Tracker
 from rasa_sdk.events import SlotSet
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
-from rasa_sdk import Action, Tracker
-from enum import Enum
 
 
 class ResetHelpFormSlots(Action):

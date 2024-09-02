@@ -1,7 +1,5 @@
-import os
+from .settings import API_URL, HEADERS
 
-HOST = os.getenv("EJ_HOST")
-API_URL = f"{HOST}/api/v1"
 HEADERS = {
     "Content-Type": "application/json",
 }
@@ -25,7 +23,7 @@ def conversation_random_comment_url(conversation_id):
     return f"{conversation_url(conversation_id)}random-comment/"
 
 
-def user_statistics_url(conversation_id):
+def user_statistics_route(conversation_id):
     return f"{conversation_url(conversation_id)}user-statistics/"
 
 
@@ -35,3 +33,31 @@ def user_comments_route(conversation_id):
 
 def user_pending_comments_route(conversation_id):
     return f"{conversation_url(conversation_id)}user-pending-comments/"
+
+
+def auth_route():
+    return f"{API_URL}/token/"
+
+
+def registration_route():
+    return f"{API_URL}/users/"
+
+
+def refresh_token_route():
+    return f"{API_URL}/refresh-token/"
+
+
+def votes_route():
+    return f"{API_URL}/votes/"
+
+
+def comments_route():
+    return f"{API_URL}/comments/"
+
+
+def my_profile_route():
+    return f"{API_URL}/profiles/me/"
+
+
+def profiles_route():
+    return f"{API_URL}/profiles/"

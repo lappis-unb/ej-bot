@@ -8,19 +8,16 @@ from typing import Any, Dict, Text
 import jwt
 
 from actions.logger import custom_logger
-from dotenv import load_dotenv
 from ej.ej_api import EjApi
 
-from .settings import *
-
-
-load_dotenv()
-
-TOKEN_EXPIRATION_TIME = timedelta(minutes=10)
-JWT_SECRET = os.getenv("JWT_SECRET")
-SECRET_KEY = os.getenv("SECRET_KEY")
-EXTERNAL_AUTHENTICATION_HOST = os.getenv("EXTERNAL_AUTHENTICATION_HOST", "")
-BP_EJ_COMPONENT_ID = os.getenv("BP_EJ_COMPONENT_ID", "")
+from .routes import auth_route, registration_route
+from .settings import (
+    BP_EJ_COMPONENT_ID,
+    EXTERNAL_AUTHENTICATION_HOST,
+    JWT_SECRET,
+    SECRET_KEY,
+    TOKEN_EXPIRATION_TIME,
+)
 
 
 class CheckAuthenticationDialogue:
@@ -171,7 +168,7 @@ class User(object):
             custom_logger(
                 f"Requesting new token for the participant", data=self.auth_data()
             )
-            response = self.ej_api.request(AUTH_URL, self.auth_data())
+            response = self.ej_api.request(auth_route(), self.auth_data())
             if response.status_code != 200:
                 custom_logger(f"EJ API ERROR", data=response.json())
                 raise Exception
@@ -180,7 +177,9 @@ class User(object):
                 f"Failed to request token, trying to create the participant",
                 data=self.registration_data(),
             )
-            response = self.ej_api.request(REGISTRATION_URL, self.registration_data())
+            response = self.ej_api.request(
+                registration_route(), self.registration_data()
+            )
             if response.status_code != 201:
                 custom_logger(f"EJ API ERROR", data=response.json())
                 raise Exception("COULD NOT CREATE USER")

@@ -1,12 +1,9 @@
 import os
+
 from actions.checkers.api_error_checker import EJApiErrorManager
-from ej.settings import EJCommunicationError
-
-from rasa_sdk import Action
-from rasa_sdk.events import SlotSet
-
 from ej.boards import Board
 from ej.conversation import Conversation
+from ej.settings import EJCommunicationError
 from ej.user import ExternalAuthorizationService, User
 from rasa_sdk import Action
 from rasa_sdk.events import SlotSet

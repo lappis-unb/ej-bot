@@ -1,22 +1,20 @@
+from datetime import timedelta
 import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 HEADERS = {
     "Content-Type": "application/json",
 }
-START_CONVERSATION_COMMAND = "/start"
-
 HOST = os.getenv("EJ_HOST")
 API_URL = f"{HOST}/api/v1"
-CONVERSATIONS_URL = (
-    f"{API_URL}/conversations/?is_promoted=true&participation_source=bot"
-)
-REGISTRATION_URL = f"{API_URL}/users/"
-AUTH_URL = f"{API_URL}/token/"
-REFRESH_TOKEN_URL = f"{API_URL}/refresh-token/"
-VOTES_URL = f"{API_URL}/votes/"
-COMMENTS_URL = f"{API_URL}/comments/"
-PROFILE = f"{API_URL}/profiles/me/"
-PUT_PROFILE = f"{API_URL}/profiles/"
+TOKEN_EXPIRATION_TIME = timedelta(minutes=10)
+JWT_SECRET = os.getenv("JWT_SECRET")
+SECRET_KEY = os.getenv("SECRET_KEY")
+EXTERNAL_AUTHENTICATION_HOST = os.getenv("EXTERNAL_AUTHENTICATION_HOST", "")
+BP_EJ_COMPONENT_ID = os.getenv("BP_EJ_COMPONENT_ID", "")
 
 
 class EJCommunicationError(Exception):

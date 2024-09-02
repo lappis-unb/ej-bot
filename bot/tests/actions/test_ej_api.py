@@ -116,8 +116,8 @@ class TestEjUrlsGenerationClass:
         url = conversation_random_comment_url(CONVERSATION_ID)
         assert url == f"{API_URL}/conversations/{CONVERSATION_ID}/random-comment/"
 
-    def test_user_statistics_url_generator(self):
-        url = user_statistics_url(CONVERSATION_ID)
+    def test_user_statistics_route_generator(self):
+        url = user_statistics_route(CONVERSATION_ID)
         assert url == f"{API_URL}/conversations/{CONVERSATION_ID}/user-statistics/"
 
     def test_user_comments_route_generator(self):

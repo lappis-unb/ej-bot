@@ -9,8 +9,8 @@ from actions.logger import custom_logger
 from rasa_sdk import Tracker
 from rasa_sdk import Tracker
 
+from .routes import auth_headers, votes_route
 from .settings import *
-from .routes import auth_headers
 
 
 class VoteDialogue:
@@ -90,7 +90,7 @@ class Vote:
                 }
             )
             response = requests.post(
-                VOTES_URL,
+                votes_route(),
                 data=body,
                 headers=auth_headers(self.token),
             )

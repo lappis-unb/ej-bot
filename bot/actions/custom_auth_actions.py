@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Text
 
-from ej.settings import EJCommunicationError
 from ej.conversation import Conversation
+from ej.settings import EJCommunicationError
 from ej.user import CheckAuthenticationDialogue, ExternalAuthorizationService, User
 from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType

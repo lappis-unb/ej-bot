@@ -6,8 +6,8 @@ import requests
 
 from rasa_sdk import Tracker
 
+from .routes import auth_headers, comments_route
 from .settings import *
-from .routes import auth_headers
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class Comment:
             )
             try:
                 response = requests.post(
-                    COMMENTS_URL,
+                    comments_route(),
                     data=body,
                     headers=auth_headers(self.token),
                 )

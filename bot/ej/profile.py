@@ -4,8 +4,8 @@ import os
 import random
 
 from actions.logger import custom_logger
+from ej.routes import my_profile_route, profiles_route
 
-from .settings import PROFILE, PUT_PROFILE
 from .conversation import Conversation
 from .ej_api import EjApi
 
@@ -22,7 +22,7 @@ class Profile:
         """
         get profile by ej-api
         """
-        response = self.ej_api.request(PROFILE)
+        response = self.ej_api.request(my_profile_route())
         data = response.json()
         self.user = data["user"]
         self.phone_number = data["phone_number"]
@@ -192,7 +192,7 @@ class Profile:
         return response
 
     def put_url(self):
-        return f"{PUT_PROFILE}{self.user}/"
+        return f"{profiles_route()}{self.user}/"
 
     @staticmethod
     def finish_profile(slot_value: str):

@@ -5,8 +5,7 @@ import requests
 
 from rasa_sdk import Tracker
 
-from .settings import REFRESH_TOKEN_URL
-from .routes import HEADERS, auth_headers
+from .routes import HEADERS, auth_headers, refresh_token_route
 
 
 @dataclass
@@ -40,7 +39,7 @@ class EjApi:
         """
         Requests a new access_token using the refresh_token attribute.
         """
-        response = requests.post(REFRESH_TOKEN_URL, {"refresh": self.refresh_token})
+        response = requests.post(refresh_token_route(), {"refresh": self.refresh_token})
         if response.status_code == 200:
             data = response.json()
             self.access_token = data.get("access")
