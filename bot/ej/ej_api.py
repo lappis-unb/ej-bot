@@ -5,7 +5,7 @@ import requests
 
 from rasa_sdk import Tracker
 
-from .constants import REFRESH_TOKEN_URL
+from .settings import REFRESH_TOKEN_URL
 from .routes import HEADERS, auth_headers
 
 

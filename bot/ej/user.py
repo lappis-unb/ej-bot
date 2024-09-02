@@ -11,7 +11,7 @@ from actions.logger import custom_logger
 from dotenv import load_dotenv
 from ej.ej_api import EjApi
 
-from .constants import *
+from .settings import *
 
 
 load_dotenv()

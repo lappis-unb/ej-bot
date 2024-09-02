@@ -6,7 +6,7 @@ import requests
 
 from rasa_sdk import Tracker
 
-from .constants import *
+from .settings import *
 from .routes import auth_headers
 
 logger = logging.getLogger(__name__)

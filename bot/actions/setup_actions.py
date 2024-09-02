@@ -1,6 +1,6 @@
 import os
 from actions.checkers.api_error_checker import EJApiErrorManager
-from ej.constants import EJCommunicationError
+from ej.settings import EJCommunicationError
 
 from rasa_sdk import Action
 from rasa_sdk.events import SlotSet

@@ -1,6 +1,6 @@
 from bot.ej.comment import Comment, CommentDialogue
 
-from bot.ej.constants import *
+from bot.ej.settings import *
 from bot.ej.conversation import Conversation
 from bot.ej.vote import Vote, VoteDialogue
 from bot.ej.user import User

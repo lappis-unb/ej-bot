@@ -5,7 +5,7 @@ import random
 
 from actions.logger import custom_logger
 
-from .constants import PROFILE, PUT_PROFILE
+from .settings import PROFILE, PUT_PROFILE
 from .conversation import Conversation
 from .ej_api import EjApi
 

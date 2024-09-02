@@ -4,7 +4,7 @@ import logging
 from ej.ej_api import EjApi
 from rasa_sdk import Tracker
 from actions.logger import custom_logger
-from .constants import EJCommunicationError
+from .settings import EJCommunicationError
 from .routes import (
     conversation_random_comment_url,
     conversation_url,

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from actions.checkers.api_error_checker import EJApiErrorManager
 from actions.base_actions import CheckSlotsInterface
-from ej.constants import EJCommunicationError
+from ej.settings import EJCommunicationError
 from ej.vote import VoteDialogue
 from ej.profile import Profile
 from rasa_sdk.events import SlotSet
@@ -41,7 +41,6 @@ class CheckNextProfileQuestionSlots(CheckSlotsInterface):
 
 
 class CheckValidateProfileQuestion(CheckSlotsInterface):
-
     def should_return_slots_to_rasa(self) -> bool:
         profile = Profile(self.tracker)
         profile_question_id = self.tracker.get_slot("profile_question_id")

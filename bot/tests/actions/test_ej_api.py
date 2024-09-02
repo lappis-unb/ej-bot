@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from bot.ej.comment import Comment
-from bot.ej.constants import *
+from bot.ej.settings import *
 from bot.ej.conversation import Conversation, EJCommunicationError
 from bot.ej.routes import *
 from bot.ej.user import User

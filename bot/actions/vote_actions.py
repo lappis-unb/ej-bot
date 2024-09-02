@@ -10,7 +10,7 @@ from actions.checkers.vote_actions_checkers import (
 from actions.logger import custom_logger
 from actions.base_actions import CheckersMixin
 from ej.comment import Comment, CommentDialogue
-from ej.constants import EJCommunicationError
+from ej.settings import EJCommunicationError
 from ej.conversation import Conversation
 from ej.vote import Vote, VoteDialogue
 from rasa_sdk import Action, FormValidationAction, Tracker

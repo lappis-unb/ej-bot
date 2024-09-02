@@ -9,7 +9,7 @@ from actions.logger import custom_logger
 from rasa_sdk import Tracker
 from rasa_sdk import Tracker
 
-from .constants import *
+from .settings import *
 from .routes import auth_headers
 
 
