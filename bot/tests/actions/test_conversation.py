@@ -16,7 +16,7 @@ class TestConversation:
 
     def test_init(self, conversation):
         assert conversation.id == "123"
-        assert conversation.title == "Test Title"
+        assert conversation.text == "Test Title"
         assert conversation.participant_can_add_comments
         assert conversation.anonymous_votes_limit == 5
         assert isinstance(conversation.ej_api, EjApi)
@@ -30,7 +30,7 @@ class TestConversation:
             "participant_can_add_comments"
         )
         assert conversation.id == tracker.get_slot("conversation_id")
-        assert conversation.title == tracker.get_slot("conversation_title")
+        assert conversation.text == tracker.get_slot("conversation_text")
 
     def test_create_conversation_with_empty_tracker(self, empty_tracker):
         data = {"anonymous_votes_limit": 0, "participants_can_add_comments": False}

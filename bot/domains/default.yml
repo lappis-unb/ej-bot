@@ -94,7 +94,7 @@ slots:
     mappings:
     - type: from_entity
       entity: conversation_id
-  conversation_title:
+  conversation_text:
     type: text
     initial_value: null
     influence_conversation: false

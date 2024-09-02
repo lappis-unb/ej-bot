@@ -1,32 +1,11 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.checkers.profile_actions_checkers import CheckSlotsInterface
 from ej.constants import EJCommunicationError
 from ej.comment import CommentDialogue
 from ej.conversation import Conversation
 from ej.profile import Profile
 from rasa_sdk.events import FollowupAction, SlotSet
-from typing import Any, List
-from actions.logger import custom_logger
-
-
-@dataclass
-class CheckSlotsInterface:
-    """
-    Defines a common interface to verify an action slots.
-    """
-
-    tracker: Any = None
-    dispatcher: Any = None
-    conversation: Any = None
-    conversation_statistics: Any = None
-    slots: List[Any] = field(default_factory=list)
-
-    def should_return_slots_to_rasa(self) -> bool:
-        """
-        Returns True if the dialogue slots has to be updated.
-        If True, the slots field must be updated with the corresponding SlotSet or FollowupAction.
-        """
-        raise Exception("not implemented")
 
 
 @dataclass

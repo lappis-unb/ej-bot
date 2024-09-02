@@ -8,23 +8,15 @@ from actions.checkers.vote_actions_checkers import (
     CheckNeedToAskAboutProfile,
 )
 from actions.logger import custom_logger
+from actions.base_actions import CheckersMixin
 from ej.comment import Comment, CommentDialogue
 from ej.constants import EJCommunicationError
 from ej.conversation import Conversation
 from ej.vote import Vote, VoteDialogue
-from ej.profile import Profile
 from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
-
-
-class CheckersMixin:
-    def __init__(self):
-        self.slots = []
-
-    def get_checkers(self, tracker, **kwargs):
-        raise NotImplementedError
 
 
 class ActionAskVote(Action, CheckersMixin):

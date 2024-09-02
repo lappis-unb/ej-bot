@@ -1,14 +1,11 @@
 from typing import Any, Dict, List, Text
 from actions.logger import custom_logger
-from actions.checkers.api_error_checker import EJApiErrorManager
-from ej.constants import EJCommunicationError
-from ej.profile import Profile
 from actions.checkers.profile_actions_checkers import (
     CheckNextProfileQuestionSlots,
     CheckValidateProfileQuestion,
 )
 from rasa_sdk import Action, Tracker
-from rasa_sdk.events import EventType, SlotSet, FollowupAction
+from rasa_sdk.events import EventType
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
 from rasa_sdk.forms import FormValidationAction

@@ -34,7 +34,7 @@ def empty_tracker():
         "access_token": None,
         "refresh_token": None,
         "conversation_id": None,
-        "conversation_title": None,
+        "conversation_text": None,
         "next_count_to_send_profile_question": 0,
         "send_profile_questions": None,
         "votes_to_send_profile_questions": None,
@@ -80,7 +80,7 @@ def tracker():
         "refresh_token": "5678",
         "conversation_id": "1",
         "conversation_id_cache": "1",
-        "conversation_title": "conversation title",
+        "conversation_text": "conversation.text",
         "send_profile_questions": True,
         "votes_to_send_profile_questions": 1,
     }

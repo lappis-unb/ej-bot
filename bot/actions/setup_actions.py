@@ -12,18 +12,6 @@ from rasa_sdk import Action
 from rasa_sdk.events import SlotSet
 
 
-class ResetHelpFormSlots(Action):
-    """
-    Rest help_form slots to allows the user to request the help_form again.
-    """
-
-    def name(self):
-        return "action_reset_help_slots"
-
-    def run(self, dispatcher, tracker, domain):
-        return [SlotSet("help_topic", None)]
-
-
 class ActionGetConversation(Action):
     """
     Authenticates the chatbot user on EJ API and requests initial conversation data.
@@ -82,7 +70,7 @@ class ActionGetConversation(Action):
         self.slots = [
             SlotSet("auth_link", auth_link),
             SlotSet("conversation_id", conversation.id),
-            SlotSet("conversation_text", conversation.title),
+            SlotSet("conversation_text", conversation.text),
             SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
             SlotSet(
                 "participant_can_add_comments",

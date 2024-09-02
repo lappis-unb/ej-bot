@@ -23,7 +23,7 @@ class Conversation:
         self.tracker = tracker
         self.data = data
         self.id = self._get_id()
-        self.title = self._get_title()
+        self.text = self._get_text()
         self.participant_can_add_comments = self._get_participants_can_add_comments()
         self.anonymous_votes_limit = self._get_anonymous_votes_limit()
         self.ej_api = EjApi(self.tracker)
@@ -51,10 +51,10 @@ class Conversation:
             return self.data.get("id")
         return self.tracker.get_slot("conversation_id")
 
-    def _get_title(self):
+    def _get_text(self):
         if self.data and "text" in self.data.keys():
             return self.data.get("text")
-        return self.tracker.get_slot("conversation_title")
+        return self.tracker.get_slot("conversation_text")
 
     def _get_anonymous_votes_limit(self):
         if self.data and "anonymous_votes_limit" in self.data.keys():

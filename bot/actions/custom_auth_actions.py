@@ -56,7 +56,7 @@ class ValidateAuthenticationForm(FormValidationAction):
             "access_token": user.tracker.get_slot("access_token"),
             "refresh_token": user.tracker.get_slot("refresh_token"),
             "has_completed_registration": user.has_completed_registration,
-            "conversation_text": conversation.title,
+            "conversation_text": conversation.text,
             "conversation_id": conversation.id,
         }
 
