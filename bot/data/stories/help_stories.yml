@@ -10,6 +10,7 @@ stories:
       - slot_was_set:
         - help_topic
       - active_loop: null
+      - action: action_reset_help_slots
       - intent: welcome
       - action: utter_return_from_help
       - action: utter_show_topic_of_discussion

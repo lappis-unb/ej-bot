@@ -12,8 +12,6 @@ intents:
   - comment_confirmation
   - out_of_context
   - help
-  - start_with_conversation_id:
-      use_entities: true
   - add_new_comment:
       ignore_entities:
       - conversation_id
@@ -172,6 +170,7 @@ slots:
   help_topic:
     type: categorical
     values: 
+      - help_plan
       - help_voting
       - help_know_more
       - help_authentication
@@ -394,6 +393,7 @@ actions:
 - action_customized_fallback
 - action_ask_check_authentication
 - validate_authentication_form
+- validate_help_form
 
 forms:
   help_form:
@@ -401,12 +401,10 @@ forms:
       - help_topic
     ignored_intents:
       - stop
-      - start_with_conversation_id
       - check_authentication
   authentication_form:
     ignored_intents:
       - stop
-      - start_with_conversation_id
     required_slots:
       - check_authentication
       - has_completed_registration
