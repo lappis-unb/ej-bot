@@ -9,7 +9,6 @@ stories:
   - slot_was_set:
     - help_topic: help_voting
   - active_loop: null
-  - action: utter_explain_help_voting
   - action: action_reset_help_slots
 
 - story: User wants to know more about the participatory process
@@ -22,7 +21,6 @@ stories:
   - slot_was_set:
     - help_topic: help_know_more
   - active_loop: null
-  - action: utter_explain_help_know_more
   - action: action_reset_help_slots
 
 - story: User wants to know more about the participatory process
@@ -35,7 +33,6 @@ stories:
   - slot_was_set:
     - help_topic: help_authentication
   - active_loop: null
-  - action: utter_explain_help_authentication
   - action: action_reset_help_slots
 
 - story: User wants to know more about the participatory process
@@ -48,5 +45,4 @@ stories:
   - slot_was_set:
     - help_topic: help_lgpd
   - active_loop: null
-  - action: utter_explain_help_lgpd
   - action: action_reset_help_slots
