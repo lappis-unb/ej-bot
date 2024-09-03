@@ -71,7 +71,7 @@ def empty_tracker():
 
 
 @pytest.fixture
-def tracker():
+def tracker(conversation_statistics):
     slots = {
         "has_completed_registration": False,
         "participant_can_add_comments": False,
@@ -83,6 +83,7 @@ def tracker():
         "conversation_text": "conversation.text",
         "send_profile_questions": True,
         "votes_to_send_profile_questions": 1,
+        "conversation_statistics": conversation_statistics,
     }
 
     def set_slot(slot, value):
@@ -93,7 +94,7 @@ def tracker():
 
     tracker = Mock()
     tracker.sender_id = "1234"
-    tracker.conversation_statistics = "1234"
+    tracker.conversation_statistics = conversation_statistics
     tracker.get_slot = lambda x: "1234"
     tracker.get_latest_input_channel = lambda: "whatsapp"
     tracker.latest_message = {

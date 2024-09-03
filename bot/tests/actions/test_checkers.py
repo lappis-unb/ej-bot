@@ -4,29 +4,32 @@ from actions.checkers.vote_actions_checkers import (
     CheckNextCommentSlots,
 )
 from actions.checkers.api_error_checker import EJApiErrorManager
-from rasa_sdk.events import SlotSet
+from ej.vote import VoteDialogue
+from ej.user import User
 
 
 class TestCheckEndConversationSlots:
-    def test_should_return_slots_to_rasa(
-        self, tracker, dispatcher, conversation_statistics
-    ):
-        conversation_statistics["missing_votes"] = 0
+    def test_should_return_slots_to_rasa(self, tracker, dispatcher):
+        user = User(tracker)
+        user.tracker.set_slot("conversation_statistics", {"missing_votes": 0})
         checker = CheckEndConversationSlots(
             tracker=tracker,
             dispatcher=dispatcher,
-            conversation_statistics=conversation_statistics,
+            user=user,
         )
         assert checker.should_return_slots_to_rasa()
-        assert checker.slots == [SlotSet("vote", "concordar")]
+        assert checker.slots == VoteDialogue.finish_voting(format="slots")
 
     def test_should_not_return_slots_to_rasa(
         self, tracker, dispatcher, conversation_statistics
     ):
+
+        user = User(tracker)
         checker = CheckEndConversationSlots(
             tracker=tracker,
             dispatcher=dispatcher,
             conversation_statistics=conversation_statistics,
+            user=user,
         )
         assert not checker.should_return_slots_to_rasa()
         assert checker.slots == []
