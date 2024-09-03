@@ -53,7 +53,7 @@ class ActionAskVote(Action, CheckersMixin):
         )
 
         for checker in action_chekers:
-            if checker.should_return_slots_to_rasa():
+            if checker.has_slots_to_return():
                 self.slots = checker.slots
                 break
 

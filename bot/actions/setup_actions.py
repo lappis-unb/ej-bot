@@ -26,7 +26,7 @@ class ActionGetConversation(Action):
 
         checkers = self.get_checkers(tracker, user=user, dispatcher=dispatcher)
         for checker in checkers:
-            if checker.should_return_slots_to_rasa():
+            if checker.has_slots_to_return():
                 self.slots = checker.slots
                 break
 

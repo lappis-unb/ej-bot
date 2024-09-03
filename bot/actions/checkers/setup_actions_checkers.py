@@ -41,7 +41,7 @@ def get_slots(conversation: Conversation, user: User, conversation_statistics: d
 
 @dataclass
 class CheckGetConversationSlots(CheckSlotsInterface):
-    def should_return_slots_to_rasa(self) -> bool:
+    def has_slots_to_return(self) -> bool:
         """ """
         if CONVERSATION_ID is not None:
             try:
@@ -63,7 +63,7 @@ class CheckGetConversationSlots(CheckSlotsInterface):
 
 @dataclass
 class CheckGetBoardSlots(CheckSlotsInterface):
-    def should_return_slots_to_rasa(self) -> bool:
+    def has_slots_to_return(self) -> bool:
         """ """
         ej_api_error_manager = EJApiErrorManager()
 

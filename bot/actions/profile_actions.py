@@ -32,7 +32,7 @@ class ActionAskProfileQuestion(Action):
         )
 
         for checker in action_checkers:
-            if checker.should_return_slots_to_rasa():
+            if checker.has_slots_to_return():
                 self.slots = checker.slots
                 break
 
@@ -72,7 +72,7 @@ class ValidateProfileForm(FormValidationAction):
         )
 
         for checker in action_checkers:
-            if checker.should_return_slots_to_rasa():
+            if checker.has_slots_to_return():
                 self.slots = checker.slots
 
         custom_logger(f"slots: {self.slots}")

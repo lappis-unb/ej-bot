@@ -15,7 +15,7 @@ class CheckNextCommentSlots(CheckSlotsInterface):
     Request to EJ API the next comment to vote and update the user statistics slots.
     """
 
-    def should_return_slots_to_rasa(self) -> bool:
+    def has_slots_to_return(self) -> bool:
         try:
             comment = self.conversation.get_next_comment()
             if comment:
@@ -69,7 +69,7 @@ class CheckNeedToAskAboutProfile(CheckSlotsInterface):
     Verify if the user needs to answer profile questions.
     """
 
-    def should_return_slots_to_rasa(self) -> bool:
+    def has_slots_to_return(self) -> bool:
         try:
             profile = Profile(self.tracker)
         except EJCommunicationError:
@@ -107,7 +107,7 @@ class CheckExternalAutenticationSlots(CheckSlotsInterface):
     Test if the user has reached the anonymous vote limit and needs to authenticate.
     """
 
-    def should_return_slots_to_rasa(self) -> bool:
+    def has_slots_to_return(self) -> bool:
         has_completed_registration = self.tracker.get_slot("has_completed_registration")
         anonymous_votes_limit = int(self.tracker.get_slot("anonymous_votes_limit"))
         if Conversation.user_should_authenticate(
@@ -138,7 +138,7 @@ class CheckEndConversationSlots(CheckSlotsInterface):
     Test if the user has voted in all available comments.
     """
 
-    def should_return_slots_to_rasa(self):
+    def has_slots_to_return(self):
         conversation_statistics = self.user.tracker.get_slot("conversation_statistics")
         if not Conversation.available_comments_to_vote(conversation_statistics):
             self._dispatch_messages()

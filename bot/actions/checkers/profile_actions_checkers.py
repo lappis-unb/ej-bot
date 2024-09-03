@@ -14,7 +14,7 @@ class CheckNextProfileQuestionSlots(CheckSlotsInterface):
     Request to EJ API the next comment to vote and update the user statistics slots.
     """
 
-    def should_return_slots_to_rasa(self) -> bool:
+    def has_slots_to_return(self) -> bool:
         profile = Profile(self.tracker)
 
         try:
@@ -41,7 +41,7 @@ class CheckNextProfileQuestionSlots(CheckSlotsInterface):
 
 
 class CheckValidateProfileQuestion(CheckSlotsInterface):
-    def should_return_slots_to_rasa(self) -> bool:
+    def has_slots_to_return(self) -> bool:
         profile = Profile(self.tracker)
         profile_question_id = self.tracker.get_slot("profile_question_id")
         if profile_question_id:

@@ -26,7 +26,7 @@ class CheckSlotsInterface:
     slot_value: Any = ""
     user: User = field(default_factory=lambda: User(None))
 
-    def should_return_slots_to_rasa(self) -> bool:
+    def has_slots_to_return(self) -> bool:
         """
         Returns True if the dialogue slots has to be updated.
         If True, the slots field must be updated with the corresponding SlotSet or FollowupAction.
