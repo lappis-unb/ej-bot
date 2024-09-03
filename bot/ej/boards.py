@@ -1,6 +1,6 @@
 from .conversation import Conversation
 from .ej_api import EjApi
-from .routes import board_url
+from .routes import board_route
 
 
 class Board:
@@ -11,7 +11,7 @@ class Board:
         self._set_board(tracker)
 
     def _set_board(self, tracker):
-        response = self.ej_api.request(board_url(self.id))
+        response = self.ej_api.request(board_route(self.id))
         data = response.json()
         self.title = data.get("title")
         self.description = data.get("description")

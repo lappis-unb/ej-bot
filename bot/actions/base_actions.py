@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, List
+from typing import Any, Dict, List
 
 from ej.user import User
 
@@ -22,7 +22,7 @@ class CheckSlotsInterface:
     dispatcher: Any = None
     conversation: Any = None
     conversation_statistics: Any = None
-    slots: List[Any] = field(default_factory=list)
+    slots: List[Any] | Dict[Any, Any] = field(default_factory=list)
     slot_value: Any = ""
     user: User = field(default_factory=lambda: User(None))
 

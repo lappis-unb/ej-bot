@@ -108,7 +108,9 @@ class User:
             self.sender_id = self.tracker.sender_id
             self.ej_api = EjApi(self.tracker)
             self.secret_id = ExternalAuthorizationService.generate_hash(self.sender_id)
-            self.has_completed_registration = tracker.get_slot("has_completed_registration")
+            self.has_completed_registration = tracker.get_slot(
+                "has_completed_registration"
+            )
             self._set_password()
             self._set_email()
 

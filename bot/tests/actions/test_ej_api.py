@@ -109,11 +109,11 @@ class TestEjUrlsGenerationClass:
     """tests bot.ej.api ej urls generation"""
 
     def test_conversation_url_generator(self):
-        url = conversation_url(CONVERSATION_ID)
+        url = conversation_route(CONVERSATION_ID)
         assert url == f"{API_URL}/conversations/{CONVERSATION_ID}/"
 
     def test_conversation_random_comment_url_generator(self):
-        url = conversation_random_comment_url(CONVERSATION_ID)
+        url = random_comment_route(CONVERSATION_ID)
         assert url == f"{API_URL}/conversations/{CONVERSATION_ID}/random-comment/"
 
     def test_user_statistics_route_generator(self):

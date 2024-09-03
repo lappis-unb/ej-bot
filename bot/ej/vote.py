@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from enum import Enum
 import json
-from typing import Text
+from typing import Any, List, Text
 
 import requests
 
 from actions.logger import custom_logger
 from rasa_sdk import Tracker
-from rasa_sdk import Tracker
+from rasa_sdk.events import SlotSet
 
 from .routes import auth_headers, votes_route
 from .settings import *
@@ -30,13 +30,19 @@ class VoteDialogue:
         }
 
     @staticmethod
-    def finish_voting():
+    def finish_voting(format="dict") -> dict | List[Any]:
         """
         Rasa ends a form when all slots are filled. This method
         fills the vote_form slots with '-' character,
         forcing Rasa to stop sending comments to voting.
         """
-        return {"vote": "-", "comment_confirmation": "-", "comment": "-"}
+        if format == "dict":
+            return {"vote": "-", "comment_confirmation": "-", "comment": "-"}
+        return [
+            SlotSet("vote", "-"),
+            SlotSet("comment_confirmation", "-"),
+            SlotSet("comment", "-"),
+        ]
 
 
 class VoteChoices(Enum):

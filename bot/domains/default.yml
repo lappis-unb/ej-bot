@@ -94,12 +94,6 @@ slots:
     mappings:
     - type: from_entity
       entity: conversation_id
-  conversation_text:
-    type: text
-    initial_value: null
-    influence_conversation: false
-    mappings:
-    - type: custom
   conversation_statistics:
     type: any
     initial_value: null
@@ -205,10 +199,9 @@ responses:
   - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
   utter_comment_fallback:
   - text: Desculpe, não foi possível reconhecer o comentário 😕.
-  utter_voted_all_comments:
-  - text: Nossa 😮😮😮 Você já opinou sobre todos os comentários que eu tinha aqui!
   utter_thanks_participation:
-  - text: Sua participação irá nos ajudar a entender o que as pessoas pensam sobre esse assunto, muito obrigado 🤗🤗🤗!!
+  - text: |
+          Parabéns, {contact_name}! Você respondeu todas as minhas perguntas.
   utter_next_conversation:
   - text: Depois conversamos mais 😘
   utter_ej_communication_error:

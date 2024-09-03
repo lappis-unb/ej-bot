@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from actions.checkers.api_error_checker import EJApiErrorManager
 from actions.checkers.profile_actions_checkers import CheckSlotsInterface
+from ej.vote import VoteDialogue
 from ej.settings import EJCommunicationError
 from ej.comment import CommentDialogue
 from ej.conversation import Conversation
@@ -17,11 +18,19 @@ class CheckNextCommentSlots(CheckSlotsInterface):
     def should_return_slots_to_rasa(self) -> bool:
         try:
             comment = self.conversation.get_next_comment()
-            self.set_slots(comment)
+            if comment:
+                self.set_slots(comment)
+            else:
+                self._dispatch_no_comments_left_to_vote()
+                self.slots = VoteDialogue.finish_voting(format="slots")
         except EJCommunicationError:
             ej_api_error_manager = EJApiErrorManager()
             self.slots = ej_api_error_manager.get_slots()
         return True
+
+    def _dispatch_no_comments_left_to_vote(self):
+        self.dispatcher.utter_message(template="utter_voted_all_comments")
+        self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def _dispatch_messages(
         self, comment, user_voted_comments, conversation_total_comments
@@ -130,15 +139,15 @@ class CheckEndConversationSlots(CheckSlotsInterface):
     """
 
     def should_return_slots_to_rasa(self):
-        if not Conversation.available_comments_to_vote(self.conversation_statistics):
+        conversation_statistics = self.user.tracker.get_slot("conversation_statistics")
+        if not Conversation.available_comments_to_vote(conversation_statistics):
             self._dispatch_messages()
             self.set_slots()
             return True
         return False
 
     def _dispatch_messages(self):
-        self.dispatcher.utter_message(template="utter_voted_all_comments")
         self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def set_slots(self):
-        self.slots = [SlotSet("vote", "concordar")]
+        self.slots = VoteDialogue.finish_voting(format="slots")

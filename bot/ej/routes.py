@@ -11,28 +11,28 @@ def auth_headers(token):
     return headers
 
 
-def board_url(board_id):
+def board_route(board_id):
     return f"{API_URL}/boards/{board_id}/"
 
 
-def conversation_url(conversation_id):
+def conversation_route(conversation_id):
     return f"{API_URL}/conversations/{conversation_id}/"
 
 
-def conversation_random_comment_url(conversation_id):
-    return f"{conversation_url(conversation_id)}random-comment/"
+def random_comment_route(conversation_id):
+    return f"{conversation_route(conversation_id)}random-comment/"
 
 
 def user_statistics_route(conversation_id):
-    return f"{conversation_url(conversation_id)}user-statistics/"
+    return f"{conversation_route(conversation_id)}user-statistics/"
 
 
 def user_comments_route(conversation_id):
-    return f"{conversation_url(conversation_id)}user-comments/"
+    return f"{conversation_route(conversation_id)}user-comments/"
 
 
 def user_pending_comments_route(conversation_id):
-    return f"{conversation_url(conversation_id)}user-pending-comments/"
+    return f"{conversation_route(conversation_id)}user-pending-comments/"
 
 
 def auth_route():

@@ -9,6 +9,7 @@ from actions.checkers.vote_actions_checkers import (
     CheckNextCommentSlots,
 )
 from actions.logger import custom_logger
+from ej.user import User
 from ej.comment import Comment, CommentDialogue
 from ej.conversation import Conversation
 from ej.settings import EJCommunicationError
@@ -33,6 +34,7 @@ class ActionAskVote(Action, CheckersMixin):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
+        user = User(tracker)
         conversation = Conversation(tracker)
         try:
             conversation_statistics = conversation.get_participant_statistics()
@@ -47,6 +49,7 @@ class ActionAskVote(Action, CheckersMixin):
             dispatcher=dispatcher,
             conversation=conversation,
             conversation_statistics=conversation_statistics,
+            user=user,
         )
 
         for checker in action_chekers:
@@ -62,12 +65,11 @@ class ActionAskVote(Action, CheckersMixin):
         """
         dispatcher = kwargs["dispatcher"]
         conversation = kwargs["conversation"]
+        user = kwargs["user"]
         conversation_statistics = kwargs["conversation_statistics"]
         return [
             CheckEndConversationSlots(
-                tracker=tracker,
-                dispatcher=dispatcher,
-                conversation_statistics=conversation_statistics,
+                tracker=tracker, dispatcher=dispatcher, user=user
             ),
             CheckExternalAutenticationSlots(
                 tracker=tracker,
@@ -159,15 +161,14 @@ class ValidateVoteForm(FormValidationAction):
         if not slot_value:
             return {}
 
-        conversation = Conversation(tracker)
         ej_api_error_manager = EJApiErrorManager()
+        conversation = Conversation(tracker)
         try:
             statistics = conversation.get_participant_statistics()
         except EJCommunicationError:
             return ej_api_error_manager.get_slots(as_dict=True)
 
         vote = Vote(slot_value, tracker)
-
         if vote.is_valid():
             custom_logger(f"POST vote to EJ API: {vote}")
             try:
@@ -204,10 +205,6 @@ class ValidateVoteForm(FormValidationAction):
         if Conversation.available_comments_to_vote(statistics):
             return VoteDialogue.continue_voting(tracker)
         else:
-            dispatcher.utter_message(template="utter_voted_all_comments")
-            """
-            TODO: Implement a new flow to get next conversation by board.
-            """
             dispatcher.utter_message(template="utter_thanks_participation")
             return VoteDialogue.finish_voting()
 

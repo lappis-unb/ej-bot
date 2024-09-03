@@ -287,8 +287,6 @@ responses:
   - text: Eu não consegui salvar seu comentário 😕, pois já existe um comentário com o mesmo texto.
   utter_comment_fallback:
   - text: Desculpe, não foi possível reconhecer o comentário 😕.
-  utter_voted_all_comments:
-  - text: "{contact_name}, parabéns! Você respondeu às perguntas que tinha aqui."
   utter_thanks_participation:
   - text: |
           Parabéns, {contact_name}! Você respondeu todas as minhas perguntas.

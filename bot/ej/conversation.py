@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 import logging
 
+from actions.logger import custom_logger
 from ej.ej_api import EjApi
 from rasa_sdk import Tracker
 
 from .routes import (
-    conversation_random_comment_url,
-    conversation_url,
+    random_comment_route,
+    conversation_route,
     user_statistics_route,
 )
 from .settings import EJCommunicationError
@@ -70,7 +71,7 @@ class Conversation:
     def get(conversation_id: int, tracker: Tracker):
         ej_api = EjApi(tracker)
         try:
-            response = ej_api.request(conversation_url(conversation_id))
+            response = ej_api.request(conversation_route(conversation_id))
             conversation = response.json()
             if len(conversation) == 0:
                 raise EJCommunicationError
@@ -98,11 +99,13 @@ class Conversation:
             if response.status_code == 500:
                 raise EJCommunicationError
             comment = response.json()
-            comment_url_as_list = comment["links"]["self"].split("/")
-            comment["id"] = comment_url_as_list[len(comment_url_as_list) - 2]
-            return comment
+            if comment.get("content"):
+                comment_url_as_list = comment["links"]["self"].split("/")
+                comment["id"] = comment_url_as_list[len(comment_url_as_list) - 2]
+                return comment
+            return None
 
-        url = conversation_random_comment_url(self.id)
+        url = random_comment_route(self.id)
         try:
             return _request()
         except EJCommunicationError:

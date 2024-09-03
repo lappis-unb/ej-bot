@@ -2,6 +2,7 @@ from actions.checkers.setup_actions_checkers import (
     CheckGetBoardSlots,
     CheckGetConversationSlots,
 )
+from actions.checkers.vote_actions_checkers import CheckEndConversationSlots
 from ej.user import User
 from rasa_sdk import Action
 
@@ -37,4 +38,7 @@ class ActionGetConversation(Action):
         return [
             CheckGetConversationSlots(dispatcher=dispatcher, user=user),
             CheckGetBoardSlots(dispatcher=dispatcher, user=user),
+            CheckEndConversationSlots(
+                tracker=tracker, dispatcher=dispatcher, user=user
+            ),
         ]

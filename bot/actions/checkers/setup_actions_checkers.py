@@ -10,14 +10,13 @@ from rasa_sdk.events import SlotSet
 from ej.settings import EJCommunicationError, BOARD_ID, CONVERSATION_ID
 
 
-def set_slots(conversation: Conversation, user: User):
+def get_slots(conversation: Conversation, user: User, conversation_statistics: dict):
     authorization_service = ExternalAuthorizationService(
         user.tracker.sender_id, user.secret_id
     )
-    auth_link = authorization_service.get_authentication_link()
-
     return [
-        SlotSet("auth_link", auth_link),
+        SlotSet("conversation_statistics", conversation_statistics),
+        SlotSet("auth_link", authorization_service.get_authentication_link()),
         SlotSet("conversation_id", conversation.id),
         SlotSet("conversation_text", conversation.text),
         SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
@@ -50,15 +49,16 @@ class CheckGetConversationSlots(CheckSlotsInterface):
                     int(CONVERSATION_ID), self.user.tracker
                 )
                 conversation = Conversation(self.user.tracker, conversation_data)
-                self.set_slots(conversation)
+                conversation_statistics = conversation.get_participant_statistics()
+                self.set_slots(conversation, conversation_statistics)
             except EJCommunicationError:
                 ej_api_error_manager = EJApiErrorManager()
                 self.slots = ej_api_error_manager.get_slots()
             return True
         return False
 
-    def set_slots(self, conversation: Conversation):
-        self.slots = set_slots(conversation, self.user)
+    def set_slots(self, conversation: Conversation, conversation_statistics: dict):
+        self.slots = get_slots(conversation, self.user, conversation_statistics)
 
 
 @dataclass
@@ -80,12 +80,13 @@ class CheckGetBoardSlots(CheckSlotsInterface):
 
             index = 0
             conversation = board.conversations[index]
-            self.set_slots(conversation)
+            conversation_statistics = conversation.get_participant_statistics()
+            self.set_slots(conversation, conversation_statistics)
             return self.slots
         except EJCommunicationError:
             self.slots = ej_api_error_manager.get_slots()
 
         return True
 
-    def set_slots(self, conversation: Conversation):
-        self.slots = set_slots(conversation, self.user)
+    def set_slots(self, conversation: Conversation, conversation_statistics: dict):
+        self.slots = get_slots(conversation, self.user, conversation_statistics)
