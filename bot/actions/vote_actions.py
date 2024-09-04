@@ -138,7 +138,7 @@ class ValidateVoteForm(FormValidationAction):
         if Conversation.user_requested_new_conversation(user_comment):
             return CommentDialogue.resume_voting("")
 
-        conversation_id = tracker.get_slot("conversation_id_cache")
+        conversation_id = tracker.get_slot("conversation_id")
         comment = Comment(conversation_id, user_comment, tracker)
         try:
             comment.create()

@@ -79,7 +79,6 @@ def tracker(conversation_statistics):
         "access_token": "1234",
         "refresh_token": "5678",
         "conversation_id": "1",
-        "conversation_id_cache": "1",
         "conversation_text": "conversation.text",
         "send_profile_questions": True,
         "votes_to_send_profile_questions": 1,

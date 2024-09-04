@@ -81,12 +81,6 @@ slots:
     influence_conversation: false
     mappings:
     - type: custom
-  conversation_id_cache:
-    type: text
-    initial_value: null
-    influence_conversation: false
-    mappings:
-    - type: custom
   conversation_id:
     type: text
     initial_value: null

@@ -29,7 +29,6 @@ class CheckNextCommentSlots(CheckSlotsInterface):
         return True
 
     def _dispatch_no_comments_left_to_vote(self):
-        self.dispatcher.utter_message(template="utter_voted_all_comments")
         self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def _dispatch_messages(
