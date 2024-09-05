@@ -22,33 +22,6 @@ stories:
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 
-  - story: Starts participation, than adds a new comment
-    steps:
-      - checkpoint: starts_voting
-      - slot_was_set:
-        - conversation_id
-      - action: vote_form
-      - active_loop: vote_form
-      - slot_was_set:
-        - auth_link: null
-        - comment_confirmation: Sim
-      - action: utter_ask_comment
-      - action: vote_form
-      - active_loop: vote_form
-
-  - story: Starts participation, but rejects adding a new a comment
-    steps:
-      - checkpoint: starts_voting
-      - slot_was_set:
-        - conversation_id
-      - action: vote_form
-      - active_loop: vote_form
-      - slot_was_set:
-        - comment_confirmation: Não
-      - action: utter_go_back_to_voting
-      - action: vote_form
-      - active_loop: vote_form
-
   - story: Starts participation, than hit stop to end voting.
     steps:
       - checkpoint: starts_voting
@@ -57,6 +30,9 @@ stories:
       - action: vote_form
       - active_loop: vote_form
       - intent: stop
+      - action: utter_thanks_participation
+      - action: action_deactivate_loop
+      - active_loop: null
       - checkpoint: end_dialogue
 
   - story: Starts participation, than asks for help.
@@ -71,14 +47,19 @@ stories:
       - action: help_form
       - checkpoint: check_help_option
 
-  - story: End dialogue
+  - story: Vote in all available comments
     steps:
-      - checkpoint: end_dialogue
-      - action: utter_thanks_participation
-      - action: action_deactivate_loop
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - slot_was_set:
+        - vote: "-"
+        - participant_voted_in_all_comments: true
       - active_loop: null
-      - action: utter_next_conversation
-      - action: action_restart
+      - checkpoint: end_dialogue
+
 
   - story: Stop bot when EJ API returns some error during participation
     steps:
@@ -89,9 +70,13 @@ stories:
       - active_loop: vote_form
       - slot_was_set:
         - vote: "-"
-        - comment_confirmation: "-"
-        - comment: "-"
         - ej_api_connection_error: true
       - active_loop: null
       - action: utter_ej_communication_error
+      - action: action_restart
+
+  - story: End dialogue
+    steps:
+      - checkpoint: end_dialogue
+      - action: utter_next_conversation
       - action: action_restart

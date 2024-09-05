@@ -11,12 +11,11 @@ stories:
       - active_loop: vote_form
       - slot_was_set:
           - vote
-          - comment
-          - comment_confirmation
           - restart_conversation: false
+      - active_loop: null
+      - slot_was_set:
           - ej_api_connection_error: false
           - need_to_ask_profile_question: true
-      - active_loop: null
       - action: profile_form
       - active_loop: profile_form
       - slot_was_set:

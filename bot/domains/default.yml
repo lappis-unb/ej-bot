@@ -218,7 +218,6 @@ actions:
 - action_ask_vote
 - validate_vote_form
 - action_get_conversation
-- action_set_new_comment
 - action_customized_fallback
 - action_ask_check_authentication
 - validate_authentication_form

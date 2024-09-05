@@ -11,8 +11,6 @@ stories:
       - active_loop: vote_form
       - slot_was_set:
           - vote
-          - comment
-          - comment_confirmation
           - restart_conversation: false
           - ej_api_connection_error: false
       - active_loop: null

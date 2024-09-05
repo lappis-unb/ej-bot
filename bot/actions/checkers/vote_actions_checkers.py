@@ -145,3 +145,23 @@ class CheckEndConversationSlots(CheckSlotsInterface):
 
     def set_slots(self):
         self.slots = VoteDialogue.finish_voting(format="slots")
+
+
+@dataclass
+class CheckUserCommentSlots(CheckSlotsInterface):
+    """
+    Test if the user has voted in all available comments.
+    """
+
+    def has_slots_to_return(self) -> bool:
+        if not Conversation.available_comments_to_vote(self.conversation_statistics):
+            self._dispatch_messages()
+            self.set_slots()
+            return True
+        return False
+
+    def _dispatch_messages(self):
+        self.dispatcher.utter_message(template="utter_thanks_participation")
+
+    def set_slots(self):
+        self.slots = VoteDialogue.finish_voting(format="slots")

@@ -8,12 +8,12 @@ from rasa_sdk import Tracker
 
 from .routes import auth_headers, comments_route
 from .settings import *
+from rasa_sdk.events import SlotSet
 
 logger = logging.getLogger(__name__)
 
 
 class CommentDialogue:
-
     REFUSES_TO_ADD_COMMENT = "não"
     WANTS_TO_ADD_COMMENT = "sim"
     BUTTONS = [
@@ -31,12 +31,26 @@ class CommentDialogue:
         return slot_value == CommentDialogue.WANTS_TO_ADD_COMMENT
 
     @staticmethod
-    def ask_user_to_comment(vote_option: Text):
-        return {"vote": vote_option, "comment_confirmation": None, "comment": None}
+    def deactivate_vote_form(vote_option: Text):
+        return {"vote": vote_option, "ask_for_a_comment": True}
+
+    @staticmethod
+    def deactivate_comment_form(format="dict"):
+        if format == "dict":
+            return {"comment": "-", "comment_confirmation": "não", "vote": None}
+        return [
+            SlotSet("comment", "-"),
+            SlotSet("comment_confirmation", "não"),
+            SlotSet("vote", None),
+        ]
 
     @staticmethod
     def resume_voting(slot_value: Text):
-        return {"vote": None, "comment_confirmation": slot_value, "comment": ""}
+        return {"vote": None, "comment_confirmation": slot_value, "comment": "-"}
+
+    @staticmethod
+    def resume_voting(slot_value: Text):
+        return {"vote": None, "comment_confirmation": slot_value, "comment": "-"}
 
     @staticmethod
     def get_comment_message(comment_content, user_voted_comments, total_comments):

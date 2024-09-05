@@ -1,0 +1,22 @@
+version: "3.1"
+
+stories:
+  - story: Starts participation, than adds a new comment
+    steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - slot_was_set:
+        - vote
+        - ask_for_a_comment: true
+      - active_loop: null
+      - action: comment_form
+      - active_loop: comment_form
+      - slot_was_set:
+        - comment
+        - comment_confirmation
+      - active_loop: null
+      - action: vote_form
+      - active_loop: vote_form

@@ -12,12 +12,8 @@ intents:
   - comment_confirmation
   - out_of_context
   - help
-  - add_new_comment:
-      ignore_entities:
-      - conversation_id
+  - add_new_comment
 
-entities:
-  - conversation_id
 
 slots:
   contact_name:
@@ -91,8 +87,7 @@ slots:
     initial_value: null
     influence_conversation: true
     mappings:
-    - type: from_entity
-      entity: conversation_id
+    - type: custom
   conversation_text:
     type: text
     initial_value: null
@@ -142,6 +137,12 @@ slots:
       conditions:
       - active_loop: vote_form
         requested_slot: vote
+  ask_for_a_comment:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+    - type: custom
   comment_confirmation:
     type: categorical
     values: 
@@ -151,7 +152,7 @@ slots:
     mappings:
     - type: from_text
       conditions:
-      - active_loop: vote_form
+      - active_loop: comment_form
         requested_slot: comment_confirmation
   comment:
     type: text
@@ -159,7 +160,7 @@ slots:
     mappings:
     - type: from_text
       conditions:
-      - active_loop: vote_form
+      - active_loop: comment_form
         requested_slot: comment
   help_topic:
     type: categorical
@@ -378,10 +379,11 @@ actions:
 - action_reset_help_slots
 - action_ask_vote
 - validate_vote_form
+- validate_comment_form
+- action_ask_comment
 - action_ask_profile_question
 - validate_profile_form
 - action_get_conversation
-- action_set_new_comment
 - action_customized_fallback
 - action_ask_check_authentication
 - validate_authentication_form
@@ -400,6 +402,14 @@ forms:
     required_slots:
       - check_authentication
       - has_completed_registration
+  comment_form:
+    ignored_intents:
+      - stop
+      - check_authentication
+      - help
+    required_slots:
+      - comment_confirmation
+      - comment
   vote_form:
     ignored_intents:
       - stop
@@ -407,8 +417,6 @@ forms:
       - help
     required_slots:
       - vote
-      - comment_confirmation
-      - comment
   profile_form:
     required_slots:
       - profile_question

@@ -10,7 +10,7 @@ from actions.checkers.vote_actions_checkers import (
 )
 from actions.logger import custom_logger
 from ej.user import User
-from ej.comment import Comment, CommentDialogue
+from ej.comment import CommentDialogue
 from ej.conversation import Conversation
 from ej.settings import EJCommunicationError
 from ej.vote import Vote, VoteDialogue
@@ -18,6 +18,24 @@ from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
+
+
+class ActionAskComment(Action, CheckersMixin):
+    """
+    This action is called when the vote_form is active.
+    It shows a comment for user to vote on, and also their statistics in the conversation.
+
+    https://rasa.com/docs/rasa/forms/#using-a-custom-action-to-ask-for-the-next-slot
+    """
+
+    def name(self) -> Text:
+        return "action_ask_comment"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
+    ) -> List[EventType]:
+        dispatcher.utter_message(template="utter_ask_comment")
+        return []
 
 
 class ActionAskVote(Action, CheckersMixin):
@@ -113,46 +131,6 @@ class ValidateVoteForm(FormValidationAction):
 
     # TODO: refactors this method using the Checkers architecture.
     # Use ActionAskVote as an example.
-    def validate_comment_confirmation(
-        self,
-        slot_value: Any,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        if CommentDialogue.user_refuses_to_add_comment(slot_value):
-            custom_logger(
-                "USER REFUSED TO ADD COMMENT", CommentDialogue.resume_voting(slot_value)
-            )
-            return CommentDialogue.resume_voting(slot_value)
-
-    # TODO: refactors this method using the Checker architecture.
-    # Use ActionAskVote as an example.
-    def validate_comment(
-        self,
-        slot_value: Any,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        if self._comment_slot_is_invalid(tracker):
-            return CommentDialogue.resume_voting("")
-
-        user_comment = slot_value
-        if Conversation.user_requested_new_conversation(user_comment):
-            return CommentDialogue.resume_voting("")
-
-        conversation_id = tracker.get_slot("conversation_id")
-        comment = Comment(conversation_id, user_comment, tracker)
-        try:
-            comment.create()
-            dispatcher.utter_message(template="utter_sent_comment")
-            return CommentDialogue.resume_voting(slot_value)
-        except:
-            dispatcher.utter_message(template="utter_send_comment_error")
-
-    # TODO: refactors this method using the Checkers architecture.
-    # Use ActionAskVote as an example.
     def validate_vote(
         self,
         slot_value: Any,
@@ -167,10 +145,6 @@ class ValidateVoteForm(FormValidationAction):
 
         ej_api_error_manager = EJApiErrorManager()
         conversation = Conversation(tracker)
-        try:
-            statistics = conversation.get_participant_statistics()
-        except EJCommunicationError:
-            return ej_api_error_manager.get_slots(as_dict=True)
 
         vote = Vote(slot_value, tracker)
         if vote.is_valid():
@@ -180,24 +154,31 @@ class ValidateVoteForm(FormValidationAction):
             except EJCommunicationError:
                 return ej_api_error_manager.get_slots(as_dict=True)
             self._dispatch_save_participant_vote(dispatcher, {"created": "ok"})
+
+            try:
+                statistics = conversation.get_participant_statistics()
+            except EJCommunicationError:
+                return ej_api_error_manager.get_slots(as_dict=True)
+
+            if Conversation.user_can_add_comment(statistics, tracker):
+                custom_logger(
+                    f"TIME TO ASK COMMENT {CommentDialogue.deactivate_vote_form(slot_value)}"
+                )
+                return CommentDialogue.deactivate_vote_form(slot_value)
+            return self._dispatch_show_next_comment(
+                dispatcher, statistics, vote, tracker
+            )
         else:
+            try:
+                statistics = conversation.get_participant_statistics()
+            except EJCommunicationError:
+                return ej_api_error_manager.get_slots(as_dict=True)
             if vote.is_internal():
                 return self._dispatch_show_next_comment(
                     dispatcher, statistics, vote, tracker
                 )
             dispatcher.utter_message(template="utter_invalid_vote_during_participation")
             return VoteDialogue.continue_voting(tracker)
-
-        if Conversation.user_can_add_comment(statistics, tracker):
-            custom_logger(
-                f"TIME TO ASK COMMENT {CommentDialogue.ask_user_to_comment(slot_value)}"
-            )
-            return CommentDialogue.ask_user_to_comment(slot_value)
-
-        if vote.is_valid():
-            return self._dispatch_show_next_comment(
-                dispatcher, statistics, vote, tracker
-            )
 
     def _dispatch_save_participant_vote(self, dispatcher, vote_data):
         if vote_data.get("created"):
@@ -210,11 +191,3 @@ class ValidateVoteForm(FormValidationAction):
             return VoteDialogue.continue_voting(tracker)
         else:
             return VoteDialogue.finish_voting()
-
-    def _comment_slot_is_invalid(self, tracker) -> bool:
-        comment_confirmation = tracker.get_slot("comment_confirmation")
-        return (
-            not comment_confirmation
-            or comment_confirmation == "não"
-            or comment_confirmation == "-"
-        )
