@@ -74,8 +74,6 @@ stories:
   - active_loop: vote_form
   - slot_was_set:
     - vote: "-"
-    - comment_confirmation: "-"
-    - comment: "-"
     - ej_api_connection_error: true
   - active_loop: null
   - action: utter_ej_communication_error

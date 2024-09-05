@@ -1,18 +1,16 @@
 from typing import Any, Dict, List, Text
-from rasa_sdk.events import SlotSet
 
 from actions.base_actions import CheckersMixin
 from actions.checkers.api_error_checker import EJApiErrorManager
 from actions.checkers.vote_actions_checkers import (
     CheckEndConversationSlots,
-    CheckExternalAutenticationSlots,
+    CheckExternalAuthenticationSlots,
     CheckNeedToAskAboutProfile,
     CheckNextCommentSlots,
     CheckUserCanAddCommentsSlots,
 )
 from actions.logger import custom_logger
 from ej.user import User
-from ej.comment import CommentDialogue
 from ej.conversation import Conversation
 from ej.settings import EJCommunicationError
 from ej.vote import Vote, VoteDialogue
@@ -20,24 +18,6 @@ from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
-
-
-class ActionAskComment(Action, CheckersMixin):
-    """
-    This action is called when the vote_form is active.
-    It shows a comment for user to vote on, and also their statistics in the conversation.
-
-    https://rasa.com/docs/rasa/forms/#using-a-custom-action-to-ask-for-the-next-slot
-    """
-
-    def name(self) -> Text:
-        return "action_ask_comment"
-
-    def run(
-        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
-    ) -> List[EventType]:
-        dispatcher.utter_message(template="utter_ask_comment")
-        return []
 
 
 class ActionAskVote(Action, CheckersMixin):
@@ -122,9 +102,9 @@ class ValidateVoteForm(FormValidationAction):
     ) -> List[EventType]:
         user_voted_comments = tracker.get_slot("user_voted_comments")
         if not user_voted_comments:
-            custom_logger("ENTROU NO RUN DO VALIDATE")
             conversation = Conversation(tracker)
             ej_api_error_manager = EJApiErrorManager()
+
             try:
                 statistics = conversation.get_participant_statistics()
             except EJCommunicationError:
@@ -137,6 +117,7 @@ class ValidateVoteForm(FormValidationAction):
                 conversation_statistics=statistics,
                 slot_type="slots",
             )
+
             if checker.has_slots_to_return():
                 custom_logger(checker, _type="string")
                 return checker.slots
@@ -219,7 +200,7 @@ class ValidateVoteForm(FormValidationAction):
                 user=user,
                 conversation_statistics=conversation_statistics,
             ),
-            CheckExternalAutenticationSlots(
+            CheckExternalAuthenticationSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
                 conversation_statistics=conversation_statistics,

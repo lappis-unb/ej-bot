@@ -1,9 +1,7 @@
 from typing import Any, Dict, List, Text
 
 from actions.base_actions import CheckersMixin
-from actions.logger import custom_logger
 from ej.comment import Comment, CommentDialogue
-from ej.conversation import Conversation
 from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType
 from rasa_sdk.executor import CollectingDispatcher
