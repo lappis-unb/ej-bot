@@ -80,6 +80,12 @@ slots:
     influence_conversation: false
     mappings:
     - type: custom
+  participant_voted_in_all_comments:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+    - type: custom
   conversation_id:
     type: text
     initial_value: null
@@ -87,12 +93,6 @@ slots:
     mappings:
     - type: from_entity
       entity: conversation_id
-  conversation_statistics:
-    type: any
-    initial_value: null
-    influence_conversation: false
-    mappings:
-    - type: custom
   conversation_text:
     type: text
     initial_value: null
@@ -268,7 +268,7 @@ responses:
   - text: |
         Sua participação é valiosa! 📊 Vamos para o próximo tópico?
   - text: |
-        🧮 Feito! (símbolo) Última pergunta:
+        🧮 Feito! Próxima pergunta:
   - text: |
         Pronto! ✅ Adiante:
   - text: |
