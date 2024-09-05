@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Text
+from rasa_sdk.events import SlotSet
 
 from actions.base_actions import CheckersMixin
 from actions.checkers.api_error_checker import EJApiErrorManager
@@ -53,7 +54,6 @@ class ActionAskVote(Action, CheckersMixin):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        user = User(tracker)
         conversation = Conversation(tracker)
         try:
             conversation_statistics = conversation.get_participant_statistics()
@@ -68,7 +68,6 @@ class ActionAskVote(Action, CheckersMixin):
             dispatcher=dispatcher,
             conversation=conversation,
             conversation_statistics=conversation_statistics,
-            user=user,
         )
 
         for checker in action_chekers:
@@ -85,20 +84,8 @@ class ActionAskVote(Action, CheckersMixin):
         """
         dispatcher = kwargs["dispatcher"]
         conversation = kwargs["conversation"]
-        user = kwargs["user"]
         conversation_statistics = kwargs["conversation_statistics"]
         return [
-            CheckEndConversationSlots(
-                tracker=tracker,
-                dispatcher=dispatcher,
-                user=user,
-                conversation_statistics=conversation_statistics,
-            ),
-            CheckExternalAutenticationSlots(
-                tracker=tracker,
-                dispatcher=dispatcher,
-                conversation_statistics=conversation_statistics,
-            ),
             CheckNeedToAskAboutProfile(
                 tracker=tracker,
                 dispatcher=dispatcher,
@@ -129,6 +116,31 @@ class ValidateVoteForm(FormValidationAction):
 
     def name(self) -> Text:
         return "validate_vote_form"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
+    ) -> List[EventType]:
+        user_voted_comments = tracker.get_slot("user_voted_comments")
+        if not user_voted_comments:
+            custom_logger("ENTROU NO RUN DO VALIDATE")
+            conversation = Conversation(tracker)
+            ej_api_error_manager = EJApiErrorManager()
+            try:
+                statistics = conversation.get_participant_statistics()
+            except EJCommunicationError:
+                return ej_api_error_manager.get_slots(as_dict=True)
+
+            checker = CheckEndConversationSlots(
+                tracker,
+                dispatcher,
+                conversation,
+                conversation_statistics=statistics,
+                slot_type="slots",
+            )
+            if checker.has_slots_to_return():
+                custom_logger(checker, _type="string")
+                return checker.slots
+        return super().run(dispatcher, tracker, domain)
 
     # TODO: refactors this method using the Checkers architecture.
     # Use ActionAskVote as an example.
@@ -168,6 +180,7 @@ class ValidateVoteForm(FormValidationAction):
                 dispatcher=dispatcher,
                 conversation_statistics=statistics,
                 slot_value=slot_value,
+                user=user,
             )
 
             for checker in checkers:
@@ -198,7 +211,14 @@ class ValidateVoteForm(FormValidationAction):
         dispatcher = kwargs["dispatcher"]
         conversation_statistics = kwargs["conversation_statistics"]
         slot_value = kwargs["conversation_statistics"]
+        user = kwargs["user"]
         return [
+            CheckEndConversationSlots(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                user=user,
+                conversation_statistics=conversation_statistics,
+            ),
             CheckExternalAutenticationSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
