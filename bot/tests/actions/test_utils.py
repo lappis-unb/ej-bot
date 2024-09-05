@@ -27,8 +27,6 @@ class TestUtils:
     def test_continue_voting(self, tracker):
         assert VoteDialogue.continue_voting(tracker) == {
             "vote": None,
-            "comment_confirmation": None,
-            "comment": None,
             "access_token": "1234",
             "refresh_token": "5678",
         }
@@ -36,26 +34,18 @@ class TestUtils:
     def test_stop_voting(self, tracker):
         assert VoteDialogue.stop_voting() == {
             "vote": "-",
-            "comment_confirmation": "-",
-            "comment": "-",
         }
         assert VoteDialogue.stop_voting(format="slots") == [
             SlotSet("vote", "-"),
-            SlotSet("comment_confirmation", "-"),
-            SlotSet("comment", "-"),
         ]
 
     def test_finish_voting(self, tracker):
         assert VoteDialogue.finish_voting() == {
             "vote": "-",
-            "comment_confirmation": "-",
-            "comment": "-",
             "participant_voted_in_all_comments": True,
         }
         assert VoteDialogue.finish_voting(format="slots") == [
             SlotSet("vote", "-"),
-            SlotSet("comment_confirmation", "-"),
-            SlotSet("comment", "-"),
             SlotSet("participant_voted_in_all_comments", True),
         ]
 

@@ -97,7 +97,7 @@ class CheckNeedToAskAboutProfile(CheckSlotsInterface):
 
 
 @dataclass
-class CheckExternalAutenticationSlots(CheckSlotsInterface):
+class CheckExternalAuthenticationSlots(CheckSlotsInterface):
     """
     Test if the user has reached the anonymous vote limit and needs to authenticate.
     """
@@ -124,7 +124,8 @@ class CheckExternalAutenticationSlots(CheckSlotsInterface):
                 SlotSet("vote", "-"),
                 SlotSet("ask_to_authenticate", True),
             ]
-        self.slots = {"vote": "-", "ask_to_authenticate": True}
+        else:
+            self.slots = {"vote": "-", "ask_to_authenticate": True}
 
 
 @dataclass

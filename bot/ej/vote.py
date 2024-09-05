@@ -23,8 +23,6 @@ class VoteDialogue:
         """
         return {
             "vote": None,
-            "comment_confirmation": None,
-            "comment": None,
             "access_token": tracker.get_slot("access_token"),
             "refresh_token": tracker.get_slot("refresh_token"),
         }

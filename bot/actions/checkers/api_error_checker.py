@@ -16,8 +16,6 @@ class EJApiErrorManager:
             return {**stop_voting_slots, "ej_api_connection_error": True}
         return [
             SlotSet("vote", "-"),
-            SlotSet("comment", "-"),
-            SlotSet("comment_confirmation", "-"),
             SlotSet("ej_api_connection_error", True),
             FollowupAction("utter_ej_communication_error"),
         ]
