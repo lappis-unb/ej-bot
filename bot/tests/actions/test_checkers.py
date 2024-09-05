@@ -11,11 +11,11 @@ from ej.user import User
 class TestCheckEndConversationSlots:
     def test_has_slots_to_return(self, tracker, dispatcher):
         user = User(tracker)
-        user.tracker.set_slot("conversation_statistics", {"missing_votes": 0})
         checker = CheckEndConversationSlots(
             tracker=tracker,
             dispatcher=dispatcher,
             user=user,
+            conversation_statistics={"missing_votes": 0},
         )
         assert checker.has_slots_to_return()
         assert checker.slots == VoteDialogue.finish_voting(format="slots")
@@ -51,9 +51,7 @@ class TestCheckNextCommentSlots:
 
 
 class TestCheckExternalAutenticationSlots:
-    def test_has_slots_to_return(
-        self, tracker, dispatcher, conversation_statistics
-    ):
+    def test_has_slots_to_return(self, tracker, dispatcher, conversation_statistics):
         tracker.set_slot("anonymous_votes_limit", 2)
         conversation_statistics["comments"] = 2
         checker = CheckExternalAutenticationSlots(

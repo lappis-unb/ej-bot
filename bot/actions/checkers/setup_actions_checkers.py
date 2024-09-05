@@ -10,12 +10,11 @@ from rasa_sdk.events import SlotSet
 from ej.settings import EJCommunicationError, BOARD_ID, CONVERSATION_ID
 
 
-def get_slots(conversation: Conversation, user: User, conversation_statistics: dict):
+def get_slots(conversation: Conversation, user: User):
     authorization_service = ExternalAuthorizationService(
         user.tracker.sender_id, user.secret_id
     )
     return [
-        SlotSet("conversation_statistics", conversation_statistics),
         SlotSet("auth_link", authorization_service.get_authentication_link()),
         SlotSet("conversation_id", conversation.id),
         SlotSet("conversation_text", conversation.text),
@@ -50,15 +49,15 @@ class CheckGetConversationSlots(CheckSlotsInterface):
                 )
                 conversation = Conversation(self.user.tracker, conversation_data)
                 conversation_statistics = conversation.get_participant_statistics()
-                self.set_slots(conversation, conversation_statistics)
+                self.set_slots(conversation)
             except EJCommunicationError:
                 ej_api_error_manager = EJApiErrorManager()
                 self.slots = ej_api_error_manager.get_slots()
             return True
         return False
 
-    def set_slots(self, conversation: Conversation, conversation_statistics: dict):
-        self.slots = get_slots(conversation, self.user, conversation_statistics)
+    def set_slots(self, conversation: Conversation):
+        self.slots = get_slots(conversation, self.user)
 
 
 @dataclass
@@ -80,13 +79,12 @@ class CheckGetBoardSlots(CheckSlotsInterface):
 
             index = 0
             conversation = board.conversations[index]
-            conversation_statistics = conversation.get_participant_statistics()
-            self.set_slots(conversation, conversation_statistics)
+            self.set_slots(conversation)
             return self.slots
         except EJCommunicationError:
             self.slots = ej_api_error_manager.get_slots()
 
         return True
 
-    def set_slots(self, conversation: Conversation, conversation_statistics: dict):
-        self.slots = get_slots(conversation, self.user, conversation_statistics)
+    def set_slots(self, conversation: Conversation):
+        self.slots = get_slots(conversation, self.user)

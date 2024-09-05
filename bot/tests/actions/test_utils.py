@@ -1,4 +1,5 @@
 from bot.ej.comment import Comment, CommentDialogue
+from rasa_sdk.events import SlotSet
 
 from bot.ej.settings import *
 from bot.ej.conversation import Conversation
@@ -32,13 +33,31 @@ class TestUtils:
             "refresh_token": "5678",
         }
 
-    def test_finish_voting(self, tracker):
-        vote = Vote("Discordar", tracker)
-        assert VoteDialogue.finish_voting() == {
+    def test_stop_voting(self, tracker):
+        assert VoteDialogue.stop_voting() == {
             "vote": "-",
             "comment_confirmation": "-",
             "comment": "-",
         }
+        assert VoteDialogue.stop_voting(format="slots") == [
+            SlotSet("vote", "-"),
+            SlotSet("comment_confirmation", "-"),
+            SlotSet("comment", "-"),
+        ]
+
+    def test_finish_voting(self, tracker):
+        assert VoteDialogue.finish_voting() == {
+            "vote": "-",
+            "comment_confirmation": "-",
+            "comment": "-",
+            "participant_voted_in_all_comments": True,
+        }
+        assert VoteDialogue.finish_voting(format="slots") == [
+            SlotSet("vote", "-"),
+            SlotSet("comment_confirmation", "-"),
+            SlotSet("comment", "-"),
+            SlotSet("participant_voted_in_all_comments", True),
+        ]
 
     def test_user_have_comments_to_vote(self):
         statistics = {"missing_votes": 5}

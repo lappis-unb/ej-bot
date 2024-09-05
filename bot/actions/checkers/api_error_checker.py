@@ -12,8 +12,8 @@ class EJApiErrorManager:
 
     def get_slots(self, as_dict=False) -> Any:
         if as_dict:
-            finish_voting_slots = VoteDialogue.finish_voting()
-            return {**finish_voting_slots, "ej_api_connection_error": True}
+            stop_voting_slots = VoteDialogue.stop_voting()
+            return {**stop_voting_slots, "ej_api_connection_error": True}
         return [
             SlotSet("vote", "-"),
             SlotSet("comment", "-"),

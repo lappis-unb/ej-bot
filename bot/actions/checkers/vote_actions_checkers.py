@@ -21,15 +21,11 @@ class CheckNextCommentSlots(CheckSlotsInterface):
             if comment:
                 self.set_slots(comment)
             else:
-                self._dispatch_no_comments_left_to_vote()
                 self.slots = VoteDialogue.finish_voting(format="slots")
         except EJCommunicationError:
             ej_api_error_manager = EJApiErrorManager()
             self.slots = ej_api_error_manager.get_slots()
         return True
-
-    def _dispatch_no_comments_left_to_vote(self):
-        self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def _dispatch_messages(
         self, comment, user_voted_comments, conversation_total_comments
@@ -137,9 +133,8 @@ class CheckEndConversationSlots(CheckSlotsInterface):
     Test if the user has voted in all available comments.
     """
 
-    def has_slots_to_return(self):
-        conversation_statistics = self.user.tracker.get_slot("conversation_statistics")
-        if not Conversation.available_comments_to_vote(conversation_statistics):
+    def has_slots_to_return(self) -> bool:
+        if not Conversation.available_comments_to_vote(self.conversation_statistics):
             self._dispatch_messages()
             self.set_slots()
             return True

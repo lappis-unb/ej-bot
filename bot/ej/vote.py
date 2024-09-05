@@ -30,7 +30,7 @@ class VoteDialogue:
         }
 
     @staticmethod
-    def finish_voting(format="dict") -> dict | List[Any]:
+    def stop_voting(format="dict") -> dict | List[Any]:
         """
         Rasa ends a form when all slots are filled. This method
         fills the vote_form slots with '-' character,
@@ -43,6 +43,17 @@ class VoteDialogue:
             SlotSet("comment_confirmation", "-"),
             SlotSet("comment", "-"),
         ]
+
+    @staticmethod
+    def finish_voting(format="dict") -> dict | List[Any]:
+        """
+        Returns slots to deactive the vote_form when the participant voted in all
+        available comments.
+        """
+        stop_voting_slots = VoteDialogue.stop_voting(format)
+        if format == "dict":
+            return {**stop_voting_slots, "participant_voted_in_all_comments": True}
+        return stop_voting_slots + [SlotSet("participant_voted_in_all_comments", True)]
 
 
 class VoteChoices(Enum):

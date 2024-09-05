@@ -54,6 +54,7 @@ class ActionAskVote(Action, CheckersMixin):
 
         for checker in action_chekers:
             if checker.has_slots_to_return():
+                custom_logger(checker, _type="string")
                 self.slots = checker.slots
                 break
 
@@ -69,7 +70,10 @@ class ActionAskVote(Action, CheckersMixin):
         conversation_statistics = kwargs["conversation_statistics"]
         return [
             CheckEndConversationSlots(
-                tracker=tracker, dispatcher=dispatcher, user=user
+                tracker=tracker,
+                dispatcher=dispatcher,
+                user=user,
+                conversation_statistics=conversation_statistics,
             ),
             CheckExternalAutenticationSlots(
                 tracker=tracker,
@@ -116,9 +120,10 @@ class ValidateVoteForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-
         if CommentDialogue.user_refuses_to_add_comment(slot_value):
-            dispatcher.utter_message(template="utter_go_back_to_voting")
+            custom_logger(
+                "USER REFUSED TO ADD COMMENT", CommentDialogue.resume_voting(slot_value)
+            )
             return CommentDialogue.resume_voting(slot_value)
 
     # TODO: refactors this method using the Checker architecture.
@@ -130,7 +135,6 @@ class ValidateVoteForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-
         if self._comment_slot_is_invalid(tracker):
             return CommentDialogue.resume_voting("")
 
@@ -205,7 +209,6 @@ class ValidateVoteForm(FormValidationAction):
         if Conversation.available_comments_to_vote(statistics):
             return VoteDialogue.continue_voting(tracker)
         else:
-            dispatcher.utter_message(template="utter_thanks_participation")
             return VoteDialogue.finish_voting()
 
     def _comment_slot_is_invalid(self, tracker) -> bool:

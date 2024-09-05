@@ -26,6 +26,12 @@ class CheckSlotsInterface:
     slot_value: Any = ""
     user: User = field(default_factory=lambda: User(None))
 
+    def __str__(self):
+        return f"Checker: {self.__class__.__name__}"
+
+    def __repr__(self):
+        return f"Checker: {self.__class__.__name__}"
+
     def has_slots_to_return(self) -> bool:
         """
         Returns True if the dialogue slots has to be updated.
