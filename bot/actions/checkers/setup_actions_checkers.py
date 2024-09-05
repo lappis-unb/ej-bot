@@ -48,7 +48,6 @@ class CheckGetConversationSlots(CheckSlotsInterface):
                     int(CONVERSATION_ID), self.user.tracker
                 )
                 conversation = Conversation(self.user.tracker, conversation_data)
-                conversation_statistics = conversation.get_participant_statistics()
                 self.set_slots(conversation)
             except EJCommunicationError:
                 ej_api_error_manager = EJApiErrorManager()

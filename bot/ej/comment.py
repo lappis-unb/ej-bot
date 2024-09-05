@@ -27,10 +27,6 @@ class CommentDialogue:
         return slot_value == CommentDialogue.REFUSES_TO_ADD_COMMENT
 
     @staticmethod
-    def user_wants_to_add_comment(slot_value):
-        return slot_value == CommentDialogue.WANTS_TO_ADD_COMMENT
-
-    @staticmethod
     def deactivate_vote_form(vote_option: Text):
         return {"vote": vote_option, "ask_for_a_comment": True}
 
@@ -43,14 +39,6 @@ class CommentDialogue:
             SlotSet("comment_confirmation", "não"),
             SlotSet("vote", None),
         ]
-
-    @staticmethod
-    def resume_voting(slot_value: Text):
-        return {"vote": None, "comment_confirmation": slot_value, "comment": "-"}
-
-    @staticmethod
-    def resume_voting(slot_value: Text):
-        return {"vote": None, "comment_confirmation": slot_value, "comment": "-"}
 
     @staticmethod
     def get_comment_message(comment_content, user_voted_comments, total_comments):

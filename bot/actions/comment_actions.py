@@ -43,8 +43,6 @@ class ValidateCommentForm(FormValidationAction):
             return CommentDialogue.deactivate_comment_form()
         return {"comment_confirmation": slot_value}
 
-    # TODO: refactors this method using the Checker architecture.
-    # Use ActionAskVote as an example.
     def validate_comment(
         self,
         slot_value: Any,

@@ -9,9 +9,10 @@ stories:
       - action: vote_form
       - active_loop: vote_form
       - slot_was_set:
-        - vote
-        - ask_for_a_comment: true
+        - vote: "-"
       - active_loop: null
+      - slot_was_set:
+        - ask_for_a_comment: true
       - action: comment_form
       - active_loop: comment_form
       - slot_was_set:

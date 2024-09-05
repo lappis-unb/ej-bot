@@ -10,10 +10,10 @@ stories:
       - action: vote_form
       - active_loop: vote_form
       - slot_was_set:
-          - vote
-          - restart_conversation: false
-          - ej_api_connection_error: false
+        - vote: "-"
       - active_loop: null
+      - slot_was_set:
+        - ask_to_authenticate: true
       - action: utter_vote_limit_anonymous_reached
       - action: authentication_form
       - active_loop: authentication_form
@@ -33,11 +33,9 @@ stories:
       - active_loop: vote_form
       - slot_was_set:
           - vote
-          - comment
-          - comment_confirmation
-          - restart_conversation: false
-          - ej_api_connection_error: false
       - active_loop: null
+      - slot_was_set:
+          - ask_to_authenticate
       - action: utter_vote_limit_anonymous_reached
       - action: authentication_form
       - active_loop: authentication_form

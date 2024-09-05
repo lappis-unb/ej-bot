@@ -7,6 +7,7 @@ from actions.checkers.vote_actions_checkers import (
     CheckExternalAutenticationSlots,
     CheckNeedToAskAboutProfile,
     CheckNextCommentSlots,
+    CheckUserCanAddCommentsSlots,
 )
 from actions.logger import custom_logger
 from ej.user import User
@@ -140,10 +141,12 @@ class ValidateVoteForm(FormValidationAction):
     ) -> Dict[Text, Any]:
         """Validate vote value."""
 
+        slots = []
         if not slot_value:
             return {}
 
         ej_api_error_manager = EJApiErrorManager()
+        user = User(tracker)
         conversation = Conversation(tracker)
 
         vote = Vote(slot_value, tracker)
@@ -160,11 +163,22 @@ class ValidateVoteForm(FormValidationAction):
             except EJCommunicationError:
                 return ej_api_error_manager.get_slots(as_dict=True)
 
-            if Conversation.user_can_add_comment(statistics, tracker):
-                custom_logger(
-                    f"TIME TO ASK COMMENT {CommentDialogue.deactivate_vote_form(slot_value)}"
-                )
-                return CommentDialogue.deactivate_vote_form(slot_value)
+            checkers = self.get_checkers(
+                tracker,
+                dispatcher=dispatcher,
+                conversation_statistics=statistics,
+                slot_value=slot_value,
+            )
+
+            for checker in checkers:
+                custom_logger(checker, _type="string")
+                if checker.has_slots_to_return():
+                    slots = checker.slots
+                    break
+
+            if slots:
+                return slots
+
             return self._dispatch_show_next_comment(
                 dispatcher, statistics, vote, tracker
             )
@@ -179,6 +193,24 @@ class ValidateVoteForm(FormValidationAction):
                 )
             dispatcher.utter_message(template="utter_invalid_vote_during_participation")
             return VoteDialogue.continue_voting(tracker)
+
+    def get_checkers(self, tracker, **kwargs):
+        dispatcher = kwargs["dispatcher"]
+        conversation_statistics = kwargs["conversation_statistics"]
+        slot_value = kwargs["conversation_statistics"]
+        return [
+            CheckExternalAutenticationSlots(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                conversation_statistics=conversation_statistics,
+            ),
+            CheckUserCanAddCommentsSlots(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                conversation_statistics=conversation_statistics,
+                slot_value=slot_value,
+            ),
+        ]
 
     def _dispatch_save_participant_vote(self, dispatcher, vote_data):
         if vote_data.get("created"):

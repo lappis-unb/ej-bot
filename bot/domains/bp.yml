@@ -137,6 +137,12 @@ slots:
       conditions:
       - active_loop: vote_form
         requested_slot: vote
+  ask_to_authenticate:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+    - type: custom
   ask_for_a_comment:
     type: bool
     initial_value: false

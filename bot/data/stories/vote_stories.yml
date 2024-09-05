@@ -56,8 +56,9 @@ stories:
       - active_loop: vote_form
       - slot_was_set:
         - vote: "-"
-        - participant_voted_in_all_comments: true
       - active_loop: null
+      - slot_was_set:
+        - participant_voted_in_all_comments: true
       - checkpoint: end_dialogue
 
 
@@ -70,8 +71,9 @@ stories:
       - active_loop: vote_form
       - slot_was_set:
         - vote: "-"
-        - ej_api_connection_error: true
       - active_loop: null
+      - slot_was_set:
+        - ej_api_connection_error: true
       - action: utter_ej_communication_error
       - action: action_restart
 

@@ -119,12 +119,12 @@ class CheckExternalAutenticationSlots(CheckSlotsInterface):
         self.dispatcher.utter_message(template="utter_vote_limit_anonymous_reached")
 
     def set_slots(self):
-        self.slots = [
-            SlotSet("vote", "-"),
-            SlotSet("comment_confirmation", "-"),
-            SlotSet("comment", "-"),
-            FollowupAction("authentication_form"),
-        ]
+        if self.slot_type != "dict":
+            self.slots = [
+                SlotSet("vote", "-"),
+                SlotSet("ask_to_authenticate", True),
+            ]
+        self.slots = {"vote": "-", "ask_to_authenticate": True}
 
 
 @dataclass
@@ -144,7 +144,7 @@ class CheckEndConversationSlots(CheckSlotsInterface):
         self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def set_slots(self):
-        self.slots = VoteDialogue.finish_voting(format="slots")
+        self.slots = VoteDialogue.finish_voting(self.slot_type)
 
 
 @dataclass
@@ -164,4 +164,22 @@ class CheckUserCommentSlots(CheckSlotsInterface):
         self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def set_slots(self):
-        self.slots = VoteDialogue.finish_voting(format="slots")
+        self.slots = VoteDialogue.finish_voting(self.slot_type)
+
+
+@dataclass
+class CheckUserCanAddCommentsSlots(CheckSlotsInterface):
+    """
+    Test if the user can add comments to the conversation.
+    """
+
+    def has_slots_to_return(self) -> bool:
+        if Conversation.user_can_add_comment(
+            self.conversation_statistics, self.tracker
+        ):
+            self.set_slots()
+            return True
+        return False
+
+    def set_slots(self):
+        self.slots = CommentDialogue.deactivate_vote_form(self.slot_value)

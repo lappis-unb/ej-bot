@@ -144,7 +144,7 @@ class Conversation:
             return False
         total_comments = Conversation.get_total_comments(statistics)
         current_comment = Conversation.get_user_voted_comments_counter(statistics)
-        return (total_comments >= 4 and current_comment == 3) or (
+        return (total_comments >= 4 and current_comment == 4) or (
             total_comments < 4 and current_comment == 2
         )
 

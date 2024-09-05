@@ -37,12 +37,8 @@ class VoteDialogue:
         forcing Rasa to stop sending comments to voting.
         """
         if format == "dict":
-            return {"vote": "-", "comment_confirmation": "-", "comment": "-"}
-        return [
-            SlotSet("vote", "-"),
-            SlotSet("comment_confirmation", "-"),
-            SlotSet("comment", "-"),
-        ]
+            return {"vote": "-"}
+        return [SlotSet("vote", "-")]
 
     @staticmethod
     def finish_voting(format="dict") -> dict | List[Any]:
