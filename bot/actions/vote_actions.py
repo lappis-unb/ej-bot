@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Text
 from actions.base_actions import CheckersMixin
 from actions.checkers.api_error_checker import EJApiErrorManager
 from actions.checkers.vote_actions_checkers import (
-    CheckEndConversationSlots,
+    CheckUserCompletedConversationSlots,
     CheckExternalAuthenticationSlots,
     CheckNeedToAskAboutProfile,
     CheckNextCommentSlots,
@@ -13,7 +13,7 @@ from actions.logger import custom_logger
 from ej.user import User
 from ej.conversation import Conversation
 from ej.settings import EJCommunicationError
-from ej.vote import Vote, VoteDialogue
+from ej.vote import SlotsType, Vote, VoteDialogue
 from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType
 from rasa_sdk.executor import CollectingDispatcher
@@ -110,17 +110,18 @@ class ValidateVoteForm(FormValidationAction):
             except EJCommunicationError:
                 return ej_api_error_manager.get_slots(as_dict=True)
 
-            checker = CheckEndConversationSlots(
+            checker = CheckUserCompletedConversationSlots(
                 tracker,
                 dispatcher,
                 conversation,
                 conversation_statistics=statistics,
-                slot_type="slots",
+                slots_type=SlotsType.LIST,
             )
 
             if checker.has_slots_to_return():
                 custom_logger(checker, _type="string")
                 return checker.slots
+
         return super().run(dispatcher, tracker, domain)
 
     # TODO: refactors this method using the Checkers architecture.
@@ -149,7 +150,7 @@ class ValidateVoteForm(FormValidationAction):
                 vote.create(tracker.get_slot("current_comment_id"))
             except EJCommunicationError:
                 return ej_api_error_manager.get_slots(as_dict=True)
-            self._dispatch_save_participant_vote(dispatcher, {"created": "ok"})
+            dispatcher.utter_message(template="utter_vote_received")
 
             try:
                 statistics = conversation.get_participant_statistics()
@@ -194,28 +195,27 @@ class ValidateVoteForm(FormValidationAction):
         slot_value = kwargs["conversation_statistics"]
         user = kwargs["user"]
         return [
-            CheckEndConversationSlots(
+            CheckUserCompletedConversationSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
                 user=user,
                 conversation_statistics=conversation_statistics,
+                slots_type=SlotsType.DICT,
             ),
             CheckExternalAuthenticationSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
                 conversation_statistics=conversation_statistics,
+                slots_type=SlotsType.DICT,
             ),
             CheckUserCanAddCommentsSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
                 conversation_statistics=conversation_statistics,
                 slot_value=slot_value,
+                slots_type=SlotsType.DICT,
             ),
         ]
-
-    def _dispatch_save_participant_vote(self, dispatcher, vote_data):
-        if vote_data.get("created"):
-            dispatcher.utter_message(template="utter_vote_received")
 
     def _dispatch_show_next_comment(
         self, dispatcher, statistics, vote: Vote, tracker: Tracker

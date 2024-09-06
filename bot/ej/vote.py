@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 import json
-from typing import Any, List, Text
+from typing import Any, Dict, List, Text
 
 import requests
 
@@ -12,6 +12,16 @@ from rasa_sdk.events import SlotSet
 from .routes import auth_headers, votes_route
 from .settings import *
 
+
+class SlotsType(Enum):
+    DICT = "dict"
+    LIST = "list"
+
+
+class VoteChoices(Enum):
+    AGREE = "1"
+    DISAGREE = "-1"
+    SKIP = "0"
 
 class VoteDialogue:
     @staticmethod
@@ -28,32 +38,34 @@ class VoteDialogue:
         }
 
     @staticmethod
-    def stop_voting(format="dict") -> dict | List[Any]:
+    def stop_voting(slot_type: SlotsType = SlotsType.DICT) -> Dict[Any, Any] | List[Any]:
         """
         Rasa ends a form when all slots are filled. This method
         fills the vote_form slots with '-' character,
         forcing Rasa to stop sending comments to voting.
         """
-        if format == "dict":
-            return {"vote": "-"}
-        return [SlotSet("vote", "-")]
+        match slot_type:
+            case SlotsType.DICT:
+                return {"vote": "-"}
+            case SlotsType.LIST:
+                return [SlotSet("vote", "-")]
+            case _:
+                raise Exception
 
     @staticmethod
-    def finish_voting(format="dict") -> dict | List[Any]:
+    def finish_voting(slot_type: SlotsType) -> dict | List[Any]:
         """
         Returns slots to deactive the vote_form when the participant voted in all
         available comments.
         """
-        stop_voting_slots = VoteDialogue.stop_voting(format)
-        if format == "dict":
-            return {**stop_voting_slots, "participant_voted_in_all_comments": True}
-        return stop_voting_slots + [SlotSet("participant_voted_in_all_comments", True)]
-
-
-class VoteChoices(Enum):
-    AGREE = "1"
-    DISAGREE = "-1"
-    SKIP = "0"
+        stop_voting_slots = VoteDialogue.stop_voting(slot_type)
+        match slot_type:
+            case SlotsType.DICT:
+                return {**stop_voting_slots, "participant_voted_in_all_comments": True}
+            case SlotsType.LIST:
+                return stop_voting_slots + [SlotSet("participant_voted_in_all_comments", True)]
+            case _:
+                raise Exception
 
 
 @dataclass

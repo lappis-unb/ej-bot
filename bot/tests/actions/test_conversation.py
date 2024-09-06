@@ -34,7 +34,7 @@ class TestConversation:
 
     def test_create_conversation_with_empty_tracker(self, empty_tracker):
         data = {"anonymous_votes_limit": 0, "participants_can_add_comments": False}
-        empty_tracker.set_slot("participants_can_add_comments", True)
+        empty_tracker.set_slot("participant_can_add_comments", True)
         conversation = Conversation(empty_tracker, data)
         assert conversation.anonymous_votes_limit is not None
         assert conversation.anonymous_votes_limit == 0

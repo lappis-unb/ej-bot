@@ -1,9 +1,9 @@
-from bot.ej.comment import Comment, CommentDialogue
+from bot.ej.comment import CommentDialogue
 from rasa_sdk.events import SlotSet
 
 from bot.ej.settings import *
 from bot.ej.conversation import Conversation
-from bot.ej.vote import Vote, VoteChoices, VoteDialogue
+from bot.ej.vote import SlotsType, Vote, VoteChoices, VoteDialogue
 from bot.ej.user import User
 
 TOKEN = "mock_token_value"
@@ -35,16 +35,16 @@ class TestUtils:
         assert VoteDialogue.stop_voting() == {
             "vote": "-",
         }
-        assert VoteDialogue.stop_voting(format="slots") == [
+        assert VoteDialogue.stop_voting(SlotsType.LIST) == [
             SlotSet("vote", "-"),
         ]
 
     def test_finish_voting(self, tracker):
-        assert VoteDialogue.finish_voting() == {
+        assert VoteDialogue.finish_voting(SlotsType.DICT) == {
             "vote": "-",
             "participant_voted_in_all_comments": True,
         }
-        assert VoteDialogue.finish_voting(format="slots") == [
+        assert VoteDialogue.finish_voting(SlotsType.LIST) == [
             SlotSet("vote", "-"),
             SlotSet("participant_voted_in_all_comments", True),
         ]

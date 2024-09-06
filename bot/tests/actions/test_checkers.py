@@ -1,31 +1,96 @@
+import pytest
 from actions.checkers.vote_actions_checkers import (
-    CheckEndConversationSlots,
+    CheckUserCompletedConversationSlots,
     CheckExternalAuthenticationSlots,
     CheckNextCommentSlots,
+    CheckUserCanAddCommentsSlots,
 )
 from actions.checkers.api_error_checker import EJApiErrorManager
-from ej.vote import VoteDialogue
+from ej.vote import SlotsType, VoteDialogue
 from ej.user import User
 
 
-class TestCheckEndConversationSlots:
-    def test_has_slots_to_return(self, tracker, dispatcher):
+class TestCheckUserCanAddComentsSlots:
+    def test_has_slots_to_return(self, tracker, dispatcher, conversation_statistics):
+        tracker.set_slot("participant_can_add_comments", True)
+        conversation_statistics["comments"] = 4
+
+        checker = CheckUserCanAddCommentsSlots(
+            tracker=tracker,
+            dispatcher=dispatcher,
+            conversation_statistics=conversation_statistics,
+            slot_value="1",
+        )
+
+        assert checker.has_slots_to_return()
+        assert checker.slots == {"vote": "1", "ask_for_a_comment": True}
+
+    def test_has_no_slots_to_return(self, tracker, dispatcher, conversation_statistics):
+        tracker.set_slot("participant_can_add_comments", True)
+        conversation_statistics["comments"] = 5
+
+        checker = CheckUserCanAddCommentsSlots(
+            tracker=tracker,
+            dispatcher=dispatcher,
+            conversation_statistics=conversation_statistics,
+            slot_value="1",
+        )
+
+        assert not checker.has_slots_to_return()
+        assert checker.slots == []
+
+
+class TestCheckUserCompletedConversationSlots:
+    def test_initialization(self, tracker, dispatcher):
         user = User(tracker)
-        checker = CheckEndConversationSlots(
+        with pytest.raises(Exception):
+            checker = CheckUserCompletedConversationSlots(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                user=user,
+                conversation_statistics={"missing_votes": 0},
+                slots_type="foo",
+            )
+            checker.set_slots()
+        checker = CheckUserCompletedConversationSlots(
             tracker=tracker,
             dispatcher=dispatcher,
             user=user,
             conversation_statistics={"missing_votes": 0},
-            slot_type="slots",
+            slots_type=SlotsType.DICT,
+        )
+
+        checker.set_slots()
+        assert type(checker.slots) == dict
+
+        checker = CheckUserCompletedConversationSlots(
+            tracker=tracker,
+            dispatcher=dispatcher,
+            user=user,
+            conversation_statistics={"missing_votes": 0},
+            slots_type=SlotsType.LIST,
+        )
+
+        checker.set_slots()
+        assert type(checker.slots) == list
+
+    def test_has_slots_to_return(self, tracker, dispatcher):
+        user = User(tracker)
+        checker = CheckUserCompletedConversationSlots(
+            tracker=tracker,
+            dispatcher=dispatcher,
+            user=user,
+            conversation_statistics={"missing_votes": 0},
+            slots_type=SlotsType.LIST,
         )
         assert checker.has_slots_to_return()
-        assert checker.slots == VoteDialogue.finish_voting(format="slots")
+        assert checker.slots == VoteDialogue.finish_voting(SlotsType.LIST)
 
     def test_should_not_return_slots_to_rasa(
         self, tracker, dispatcher, conversation_statistics
     ):
         user = User(tracker)
-        checker = CheckEndConversationSlots(
+        checker = CheckUserCompletedConversationSlots(
             tracker=tracker,
             dispatcher=dispatcher,
             conversation_statistics=conversation_statistics,
@@ -58,7 +123,7 @@ class TestCheckExternalAuthenticationSlots:
             tracker=tracker,
             dispatcher=dispatcher,
             conversation_statistics=conversation_statistics,
-            slot_type="slots",
+            slots_type=SlotsType.LIST,
         )
         assert checker.has_slots_to_return()
         print(checker.slots)

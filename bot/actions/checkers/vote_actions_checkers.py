@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from actions.checkers.api_error_checker import EJApiErrorManager
 from actions.checkers.profile_actions_checkers import CheckSlotsInterface
-from ej.vote import VoteDialogue
+from ej.vote import SlotsType, VoteDialogue
 from ej.settings import EJCommunicationError
 from ej.comment import CommentDialogue
 from ej.conversation import Conversation
@@ -44,7 +44,7 @@ class CheckNextCommentSlots(CheckSlotsInterface):
         conversation_total_comments = Conversation.get_total_comments(
             self.conversation_statistics
         )
-        user_voted_comments = Conversation.get_user_voted_comments_counter(
+        user_voted_comments = Conversation.get_voted_comments(
             self.conversation_statistics
         )
 
@@ -119,17 +119,20 @@ class CheckExternalAuthenticationSlots(CheckSlotsInterface):
         self.dispatcher.utter_message(template="utter_vote_limit_anonymous_reached")
 
     def set_slots(self):
-        if self.slot_type != "dict":
-            self.slots = [
-                SlotSet("vote", "-"),
-                SlotSet("ask_to_authenticate", True),
-            ]
-        else:
-            self.slots = {"vote": "-", "ask_to_authenticate": True}
+        match self.slots_type:
+            case SlotsType.LIST:
+                self.slots = [
+                    SlotSet("vote", "-"),
+                    SlotSet("ask_to_authenticate", True),
+                ]
+            case SlotsType.DICT:
+                self.slots = {"vote": "-", "ask_to_authenticate": True}
+            case _:
+                raise Exception
 
 
 @dataclass
-class CheckEndConversationSlots(CheckSlotsInterface):
+class CheckUserCompletedConversationSlots(CheckSlotsInterface):
     """
     Test if the user has voted in all available comments.
     """
@@ -145,7 +148,7 @@ class CheckEndConversationSlots(CheckSlotsInterface):
         self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def set_slots(self):
-        self.slots = VoteDialogue.finish_voting(self.slot_type)
+        self.slots = VoteDialogue.finish_voting(self.slots_type)
 
 
 @dataclass
@@ -165,7 +168,7 @@ class CheckUserCommentSlots(CheckSlotsInterface):
         self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def set_slots(self):
-        self.slots = VoteDialogue.finish_voting(self.slot_type)
+        self.slots = VoteDialogue.finish_voting(self.slots_type)
 
 
 @dataclass

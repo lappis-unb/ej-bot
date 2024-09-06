@@ -120,7 +120,7 @@ class Conversation:
         has_completed_registration: bool, anonymous_votes_limit: int, statistics
     ):
         if not has_completed_registration:
-            comments_counter = Conversation.get_user_voted_comments_counter(statistics)
+            comments_counter = Conversation.get_voted_comments(statistics)
             if comments_counter == anonymous_votes_limit:
                 return True
         return False
@@ -134,7 +134,7 @@ class Conversation:
         return statistics["total_comments"]
 
     @staticmethod
-    def get_user_voted_comments_counter(statistics):
+    def get_voted_comments(statistics):
         return statistics["comments"]
 
     @staticmethod
@@ -143,9 +143,9 @@ class Conversation:
         if not participant_can_add_comments:
             return False
         total_comments = Conversation.get_total_comments(statistics)
-        current_comment = Conversation.get_user_voted_comments_counter(statistics)
-        return (total_comments >= 4 and current_comment == 4) or (
-            total_comments < 4 and current_comment == 2
+        voted_comments = Conversation.get_voted_comments(statistics)
+        return (total_comments >= 4 and voted_comments == 4) or (
+            total_comments < 4 and voted_comments == 2
         )
 
     @staticmethod

@@ -29,7 +29,7 @@ def dispatcher():
 def empty_tracker():
     slots = {
         "has_completed_registration": None,
-        "participants_can_add_comments": None,
+        "participant_can_add_comments": None,
         "anonymous_votes_limit": None,
         "access_token": None,
         "refresh_token": None,

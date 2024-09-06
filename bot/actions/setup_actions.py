@@ -2,7 +2,8 @@ from actions.checkers.setup_actions_checkers import (
     CheckGetBoardSlots,
     CheckGetConversationSlots,
 )
-from actions.checkers.vote_actions_checkers import CheckEndConversationSlots
+from actions.checkers.vote_actions_checkers import CheckUserCompletedConversationSlots
+from ej.vote import SlotsType
 from ej.user import User
 from rasa_sdk import Action
 
@@ -16,8 +17,6 @@ class ActionGetConversation(Action):
     def name(self):
         return "action_get_conversation"
 
-    # TODO: refactors this method using the Checkers architecture.
-    # Use ActionAskVote as an example.
     def run(self, dispatcher, tracker, domain):
         user = User(tracker)
         user.authenticate()
@@ -36,9 +35,16 @@ class ActionGetConversation(Action):
         dispatcher = kwargs["dispatcher"]
         user = kwargs["user"]
         return [
-            CheckGetConversationSlots(dispatcher=dispatcher, user=user),
-            CheckGetBoardSlots(dispatcher=dispatcher, user=user),
-            CheckEndConversationSlots(
-                tracker=tracker, dispatcher=dispatcher, user=user
+            CheckGetConversationSlots(
+                dispatcher=dispatcher, user=user, slots_type=SlotsType.LIST
+            ),
+            CheckGetBoardSlots(
+                dispatcher=dispatcher, user=user, slots_type=SlotsType.LIST
+            ),
+            CheckUserCompletedConversationSlots(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                user=user,
+                slots_type=SlotsType.LIST,
             ),
         ]
