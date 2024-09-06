@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Text
 from actions.base_actions import CheckersMixin
 from actions.checkers.api_error_checker import EJApiErrorManager
 from actions.checkers.vote_actions_checkers import (
-    CheckUserCompletedConversationSlots,
+    CheckRemainingCommentsSlots,
     CheckExternalAuthenticationSlots,
     CheckNeedToAskAboutProfile,
     CheckNextCommentSlots,
@@ -94,6 +94,10 @@ class ValidateVoteForm(FormValidationAction):
     https://rasa.com/docs/rasa/forms/#validating-form-input
     """
 
+    def __init__(self, **kwargs):
+        self.slots = []
+        super().__init__(**kwargs)
+
     def name(self) -> Text:
         return "validate_vote_form"
 
@@ -110,17 +114,18 @@ class ValidateVoteForm(FormValidationAction):
             except EJCommunicationError:
                 return ej_api_error_manager.get_slots(as_dict=True)
 
-            checker = CheckUserCompletedConversationSlots(
-                tracker,
-                dispatcher,
-                conversation,
+            checker = CheckRemainingCommentsSlots(
+                dispatcher=dispatcher,
                 conversation_statistics=statistics,
                 slots_type=SlotsType.LIST,
             )
 
             if checker.has_slots_to_return():
                 custom_logger(checker, _type="string")
-                return checker.slots
+                if checker.slots == VoteDialogue.restart_vote_form_slots():
+                    return super().run(dispatcher, tracker, domain)
+                else:
+                    return checker.slots
 
         return super().run(dispatcher, tracker, domain)
 
@@ -135,17 +140,14 @@ class ValidateVoteForm(FormValidationAction):
     ) -> Dict[Text, Any]:
         """Validate vote value."""
 
-        slots = []
-        if not slot_value:
-            return {}
-
         ej_api_error_manager = EJApiErrorManager()
         user = User(tracker)
         conversation = Conversation(tracker)
 
-        vote = Vote(slot_value, tracker)
-        if vote.is_valid():
+        if Vote.is_valid(slot_value):
+            vote = Vote(slot_value, tracker)
             custom_logger(f"POST vote to EJ API: {vote}")
+
             try:
                 vote.create(tracker.get_slot("current_comment_id"))
             except EJCommunicationError:
@@ -168,40 +170,19 @@ class ValidateVoteForm(FormValidationAction):
             for checker in checkers:
                 custom_logger(checker, _type="string")
                 if checker.has_slots_to_return():
-                    slots = checker.slots
+                    self.slots = checker.slots
                     break
 
-            if slots:
-                return slots
-
-            return self._dispatch_show_next_comment(
-                dispatcher, statistics, vote, tracker
-            )
+            return self.slots
         else:
-            try:
-                statistics = conversation.get_participant_statistics()
-            except EJCommunicationError:
-                return ej_api_error_manager.get_slots(as_dict=True)
-            if vote.is_internal():
-                return self._dispatch_show_next_comment(
-                    dispatcher, statistics, vote, tracker
-                )
             dispatcher.utter_message(template="utter_invalid_vote_during_participation")
-            return VoteDialogue.continue_voting(tracker)
+            return VoteDialogue.restart_vote_form_slots()
 
     def get_checkers(self, tracker, **kwargs):
         dispatcher = kwargs["dispatcher"]
         conversation_statistics = kwargs["conversation_statistics"]
         slot_value = kwargs["conversation_statistics"]
-        user = kwargs["user"]
         return [
-            CheckUserCompletedConversationSlots(
-                tracker=tracker,
-                dispatcher=dispatcher,
-                user=user,
-                conversation_statistics=conversation_statistics,
-                slots_type=SlotsType.DICT,
-            ),
             CheckExternalAuthenticationSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
@@ -215,12 +196,7 @@ class ValidateVoteForm(FormValidationAction):
                 slot_value=slot_value,
                 slots_type=SlotsType.DICT,
             ),
+            CheckRemainingCommentsSlots(
+                conversation_statistics=conversation_statistics, dispatcher=dispatcher
+            ),
         ]
-
-    def _dispatch_show_next_comment(
-        self, dispatcher, statistics, vote: Vote, tracker: Tracker
-    ):
-        if Conversation.available_comments_to_vote(statistics):
-            return VoteDialogue.continue_voting(tracker)
-        else:
-            return VoteDialogue.finish_voting()

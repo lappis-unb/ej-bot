@@ -1,13 +1,68 @@
 import pytest
 from actions.checkers.vote_actions_checkers import (
-    CheckUserCompletedConversationSlots,
+    CheckRemainingCommentsSlots,
     CheckExternalAuthenticationSlots,
     CheckNextCommentSlots,
     CheckUserCanAddCommentsSlots,
 )
 from actions.checkers.api_error_checker import EJApiErrorManager
-from ej.vote import SlotsType, VoteDialogue
+from ej.vote import SlotsType
 from ej.user import User
+
+
+class TestCheckRemainingCommentsSlots:
+    def test_initialization(self, tracker, dispatcher):
+
+        with pytest.raises(Exception):
+            checker = CheckRemainingCommentsSlots(
+                dispatcher=dispatcher,
+                conversation_statistics={"missing_votes": 0},
+                slots_type="foo",
+            )
+            checker.has_slots_to_return()
+
+        checker = CheckRemainingCommentsSlots(
+            dispatcher=dispatcher,
+            conversation_statistics={"missing_votes": 1},
+            slots_type=SlotsType.DICT,
+        )
+
+        assert checker.has_slots_to_return()
+        assert type(checker.slots) == dict
+
+        checker = CheckRemainingCommentsSlots(
+            dispatcher=dispatcher,
+            conversation_statistics={"missing_votes": 0},
+            slots_type=SlotsType.LIST,
+        )
+
+        checker.set_slots()
+        assert checker.has_slots_to_return()
+        assert type(checker.slots) == list
+
+    def test_keep_vote_form_running(self, tracker, dispatcher, conversation_statistics):
+        conversation_statistics["missing_votes"] = 2
+
+        checker = CheckRemainingCommentsSlots(
+            dispatcher=dispatcher,
+            conversation_statistics=conversation_statistics,
+            slots_type=SlotsType.DICT,
+        )
+
+        assert checker.has_slots_to_return()
+        assert checker.slots == {"vote": None}
+
+    def test_completed_vote_form(self, tracker, dispatcher, conversation_statistics):
+        conversation_statistics["missing_votes"] = 0
+
+        checker = CheckRemainingCommentsSlots(
+            dispatcher=dispatcher,
+            conversation_statistics=conversation_statistics,
+            slots_type=SlotsType.DICT,
+        )
+
+        assert checker.has_slots_to_return()
+        assert checker.slots == {"vote": "-", "participant_voted_in_all_comments": True}
 
 
 class TestCheckUserCanAddComentsSlots:
@@ -36,66 +91,6 @@ class TestCheckUserCanAddComentsSlots:
             slot_value="1",
         )
 
-        assert not checker.has_slots_to_return()
-        assert checker.slots == []
-
-
-class TestCheckUserCompletedConversationSlots:
-    def test_initialization(self, tracker, dispatcher):
-        user = User(tracker)
-        with pytest.raises(Exception):
-            checker = CheckUserCompletedConversationSlots(
-                tracker=tracker,
-                dispatcher=dispatcher,
-                user=user,
-                conversation_statistics={"missing_votes": 0},
-                slots_type="foo",
-            )
-            checker.set_slots()
-        checker = CheckUserCompletedConversationSlots(
-            tracker=tracker,
-            dispatcher=dispatcher,
-            user=user,
-            conversation_statistics={"missing_votes": 0},
-            slots_type=SlotsType.DICT,
-        )
-
-        checker.set_slots()
-        assert type(checker.slots) == dict
-
-        checker = CheckUserCompletedConversationSlots(
-            tracker=tracker,
-            dispatcher=dispatcher,
-            user=user,
-            conversation_statistics={"missing_votes": 0},
-            slots_type=SlotsType.LIST,
-        )
-
-        checker.set_slots()
-        assert type(checker.slots) == list
-
-    def test_has_slots_to_return(self, tracker, dispatcher):
-        user = User(tracker)
-        checker = CheckUserCompletedConversationSlots(
-            tracker=tracker,
-            dispatcher=dispatcher,
-            user=user,
-            conversation_statistics={"missing_votes": 0},
-            slots_type=SlotsType.LIST,
-        )
-        assert checker.has_slots_to_return()
-        assert checker.slots == VoteDialogue.finish_voting(SlotsType.LIST)
-
-    def test_should_not_return_slots_to_rasa(
-        self, tracker, dispatcher, conversation_statistics
-    ):
-        user = User(tracker)
-        checker = CheckUserCompletedConversationSlots(
-            tracker=tracker,
-            dispatcher=dispatcher,
-            conversation_statistics=conversation_statistics,
-            user=user,
-        )
         assert not checker.has_slots_to_return()
         assert checker.slots == []
 

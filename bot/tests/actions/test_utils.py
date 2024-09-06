@@ -17,34 +17,31 @@ class TestUtils:
         assert VoteChoices(values[2])
 
     def test_vote_is_valid(self, tracker):
-        vote = Vote("1", tracker)
-        assert vote.is_valid()
+        assert Vote.is_valid("1")
 
     def test_vote_is_invalid(self, tracker):
         vote = Vote("xpto", tracker)
-        assert vote.is_valid() == False
+        assert not Vote.is_valid("xpto")
 
-    def test_continue_voting(self, tracker):
-        assert VoteDialogue.continue_voting(tracker) == {
+    def test_continue_voting(self):
+        assert VoteDialogue.restart_vote_form_slots() == {
             "vote": None,
-            "access_token": "1234",
-            "refresh_token": "5678",
         }
 
     def test_stop_voting(self, tracker):
-        assert VoteDialogue.stop_voting() == {
+        assert VoteDialogue.deactivate_vote_form_slots() == {
             "vote": "-",
         }
-        assert VoteDialogue.stop_voting(SlotsType.LIST) == [
+        assert VoteDialogue.deactivate_vote_form_slots(SlotsType.LIST) == [
             SlotSet("vote", "-"),
         ]
 
     def test_finish_voting(self, tracker):
-        assert VoteDialogue.finish_voting(SlotsType.DICT) == {
+        assert VoteDialogue.completed_vote_form_slots(SlotsType.DICT) == {
             "vote": "-",
             "participant_voted_in_all_comments": True,
         }
-        assert VoteDialogue.finish_voting(SlotsType.LIST) == [
+        assert VoteDialogue.completed_vote_form_slots(SlotsType.LIST) == [
             SlotSet("vote", "-"),
             SlotSet("participant_voted_in_all_comments", True),
         ]

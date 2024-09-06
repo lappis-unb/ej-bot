@@ -77,7 +77,7 @@ class CheckValidateProfileQuestion(CheckSlotsInterface):
     def _set_slots(self, is_valid=True):
         if is_valid:
             self.slots = {
-                **VoteDialogue.continue_voting(self.tracker),
+                **VoteDialogue.restart_vote_form_slots(),
                 **Profile.finish_profile(self.slot_value),
             }
         else:

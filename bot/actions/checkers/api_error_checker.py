@@ -12,7 +12,7 @@ class EJApiErrorManager:
 
     def get_slots(self, as_dict=False) -> Any:
         if as_dict:
-            stop_voting_slots = VoteDialogue.stop_voting()
+            stop_voting_slots = VoteDialogue.deactivate_vote_form_slots()
             return {**stop_voting_slots, "ej_api_connection_error": True}
         return [
             SlotSet("vote", "-"),

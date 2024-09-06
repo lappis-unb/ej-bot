@@ -10,6 +10,26 @@ from rasa_sdk.events import FollowupAction, SlotSet
 
 
 @dataclass
+class CheckRemainingCommentsSlots(CheckSlotsInterface):
+    """
+    Check if after a vote, still exists an next comment to vote.
+    """
+
+    def has_slots_to_return(self) -> bool:
+        available_comments_exists =Conversation.available_comments_to_vote(self.conversation_statistics)
+        self.set_slots(available_comments_exists)
+        return True
+
+
+    def set_slots(self, available_comments_exists=True):
+        if available_comments_exists:
+            self.slots = VoteDialogue.restart_vote_form_slots()
+        else:
+            self.dispatcher.utter_message(template="utter_thanks_participation")
+            self.slots = VoteDialogue.completed_vote_form_slots(self.slots_type)
+
+
+@dataclass
 class CheckNextCommentSlots(CheckSlotsInterface):
     """
     Request to EJ API the next comment to vote and update the user statistics slots.
@@ -21,7 +41,7 @@ class CheckNextCommentSlots(CheckSlotsInterface):
             if comment:
                 self.set_slots(comment)
             else:
-                self.slots = VoteDialogue.finish_voting(format="slots")
+                self.slots = VoteDialogue.completed_vote_form_slots(SlotsType.LIST)
         except EJCommunicationError:
             ej_api_error_manager = EJApiErrorManager()
             self.slots = ej_api_error_manager.get_slots()
@@ -132,26 +152,6 @@ class CheckExternalAuthenticationSlots(CheckSlotsInterface):
 
 
 @dataclass
-class CheckUserCompletedConversationSlots(CheckSlotsInterface):
-    """
-    Test if the user has voted in all available comments.
-    """
-
-    def has_slots_to_return(self) -> bool:
-        if not Conversation.available_comments_to_vote(self.conversation_statistics):
-            self._dispatch_messages()
-            self.set_slots()
-            return True
-        return False
-
-    def _dispatch_messages(self):
-        self.dispatcher.utter_message(template="utter_thanks_participation")
-
-    def set_slots(self):
-        self.slots = VoteDialogue.finish_voting(self.slots_type)
-
-
-@dataclass
 class CheckUserCommentSlots(CheckSlotsInterface):
     """
     Test if the user has voted in all available comments.
@@ -168,7 +168,7 @@ class CheckUserCommentSlots(CheckSlotsInterface):
         self.dispatcher.utter_message(template="utter_thanks_participation")
 
     def set_slots(self):
-        self.slots = VoteDialogue.finish_voting(self.slots_type)
+        self.slots = VoteDialogue.completed_vote_form_slots(self.slots_type)
 
 
 @dataclass
