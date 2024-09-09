@@ -16,10 +16,11 @@ class CheckRemainingCommentsSlots(CheckSlotsInterface):
     """
 
     def has_slots_to_return(self) -> bool:
-        available_comments_exists =Conversation.available_comments_to_vote(self.conversation_statistics)
+        available_comments_exists = Conversation.available_comments_to_vote(
+            self.conversation_statistics
+        )
         self.set_slots(available_comments_exists)
         return True
-
 
     def set_slots(self, available_comments_exists=True):
         if available_comments_exists:
@@ -105,15 +106,21 @@ class CheckNeedToAskAboutProfile(CheckSlotsInterface):
             self.dispatcher.utter_message(response="utter_profile_intro")
 
     def set_slots(self, next):
-        self.slots = [
-            SlotSet("vote", "-"),
-            SlotSet("comment_confirmation", "-"),
-            SlotSet("comment", "-"),
-            SlotSet("need_to_ask_profile_question", True),
-            SlotSet("next_count_to_send_profile_question", str(next)),
-            SlotSet("profile_question", None),
-            FollowupAction("profile_form"),
-        ]
+        match self.slots_type:
+            case SlotsType.LIST:
+                self.slots = [
+                    SlotSet("vote", "-"),
+                    SlotSet("need_to_ask_profile_question", True),
+                    SlotSet("next_count_to_send_profile_question", str(next)),
+                    SlotSet("profile_question", None),
+                ]
+            case SlotsType.DICT:
+                self.slots = {
+                    "vote": "-",
+                    "need_to_ask_profile_question": True,
+                    "next_count_to_send_profile_question": str(next),
+                    "profile_question": None,
+                }
 
 
 @dataclass

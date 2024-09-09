@@ -66,12 +66,6 @@ class ActionAskVote(Action, CheckersMixin):
         conversation = kwargs["conversation"]
         conversation_statistics = kwargs["conversation_statistics"]
         return [
-            CheckNeedToAskAboutProfile(
-                tracker=tracker,
-                dispatcher=dispatcher,
-                conversation=conversation,
-                conversation_statistics=conversation_statistics,
-            ),
             CheckNextCommentSlots(
                 tracker=tracker,
                 dispatcher=dispatcher,
@@ -165,6 +159,7 @@ class ValidateVoteForm(FormValidationAction):
                 conversation_statistics=statistics,
                 slot_value=slot_value,
                 user=user,
+                conversation=conversation
             )
 
             for checker in checkers:
@@ -182,6 +177,7 @@ class ValidateVoteForm(FormValidationAction):
         dispatcher = kwargs["dispatcher"]
         conversation_statistics = kwargs["conversation_statistics"]
         slot_value = kwargs["conversation_statistics"]
+        conversation = kwargs["conversation"]
         return [
             CheckExternalAuthenticationSlots(
                 tracker=tracker,
@@ -195,6 +191,13 @@ class ValidateVoteForm(FormValidationAction):
                 conversation_statistics=conversation_statistics,
                 slot_value=slot_value,
                 slots_type=SlotsType.DICT,
+            ),
+            CheckNeedToAskAboutProfile(
+                tracker=tracker,
+                dispatcher=dispatcher,
+                conversation=conversation,
+                conversation_statistics=conversation_statistics,
+                slots_type=SlotsType.DICT
             ),
             CheckRemainingCommentsSlots(
                 conversation_statistics=conversation_statistics, dispatcher=dispatcher

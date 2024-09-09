@@ -5,3 +5,12 @@ rules:
     steps:
       - intent: nlu_fallback
       - action: utter_nlu_fallback
+
+  - rule: stop the conversation whenever the user send a message with intent `stop`
+    steps:
+      - intent: stop
+      - action: utter_thanks_participation
+      - action: utter_next_conversation
+      - action: action_deactivate_loop
+      - active_loop: null
+      - action: action_restart

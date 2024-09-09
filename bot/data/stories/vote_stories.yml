@@ -22,19 +22,6 @@ stories:
       - action: utter_show_topic_of_discussion
       - checkpoint: starts_voting
 
-  - story: Starts participation, than hit stop to end voting.
-    steps:
-      - checkpoint: starts_voting
-      - slot_was_set:
-        - conversation_id
-      - action: vote_form
-      - active_loop: vote_form
-      - intent: stop
-      - action: utter_thanks_participation
-      - action: action_deactivate_loop
-      - active_loop: null
-      - checkpoint: end_dialogue
-
   - story: Starts participation, than asks for help.
     steps:
       - checkpoint: starts_voting
