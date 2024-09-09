@@ -302,15 +302,15 @@ responses:
   - text: |
         Olá! Eu sou a Iara! Como posso te ajudar hoje? Escolha uma das opções a seguir:
     buttons:
-    - title: ℹ️ Sobre o processo
+    - title: Sobre o processo
       payload: help_know_more
-    - title: 🤔 Uso das respostas
+    - title: Uso das respostas
       payload: help_voting
-    - title: 📥 Colaborar com o Plano
+    - title: Colaborar com o Plano
       payload: help_plan
-    - title: 🔑 Ajuda com autenticação
+    - title: Ajuda com autenticação
       payload: help_authentication
-    - title: 🛡️ Segurança dos dados
+    - title: Segurança dos dados
       payload: help_lgpd
   utter_nlu_fallback:
     - text: |
