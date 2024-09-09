@@ -123,8 +123,6 @@ class ValidateVoteForm(FormValidationAction):
 
         return super().run(dispatcher, tracker, domain)
 
-    # TODO: refactors this method using the Checkers architecture.
-    # Use ActionAskVote as an example.
     def validate_vote(
         self,
         slot_value: Any,
@@ -133,6 +131,9 @@ class ValidateVoteForm(FormValidationAction):
         domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate vote value."""
+
+        if not slot_value:
+            return VoteDialogue.restart_vote_form_slots()
 
         ej_api_error_manager = EJApiErrorManager()
         user = User(tracker)
@@ -144,9 +145,9 @@ class ValidateVoteForm(FormValidationAction):
 
             try:
                 vote.create(tracker.get_slot("current_comment_id"))
+                dispatcher.utter_message(template="utter_vote_received")
             except EJCommunicationError:
                 return ej_api_error_manager.get_slots(as_dict=True)
-            dispatcher.utter_message(template="utter_vote_received")
 
             try:
                 statistics = conversation.get_participant_statistics()
@@ -159,7 +160,7 @@ class ValidateVoteForm(FormValidationAction):
                 conversation_statistics=statistics,
                 slot_value=slot_value,
                 user=user,
-                conversation=conversation
+                conversation=conversation,
             )
 
             for checker in checkers:
@@ -167,8 +168,8 @@ class ValidateVoteForm(FormValidationAction):
                 if checker.has_slots_to_return():
                     self.slots = checker.slots
                     break
-
             return self.slots
+
         else:
             dispatcher.utter_message(template="utter_invalid_vote_during_participation")
             return VoteDialogue.restart_vote_form_slots()
@@ -197,7 +198,7 @@ class ValidateVoteForm(FormValidationAction):
                 dispatcher=dispatcher,
                 conversation=conversation,
                 conversation_statistics=conversation_statistics,
-                slots_type=SlotsType.DICT
+                slots_type=SlotsType.DICT,
             ),
             CheckRemainingCommentsSlots(
                 conversation_statistics=conversation_statistics, dispatcher=dispatcher

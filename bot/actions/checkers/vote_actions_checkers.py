@@ -1,12 +1,13 @@
 from dataclasses import dataclass
+
 from actions.checkers.api_error_checker import EJApiErrorManager
 from actions.checkers.profile_actions_checkers import CheckSlotsInterface
-from ej.vote import SlotsType, VoteDialogue
-from ej.settings import EJCommunicationError
 from ej.comment import CommentDialogue
 from ej.conversation import Conversation
 from ej.profile import Profile
-from rasa_sdk.events import FollowupAction, SlotSet
+from ej.settings import EJCommunicationError
+from ej.vote import SlotsType, VoteDialogue
+from rasa_sdk.events import SlotSet
 
 
 @dataclass

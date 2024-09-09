@@ -48,6 +48,21 @@ stories:
         - participant_voted_in_all_comments: true
       - checkpoint: end_dialogue
 
+  - story: Force the vote_form deactivation
+    steps:
+      - checkpoint: starts_voting
+      - slot_was_set:
+        - conversation_id
+      - action: vote_form
+      - active_loop: vote_form
+      - slot_was_set:
+        - vote: "-"
+      - slot_was_set:
+        - participant_voted_in_all_comments: true
+      - action: action_deactivate_loop
+      - active_loop: null
+      - checkpoint: end_dialogue
+
 
   - story: Stop bot when EJ API returns some error during participation
     steps:

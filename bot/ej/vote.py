@@ -7,7 +7,7 @@ import requests
 
 from actions.logger import custom_logger
 from rasa_sdk import Tracker
-from rasa_sdk.events import SlotSet
+from rasa_sdk.events import FollowupAction, SlotSet
 
 from .routes import auth_headers, votes_route
 from .settings import *
@@ -24,6 +24,7 @@ class VoteChoices(Enum):
     SKIP = "0"
     DEACTIVATE_VOTE_FORM = "-"
 
+
 class VoteDialogue:
     @staticmethod
     def restart_vote_form_slots():
@@ -32,10 +33,12 @@ class VoteDialogue:
         fills the vote_form slots with None values,
         forcing Rasa to keep sending comments to voting.
         """
-        return { "vote": None }
+        return {"vote": None}
 
     @staticmethod
-    def deactivate_vote_form_slots(slot_type: SlotsType = SlotsType.DICT) -> Dict[Any, Any] | List[Any]:
+    def deactivate_vote_form_slots(
+        slot_type: SlotsType = SlotsType.DICT,
+    ) -> Dict[Any, Any] | List[Any]:
         """
         Rasa ends a form when all slots are filled. This method
         fills the vote_form slots with '-' character,
@@ -60,7 +63,10 @@ class VoteDialogue:
             case SlotsType.DICT:
                 return {**stop_voting_slots, "participant_voted_in_all_comments": True}
             case SlotsType.LIST:
-                return stop_voting_slots + [SlotSet("participant_voted_in_all_comments", True)]
+                return stop_voting_slots + [
+                    SlotSet("participant_voted_in_all_comments", True),
+                    FollowupAction("action_deactivate_loop"),
+                ]
             case _:
                 raise Exception
 
