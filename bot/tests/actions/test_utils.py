@@ -1,10 +1,9 @@
 from bot.ej.comment import CommentDialogue
-from rasa_sdk.events import SlotSet
-
-from bot.ej.settings import *
 from bot.ej.conversation import Conversation
-from bot.ej.vote import SlotsType, Vote, VoteChoices, VoteDialogue
+from bot.ej.settings import *
 from bot.ej.user import User
+from bot.ej.vote import SlotsType, Vote, VoteChoices, VoteDialogue
+from rasa_sdk.events import FollowupAction, SlotSet
 
 TOKEN = "mock_token_value"
 
@@ -44,6 +43,7 @@ class TestUtils:
         assert VoteDialogue.completed_vote_form_slots(SlotsType.LIST) == [
             SlotSet("vote", "-"),
             SlotSet("participant_voted_in_all_comments", True),
+            FollowupAction("action_deactivate_loop"),
         ]
 
     def test_user_have_comments_to_vote(self):

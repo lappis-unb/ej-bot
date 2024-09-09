@@ -35,7 +35,7 @@ stories:
   - slot_was_set:
     - comment
 
-- story: User stoped voting
+- story: User stop voting
   steps:
   - user: |
       ola
@@ -53,9 +53,9 @@ stories:
   - active_loop: vote_form
   - intent: stop
   - action: utter_thanks_participation
+  - action: utter_next_conversation
   - action: action_deactivate_loop
   - active_loop: null
-  - action: utter_next_conversation
   - action: action_restart
 
 - story: EJ API is unavailable
