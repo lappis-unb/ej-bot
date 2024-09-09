@@ -302,9 +302,9 @@ responses:
   - text: |
         Olá! Eu sou a Iara! Como posso te ajudar hoje? Escolha uma das opções a seguir:
     buttons:
-    - title: ℹ️ Saber mais sobre o processo
+    - title: ℹ️ Sobre o processo
       payload: help_know_more
-    - title: 🤔  Saber como as respostas serão usadas
+    - title: 🤔 Uso das respostas
       payload: help_voting
     - title: 📥 Colaborar com o Plano
       payload: help_plan
