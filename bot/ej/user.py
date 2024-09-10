@@ -72,6 +72,14 @@ class ExternalAuthenticationManager:
         self,
         expiration_minutes=TOKEN_EXPIRATION_TIME.total_seconds(),
     ) -> Text:
+        """
+        Returns a JWT string containing the user_id and secret_id fields.
+        This token will be used by Brasil Particiativo platform to unify the
+        the data (votes, comments and profile fields) provided by the same user across different channels.
+        """
+        if not JWT_SECRET:
+            raise Exception("JWT_SECRET variable not found.")
+
         utc_now = datetime.now(timezone.utc)
         expiration = utc_now + timedelta(minutes=expiration_minutes)
         data = {
@@ -79,10 +87,17 @@ class ExternalAuthenticationManager:
             "secret_id": self.secret_id,
             "exp": expiration,
         }
-        encoded_data = jwt.encode(data, JWT_SECRET, algorithm="HS256")
-        return encoded_data
+        return jwt.encode(data, JWT_SECRET, algorithm="HS256")
 
-    def _get_authorization_url(self):
+    def _get_authorization_url(self) -> Text:
+        """
+        Returns an URL to authenticate the user using the JWT authorization data.
+        """
+        if not EXTERNAL_AUTHENTICATION_HOST or not BP_EJ_COMPONENT_ID:
+            raise Exception(
+                "EXTERNAL_AUTHENTICATION_HOST or BP_EJ_COMPONENT_ID variables were not defined"
+            )
+
         return f"{EXTERNAL_AUTHENTICATION_HOST}/{BP_EJ_COMPONENT_ID}/link_external_user"
 
     @staticmethod

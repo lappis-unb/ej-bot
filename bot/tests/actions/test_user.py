@@ -2,7 +2,37 @@ import json
 from bot.ej.settings import SECRET_KEY
 import pytest
 
-from bot.ej.user import User
+from bot.ej.user import CheckAuthenticationDialogue, User
+
+
+class TestCheckAuthenticationDialogue:
+    def test_authentication_dialogue_options(self):
+        message = CheckAuthenticationDialogue.get_message()
+        message[
+            "text"
+        ] = "Estou aguardando você se autenticar para continuar a votação. 😊"
+
+        buttons = message["buttons"]
+
+        assert buttons[0]["title"] == "Confirmar"
+        assert (
+            buttons[0]["payload"]
+            == CheckAuthenticationDialogue.CHECK_AUTHENTICATION_SLOT
+        )
+
+        assert buttons[1]["title"] == "Encerrar"
+        assert (
+            buttons[1]["payload"] == CheckAuthenticationDialogue.END_PARTICIPATION_SLOT
+        )
+
+    def test_authentication_dialogue_slots(self):
+        slots = CheckAuthenticationDialogue.restart_auth_form()
+        assert slots["check_authentication"] is None
+        assert slots["has_completed_registration"] is None
+
+        slots = CheckAuthenticationDialogue.end_auth_form()
+        assert slots["check_authentication"] == "end_participant_conversation"
+        assert slots["has_completed_registration"] == False
 
 
 class TestUser:
