@@ -22,7 +22,7 @@ class ActionAskComment(Action, CheckersMixin):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        dispatcher.utter_message(template="utter_ask_comment")
+        dispatcher.utter_message(response="utter_ask_comment")
         return []
 
 
@@ -54,7 +54,7 @@ class ValidateCommentForm(FormValidationAction):
 
         try:
             comment.create()
-            dispatcher.utter_message(template="utter_sent_comment")
+            dispatcher.utter_message(response="utter_sent_comment")
             return {"vote": None}
         except:
-            dispatcher.utter_message(template="utter_send_comment_error")
+            dispatcher.utter_message(response="utter_send_comment_error")

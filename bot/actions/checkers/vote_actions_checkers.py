@@ -25,9 +25,11 @@ class CheckRemainingCommentsSlots(CheckSlotsInterface):
 
     def set_slots(self, available_comments_exists=True):
         if available_comments_exists:
+            if Conversation.get_voted_comments(self.conversation_statistics):
+                self.dispatcher.utter_message(response="utter_vote_received")
             self.slots = VoteDialogue.restart_vote_form_slots()
         else:
-            self.dispatcher.utter_message(template="utter_thanks_participation")
+            self.dispatcher.utter_message(response="utter_thanks_participation")
             self.slots = VoteDialogue.completed_vote_form_slots(self.slots_type)
 
 
@@ -43,6 +45,7 @@ class CheckNextCommentSlots(CheckSlotsInterface):
             if comment:
                 self.set_slots(comment)
             else:
+                self.dispatcher.utter_message(response="utter_thanks_participation")
                 self.slots = VoteDialogue.completed_vote_form_slots(SlotsType.LIST)
         except EJCommunicationError:
             ej_api_error_manager = EJApiErrorManager()
@@ -144,7 +147,7 @@ class CheckExternalAuthenticationSlots(CheckSlotsInterface):
         return False
 
     def _dispatch_messages(self):
-        self.dispatcher.utter_message(template="utter_vote_limit_anonymous_reached")
+        self.dispatcher.utter_message(response="utter_vote_limit_anonymous_reached")
 
     def set_slots(self):
         match self.slots_type:
@@ -173,7 +176,7 @@ class CheckUserCommentSlots(CheckSlotsInterface):
         return False
 
     def _dispatch_messages(self):
-        self.dispatcher.utter_message(template="utter_thanks_participation")
+        self.dispatcher.utter_message(response="utter_thanks_participation")
 
     def set_slots(self):
         self.slots = VoteDialogue.completed_vote_form_slots(self.slots_type)

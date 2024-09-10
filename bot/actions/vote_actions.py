@@ -145,7 +145,6 @@ class ValidateVoteForm(FormValidationAction):
 
             try:
                 vote.create(tracker.get_slot("current_comment_id"))
-                dispatcher.utter_message(template="utter_vote_received")
             except EJCommunicationError:
                 return ej_api_error_manager.get_slots(as_dict=True)
 
@@ -171,7 +170,7 @@ class ValidateVoteForm(FormValidationAction):
             return self.slots
 
         else:
-            dispatcher.utter_message(template="utter_invalid_vote_during_participation")
+            dispatcher.utter_message(response="utter_invalid_vote_during_participation")
             return VoteDialogue.restart_vote_form_slots()
 
     def get_checkers(self, tracker, **kwargs):

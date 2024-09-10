@@ -2,7 +2,7 @@
   "questions": [
     {
       "id": 0,
-      "body": "Dentre as opções na lista, qual seu gênero?",
+      "body": "Para personalizar essa experiência, gostaríamos de saber um pouquinho mais sobre você. Dentre as opções na lista, qual seu gênero?",
       "change": "Gender",
       "put_payload": "gender",
       "answers": [
@@ -30,7 +30,7 @@
     },
     {
       "id": 1,
-      "body": "Dentre as opções na lista, você se autodeclara como pessoa:",
+      "body": "Para personalizar essa experiência, gostaríamos de saber um pouquinho mais sobre você. Dentre as opções na lista, você se autodeclara como pessoa:",
       "change": "Ethnicity",
       "put_payload": "ethnicity_choices",
       "answers": [
@@ -68,7 +68,7 @@
     },
     {
       "id": 2,
-      "body": "Dentre as opções na lista, em qual região você vive?",
+      "body": "Para personalizar essa experiência, gostaríamos de saber um pouquinho mais sobre você. Dentre as opções na lista, em qual região você vive?",
       "change": "Region",
       "put_payload": "region",
       "answers": [
@@ -101,7 +101,7 @@
     },
     {
       "id": 3,
-      "body": "Dentre as opções na lista, você tem quantos anos?",
+      "body": "Para personalizar essa experiência, gostaríamos de saber um pouquinho mais sobre você. Dentre as opções na lista, você tem quantos anos?",
       "change": "AgeRange",
       "put_payload": "age_range",
       "answers": [

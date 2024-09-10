@@ -66,14 +66,14 @@ class CheckGetBoardSlots(CheckSlotsInterface):
         ej_api_error_manager = EJApiErrorManager()
 
         if BOARD_ID is None:
-            self.dispatcher.utter_message(template="utter_no_board_id")
+            self.dispatcher.utter_message(response="utter_no_board_id")
             self.slots = ej_api_error_manager.get_slots()
             return True
 
         try:
             board = Board(int(BOARD_ID), self.user.tracker)
             if len(board.conversations) == 0:
-                self.dispatcher.utter_message(template="utter_no_conversations")
+                self.dispatcher.utter_message(response="utter_no_conversations")
                 raise Exception("No conversations found.")
 
             index = 0

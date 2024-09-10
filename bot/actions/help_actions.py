@@ -54,7 +54,7 @@ class ValidateHelpForm(FormValidationAction, CheckersMixin):
 
         try:
             CHOICE = HelpChoices[slot_value.upper()]
-            dispatcher.utter_message(template=CHOICE.value)
+            dispatcher.utter_message(response=CHOICE.value)
             return {"help_topic": slot_value}
         except Exception as e:
             raise e

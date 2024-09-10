@@ -44,7 +44,7 @@ class ValidateAuthenticationForm(FormValidationAction):
 
         if not user.has_completed_registration:
             dispatcher.utter_message(
-                template="utter_error_during_authentication_validation"
+                response="utter_error_during_authentication_validation"
             )
             return CheckAuthenticationDialogue.restart_auth_form()
 
@@ -75,7 +75,7 @@ class ActionAskHasCompletedRegistration(Action):
             )
             auth_link = authorization_service.get_authentication_link()
             message = CheckAuthenticationDialogue.get_message()
-            dispatcher.utter_message(template="utter_get_token", auth_link=auth_link)
+            dispatcher.utter_message(response="utter_get_token", auth_link=auth_link)
             dispatcher.utter_message(**message)
 
         except EJCommunicationError:
