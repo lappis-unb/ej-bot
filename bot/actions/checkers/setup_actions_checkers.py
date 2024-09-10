@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.checkers.api_error_checker import EJClientErrorManager
 from actions.checkers.profile_actions_checkers import CheckSlotsInterface
 from ej.boards import Board
-from ej.user import ExternalAuthorizationService, User
+from ej.user import ExternalAuthenticationManager, User
 from ej.settings import EJCommunicationError
 from ej.conversation import Conversation
 from rasa_sdk.events import SlotSet
@@ -11,7 +11,7 @@ from ej.settings import EJCommunicationError, BOARD_ID, CONVERSATION_ID
 
 
 def get_slots(conversation: Conversation, user: User):
-    authorization_service = ExternalAuthorizationService(
+    authorization_service = ExternalAuthenticationManager(
         user.tracker.sender_id, user.secret_id
     )
     return [
@@ -50,8 +50,8 @@ class CheckGetConversationSlots(CheckSlotsInterface):
                 conversation = Conversation(self.user.tracker, conversation_data)
                 self.set_slots(conversation)
             except EJCommunicationError:
-                ej_api_error_manager = EJApiErrorManager()
-                self.slots = ej_api_error_manager.get_slots()
+                ej_client_error_manager = EJClientErrorManager()
+                self.slots = ej_client_error_manager.get_slots()
             return True
         return False
 
@@ -63,11 +63,11 @@ class CheckGetConversationSlots(CheckSlotsInterface):
 class CheckGetBoardSlots(CheckSlotsInterface):
     def has_slots_to_return(self) -> bool:
         """ """
-        ej_api_error_manager = EJApiErrorManager()
+        ej_client_error_manager = EJClientErrorManager()
 
         if BOARD_ID is None:
             self.dispatcher.utter_message(response="utter_no_board_id")
-            self.slots = ej_api_error_manager.get_slots()
+            self.slots = ej_client_error_manager.get_slots()
             return True
 
         try:
@@ -81,7 +81,7 @@ class CheckGetBoardSlots(CheckSlotsInterface):
             self.set_slots(conversation)
             return self.slots
         except EJCommunicationError:
-            self.slots = ej_api_error_manager.get_slots()
+            self.slots = ej_client_error_manager.get_slots()
 
         return True
 

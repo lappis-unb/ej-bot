@@ -74,7 +74,7 @@ stories:
   - active_loop: vote_form
   - slot_was_set:
     - vote: "-"
-    - ej_api_connection_error: true
+    - ej_client_connection_error: true
   - active_loop: null
   - action: utter_ej_communication_error
   - action: action_restart

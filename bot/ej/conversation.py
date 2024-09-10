@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import logging
 
 from actions.logger import custom_logger
-from ej.ej_api import EjApi
+from ej.ej_client import EjClient
 from rasa_sdk import Tracker
 
 from .routes import (
@@ -27,7 +27,7 @@ class Conversation:
         self.text = self._get_text()
         self.participant_can_add_comments = self._get_participants_can_add_comments()
         self.anonymous_votes_limit = self._get_anonymous_votes_limit()
-        self.ej_api = EjApi(self.tracker)
+        self.ej_client = EjClient(self.tracker)
         self.send_profile_question = self._get_send_profile_question()
         self.votes_to_send_profile_questions = int(
             self._get_votes_to_send_profile_questions()
@@ -69,9 +69,9 @@ class Conversation:
 
     @staticmethod
     def get(conversation_id: int, tracker: Tracker):
-        ej_api = EjApi(tracker)
+        ej_client = EjClient(tracker)
         try:
-            response = ej_api.request(conversation_route(conversation_id))
+            response = ej_client.request(conversation_route(conversation_id))
             conversation = response.json()
             if len(conversation) == 0:
                 raise EJCommunicationError
@@ -84,7 +84,7 @@ class Conversation:
     def get_participant_statistics(self):
         try:
             url = user_statistics_route(self.id)
-            response = self.ej_api.request(url)
+            response = self.ej_client.request(url)
             response = response.json()
         except:
             raise EJCommunicationError
@@ -95,7 +95,7 @@ class Conversation:
         import time
 
         def _request():
-            response = self.ej_api.request(url)
+            response = self.ej_client.request(url)
             if response.status_code == 500:
                 raise EJCommunicationError
             comment = response.json()

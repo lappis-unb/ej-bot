@@ -26,7 +26,7 @@ def test_set_remaining_questions(mock_profile):
 
 
 # Test validation of a valid answer
-@patch("bot.ej.ej_api.requests.post")
+@patch("bot.ej.ej_client.requests.post")
 def test_is_valid_answer_valid(mock_post):
     mock_post.return_value = Mock(ok=True)
     mock_profile = Mock(spec=Profile)

@@ -1,3 +1,4 @@
+import base64
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from datetime import timedelta
@@ -8,7 +9,7 @@ from typing import Any, Dict, Text
 import jwt
 
 from actions.logger import custom_logger
-from ej.ej_api import EjApi
+from ej.ej_client import EjClient
 
 from .routes import auth_route, registration_route
 from .settings import (
@@ -21,7 +22,6 @@ from .settings import (
 
 
 class CheckAuthenticationDialogue:
-
     END_PARTICIPATION_SLOT = "end_participant_conversation"
     CHECK_AUTHENTICATION_SLOT = "check_participant_authentication"
 
@@ -59,8 +59,7 @@ class CheckAuthenticationDialogue:
 
 
 @dataclass
-class ExternalAuthorizationService:
-
+class ExternalAuthenticationManager:
     sender_id: Text
     secret_id: Text
 
@@ -87,8 +86,11 @@ class ExternalAuthorizationService:
         return f"{EXTERNAL_AUTHENTICATION_HOST}/{BP_EJ_COMPONENT_ID}/link_external_user"
 
     @staticmethod
-    def generate_hash(identifier):
-        hash_object = hashlib.sha256(identifier.encode())
+    def to_sha256(sender_id: Text):
+        """
+        Crypto sender_id with sha256 algorithm.
+        """
+        hash_object = hashlib.sha256(sender_id.encode())
         hex_dig = hash_object.hexdigest()
         return hex_dig
 
@@ -100,29 +102,26 @@ class User:
 
     ANONYMOUS_USER_NAME = "Participante anônimo"
 
-    def __init__(self, tracker: Any, name=ANONYMOUS_USER_NAME):
-        self.tracker = tracker
-        if self.tracker:
-            self.name = self._get_name_from_tracker()
-            self.display_name = self.name
-            self.sender_id = self.tracker.sender_id
-            self.ej_api = EjApi(self.tracker)
-            self.secret_id = ExternalAuthorizationService.generate_hash(self.sender_id)
+    def __init__(self, tracker: Any):
+        if tracker:
+            self.tracker = tracker
+            self.sender_id = tracker.sender_id
             self.has_completed_registration = tracker.get_slot(
                 "has_completed_registration"
             )
-            self._set_password()
-            self._set_email()
+            self.name = self._get_name_from_tracker()
+            self.display_name = self.name
+            self.email = f"{self.remove_special(self.sender_id)}-opinion-bot@mail.com"
+            self.password = self._get_password()
+            self.password_confirm = self.password
+            self.secret_id = ExternalAuthenticationManager.to_sha256(self.sender_id)
+            self.ej_client = EjClient(tracker)
 
-    def _set_password(self):
-        password = self._get_password_hash()
-        self.password, self.password_confirm = [password, password]
-
-    def _get_password_hash(self):
+    def _get_password(self):
         if SECRET_KEY and self.sender_id:
-            combined = f"{self.sender_id}{SECRET_KEY}"
-            hash_object = hashlib.sha256(combined.encode())
-            return hash_object.hexdigest()
+            seed = f"{self.sender_id}{SECRET_KEY}".encode()
+            seed_base64 = base64.b64encode(seed)
+            return hashlib.sha256(seed_base64).hexdigest()
         raise Exception("could not generate user password")
 
     def registration_data(self):
@@ -150,11 +149,6 @@ class User:
             }
         )
 
-    def _set_email(self):
-        if self.name != User.ANONYMOUS_USER_NAME:
-            self.email = f"{self.name}-opinion-bot@mail.com"
-        self.email = f"{self.remove_special(self.sender_id)}-opinion-bot@mail.com"
-
     def authenticate(self):
         """
         Differentiate user type of login (using phone number or anonymous)
@@ -171,7 +165,7 @@ class User:
             custom_logger(
                 f"Requesting new token for the participant", data=self.auth_data()
             )
-            response = self.ej_api.request(auth_route(), self.auth_data())
+            response = self.ej_client.request(auth_route(), self.auth_data())
             if response.status_code != 200:
                 custom_logger(f"EJ API ERROR", data=response.json())
                 raise Exception
@@ -180,7 +174,7 @@ class User:
                 f"Failed to request token, trying to create the participant",
                 data=self.registration_data(),
             )
-            response = self.ej_api.request(
+            response = self.ej_client.request(
                 registration_route(), self.registration_data()
             )
             if response.status_code != 201:

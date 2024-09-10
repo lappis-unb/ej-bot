@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Text
 
 from actions.base_actions import CheckersMixin
-from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.checkers.api_error_checker import EJClientErrorManager
 from actions.checkers.vote_actions_checkers import (
     CheckRemainingCommentsSlots,
     CheckExternalAuthenticationSlots,
@@ -38,8 +38,8 @@ class ActionAskVote(Action, CheckersMixin):
         try:
             conversation_statistics = conversation.get_participant_statistics()
         except EJCommunicationError:
-            ej_api_error_manager = EJApiErrorManager()
-            return ej_api_error_manager.get_slots()
+            ej_client_error_manager = EJClientErrorManager()
+            return ej_client_error_manager.get_slots()
 
         # If you want to add new verifications during this action call,
         # you need to implement a new Checker.
@@ -101,12 +101,12 @@ class ValidateVoteForm(FormValidationAction):
         user_voted_comments = tracker.get_slot("user_voted_comments")
         if not user_voted_comments:
             conversation = Conversation(tracker)
-            ej_api_error_manager = EJApiErrorManager()
+            ej_client_error_manager = EJClientErrorManager()
 
             try:
                 statistics = conversation.get_participant_statistics()
             except EJCommunicationError:
-                return ej_api_error_manager.get_slots(as_dict=True)
+                return ej_client_error_manager.get_slots(as_dict=True)
 
             checker = CheckRemainingCommentsSlots(
                 dispatcher=dispatcher,
@@ -135,7 +135,7 @@ class ValidateVoteForm(FormValidationAction):
         if not slot_value:
             return VoteDialogue.restart_vote_form_slots()
 
-        ej_api_error_manager = EJApiErrorManager()
+        ej_client_error_manager = EJClientErrorManager()
         user = User(tracker)
         conversation = Conversation(tracker)
 
@@ -146,12 +146,12 @@ class ValidateVoteForm(FormValidationAction):
             try:
                 vote.create(tracker.get_slot("current_comment_id"))
             except EJCommunicationError:
-                return ej_api_error_manager.get_slots(as_dict=True)
+                return ej_client_error_manager.get_slots(as_dict=True)
 
             try:
                 statistics = conversation.get_participant_statistics()
             except EJCommunicationError:
-                return ej_api_error_manager.get_slots(as_dict=True)
+                return ej_client_error_manager.get_slots(as_dict=True)
 
             checkers = self.get_checkers(
                 tracker,

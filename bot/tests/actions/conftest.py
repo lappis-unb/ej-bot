@@ -193,7 +193,7 @@ def livechat_metadata():
 
 
 @pytest.fixture
-def mock_ej_api_response():
+def mock_ej_client_response():
     return {
         "user": 1,
         "phone_number": "123456789",
@@ -225,20 +225,19 @@ mock_json_content = """
 
 
 @pytest.fixture
-def mock_profile(mock_ej_api_response, tracker):
-    with patch("bot.ej.profile.EjApi.request") as mock_request, patch(
+def mock_profile(mock_ej_client_response, tracker):
+    with patch("bot.ej.profile.EjClient.request") as mock_request, patch(
         "bot.ej.profile.Profile.send_answer"
     ) as mock_send_answer, patch(
-        "bot.ej.ej_api.EjApi._refresh_access_token"
+        "bot.ej.ej_client.EjClient._refresh_access_token"
     ) as mock_refresh_token, patch(
         "builtins.open", mock_open(read_data=mock_json_content)
     ):
-
-        mock_request.return_value.json.return_value = mock_ej_api_response
+        mock_request.return_value.json.return_value = mock_ej_client_response
         mock_request.return_value.status_code = 200
         mock_send_answer.return_value = Mock(status_code=200)
         mock_refresh_token.return_value = None
 
         mock_profile = Profile(tracker)
-        mock_profile.ej_api.access_token = "mock_access_token"
+        mock_profile.ej_client.access_token = "mock_access_token"
         return mock_profile

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.checkers.api_error_checker import EJClientErrorManager
 from actions.checkers.profile_actions_checkers import CheckSlotsInterface
 from ej.comment import CommentDialogue
 from ej.conversation import Conversation
@@ -48,8 +48,8 @@ class CheckNextCommentSlots(CheckSlotsInterface):
                 self.dispatcher.utter_message(response="utter_thanks_participation")
                 self.slots = VoteDialogue.completed_vote_form_slots(SlotsType.LIST)
         except EJCommunicationError:
-            ej_api_error_manager = EJApiErrorManager()
-            self.slots = ej_api_error_manager.get_slots()
+            ej_client_error_manager = EJClientErrorManager()
+            self.slots = ej_client_error_manager.get_slots()
         return True
 
     def _dispatch_messages(
@@ -93,8 +93,8 @@ class CheckNeedToAskAboutProfile(CheckSlotsInterface):
         try:
             profile = Profile(self.tracker)
         except EJCommunicationError:
-            ej_api_error_manager = EJApiErrorManager()
-            self.slots = ej_api_error_manager.get_slots()
+            ej_client_error_manager = EJClientErrorManager()
+            self.slots = ej_client_error_manager.get_slots()
             return True
         response, next = profile.need_to_ask_about_profile(
             self.conversation, self.conversation_statistics, self.tracker

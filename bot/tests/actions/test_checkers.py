@@ -5,9 +5,8 @@ from actions.checkers.vote_actions_checkers import (
     CheckNextCommentSlots,
     CheckUserCanAddCommentsSlots,
 )
-from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.checkers.api_error_checker import EJClientErrorManager
 from ej.vote import SlotsType
-from ej.user import User
 
 
 class TestCheckRemainingCommentsSlots:
@@ -129,13 +128,13 @@ class TestCheckExternalAuthenticationSlots:
 
 class TestEJApiErrorManager:
     def test_get_slots(self):
-        ej_api_error_manager = EJApiErrorManager()
-        slots = ej_api_error_manager.get_slots()
+        ej_client_error_manager = EJClientErrorManager()
+        slots = ej_client_error_manager.get_slots()
         assert slots[0].get("value") == "-"
         assert slots[1].get("value") == True
 
     def test_get_slots_as_dict(self):
-        ej_api_error_manager = EJApiErrorManager()
-        slots = ej_api_error_manager.get_slots(as_dict=True)
+        ej_client_error_manager = EJClientErrorManager()
+        slots = ej_client_error_manager.get_slots(as_dict=True)
         assert slots.get("vote") == "-"
-        assert slots.get("ej_api_connection_error") == True
+        assert slots.get("ej_client_connection_error") == True

@@ -1,4 +1,4 @@
-from ej.ej_api import EjApi
+from ej.ej_client import EjClient
 from ej.conversation import Conversation
 
 
@@ -19,7 +19,7 @@ class TestConversation:
         assert conversation.text == "Test Title"
         assert conversation.participant_can_add_comments
         assert conversation.anonymous_votes_limit == 5
-        assert isinstance(conversation.ej_api, EjApi)
+        assert isinstance(conversation.ej_client, EjClient)
 
     def test_create_conversation_without_api_data(self, tracker):
         conversation = Conversation(tracker)

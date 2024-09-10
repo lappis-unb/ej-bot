@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from actions.checkers.api_error_checker import EJApiErrorManager
+from actions.checkers.api_error_checker import EJClientErrorManager
 from actions.base_actions import CheckSlotsInterface
 from ej.settings import EJCommunicationError
 from ej.vote import VoteDialogue
@@ -20,8 +20,8 @@ class CheckNextProfileQuestionSlots(CheckSlotsInterface):
         try:
             message, id = profile.get_next_question()
         except EJCommunicationError:
-            ej_api_error_manager = EJApiErrorManager()
-            return ej_api_error_manager.get_slots()
+            ej_client_error_manager = EJClientErrorManager()
+            return ej_client_error_manager.get_slots()
 
         self._dispatch_messages(message)
         self._set_slots(id)
@@ -51,8 +51,8 @@ class CheckValidateProfileQuestion(CheckSlotsInterface):
 
         if not response:
             if err:
-                ej_api_error_manager = EJApiErrorManager()
-                self.slots = ej_api_error_manager.get_slots(as_dict=True)
+                ej_client_error_manager = EJClientErrorManager()
+                self.slots = ej_client_error_manager.get_slots(as_dict=True)
             else:
                 message = {
                     "response": "utter_profile_fallback",

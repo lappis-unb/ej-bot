@@ -22,7 +22,7 @@ slots:
     influence_conversation: false
     mappings:
     - type: custom
-  ej_api_connection_error:
+  ej_client_connection_error:
     type: bool
     initial_value: false
     influence_conversation: true

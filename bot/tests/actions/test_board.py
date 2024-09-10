@@ -2,13 +2,13 @@ import pytest
 from unittest.mock import MagicMock, patch
 from ej.boards import Board
 from ej.conversation import Conversation
-from ej.ej_api import EjApi
+from ej.ej_client import EjClient
 
 
 class TestBoard:
-    @patch("ej.boards.EjApi")
-    def test_board_initialization(self, MockEjApi, tracker):
-        mock_api_instance = MockEjApi.return_value
+    @patch("ej.boards.EjClient")
+    def test_board_initialization(self, MockEjClient, tracker):
+        mock_api_instance = MockEjClient.return_value
         mock_api_instance.request.return_value.json.return_value = {
             "title": "Test Board",
             "description": "Test Description",
@@ -23,10 +23,10 @@ class TestBoard:
         assert isinstance(board.conversations, list)
         assert len(board.conversations) == 0
 
-    @patch("ej.boards.EjApi")
+    @patch("ej.boards.EjClient")
     @patch("ej.boards.Conversation")
-    def test_set_board(self, MockConversation, MockEjApi, tracker):
-        mock_api_instance = MockEjApi.return_value
+    def test_set_board(self, MockConversation, MockEjClient, tracker):
+        mock_api_instance = MockEjClient.return_value
         mock_api_instance.request.return_value.json.return_value = {
             "title": "Test Board",
             "description": "Test Description",

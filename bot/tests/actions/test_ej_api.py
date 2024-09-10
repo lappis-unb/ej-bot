@@ -18,15 +18,15 @@ SENDER_ID = "mock_rasa_sender_id"
 class TestAPIClass:
     """tests ej.api API class"""
 
-    @patch("bot.ej.ej_api.requests.post")
+    @patch("bot.ej.ej_client.requests.post")
     def test_create_user_in_ej_with_rasa_id(self, mock_post, tracker):
         mock_post.return_value = Mock(ok=True)
         user = User(tracker)
         user.authenticate()
-        assert user.ej_api.access_token == "1234"
+        assert user.ej_client.access_token == "1234"
         assert user.name == "mr_davidCarlos"
 
-    @patch("bot.ej.ej_api.requests.get")
+    @patch("bot.ej.ej_client.requests.get")
     def test_get_random_comment_in_ej(self, mock_get, tracker):
         response_value = {
             "content": "This is the comment text",
@@ -40,14 +40,14 @@ class TestAPIClass:
         assert response["content"] == response_value["content"]
         assert response["id"] == "1"
 
-    @patch("bot.ej.ej_api.requests.get")
+    @patch("bot.ej.ej_client.requests.get")
     def test_get_random_comment_in_ej_forbidden_response(self, mock_get, tracker):
         mock_get.return_value.status_code = 500
         with pytest.raises(EJCommunicationError):
             conversation = Conversation(tracker)
             conversation.get_next_comment()
 
-    @patch("bot.ej.ej_api.requests.get")
+    @patch("bot.ej.ej_client.requests.get")
     def test_get_user_conversation_statistics(self, mock_get, tracker):
         statistics_mock = {
             "votes": 3,
@@ -60,7 +60,7 @@ class TestAPIClass:
         assert response["votes"] == statistics_mock["votes"]
         assert response["missing_votes"] == statistics_mock["missing_votes"]
 
-    @patch("bot.ej.ej_api.requests.get")
+    @patch("bot.ej.ej_client.requests.get")
     def test_get_user_conversation_statistics_error_status(self, mock_get, tracker):
         mock_get.return_value = Mock(status=404), "not found"
         with pytest.raises(EJCommunicationError):

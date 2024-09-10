@@ -1,15 +1,32 @@
 import json
+from bot.ej.settings import SECRET_KEY
 import pytest
 
 from bot.ej.user import User
 
 
 class TestUser:
+    def test_get_password_hash(self, tracker):
+        import base64
+        import hashlib
+
+        user = User(tracker)
+
+        # create a byte string for the password seed
+        seed = f"{user.sender_id}{SECRET_KEY}".encode()
+
+        # encode the seed using base64 lib
+        seed_base64 = base64.b64encode(seed)
+
+        # encrypt the base64 seed with sha256 algorithm
+        password = hashlib.sha256(seed_base64).hexdigest()
+
+        assert user._get_password() == password
+
     def test_generate_password(self, tracker):
         user = User(tracker)
-        user._set_password()
-        assert user.password == user._get_password_hash()
-        assert user.password_confirm == user._get_password_hash()
+        assert user.password == user._get_password()
+        assert user.password_confirm == user._get_password()
 
     def test_generate_password_raises_error(self, tracker):
         user = User(tracker)

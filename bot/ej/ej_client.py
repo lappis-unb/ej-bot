@@ -9,9 +9,9 @@ from .routes import HEADERS, auth_headers, refresh_token_route
 
 
 @dataclass
-class EjApi:
+class EjClient:
     """
-    EjApi manages the requests sent to the EJ API. It also renew the access token when necessary.
+    EjClient manages the requests sent to the EJ API. It also renew the access token when necessary.
     """
 
     tracker: Tracker

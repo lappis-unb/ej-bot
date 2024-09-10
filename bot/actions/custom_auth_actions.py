@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Text
 
 from ej.conversation import Conversation
 from ej.settings import EJCommunicationError
-from ej.user import CheckAuthenticationDialogue, ExternalAuthorizationService, User
+from ej.user import CheckAuthenticationDialogue, ExternalAuthenticationManager, User
 from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.events import EventType
 from rasa_sdk.executor import CollectingDispatcher
@@ -20,7 +20,6 @@ class ValidateAuthenticationForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-
         return {}
 
     def validate_check_authentication(
@@ -30,7 +29,6 @@ class ValidateAuthenticationForm(FormValidationAction):
         tracker: Tracker,
         domain: DomainDict,
     ) -> Dict[Text, Any]:
-
         if not slot_value:
             return {}
 
@@ -70,7 +68,7 @@ class ActionAskHasCompletedRegistration(Action):
     ) -> List[EventType]:
         try:
             user = User(tracker)
-            authorization_service = ExternalAuthorizationService(
+            authorization_service = ExternalAuthenticationManager(
                 tracker.sender_id, user.secret_id
             )
             auth_link = authorization_service.get_authentication_link()

@@ -7,12 +7,12 @@ from actions.logger import custom_logger
 from ej.routes import my_profile_route, profiles_route
 
 from .conversation import Conversation
-from .ej_api import EjApi
+from .ej_client import EjClient
 
 
 class Profile:
     def __init__(self, tracker):
-        self.ej_api: EjApi = EjApi(tracker)
+        self.ej_client: EjClient = EjClient(tracker)
         self.questions: Question = []
         self.get_profile()
         self.set_attributes()
@@ -22,7 +22,7 @@ class Profile:
         """
         get profile by ej-api
         """
-        response = self.ej_api.request(my_profile_route())
+        response = self.ej_client.request(my_profile_route())
         data = response.json()
         self.user = data["user"]
         self.phone_number = data["phone_number"]
@@ -185,7 +185,7 @@ class Profile:
         data = {question.put_payload: answer}
         custom_logger(f"Sending answer {data} to ej-api")
         json_data = json.dumps(data)
-        response = self.ej_api.request(self.put_url(), json_data, put=True)
+        response = self.ej_client.request(self.put_url(), json_data, put=True)
         custom_logger(f"Response: {response.json()}")
         return response
 
