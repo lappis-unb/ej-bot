@@ -100,14 +100,9 @@ class CheckNeedToAskAboutProfile(CheckSlotsInterface):
             self.conversation, self.conversation_statistics, self.tracker
         )
         if response:
-            self._dispatch_messages(profile)
             self.set_slots(next=next)
             return True
         return False
-
-    def _dispatch_messages(self, profile: Profile):
-        if len(profile.remaining_questions) == len(profile.questions):
-            self.dispatcher.utter_message(response="utter_profile_intro")
 
     def set_slots(self, next):
         match self.slots_type:

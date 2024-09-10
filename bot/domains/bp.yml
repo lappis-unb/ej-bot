@@ -369,8 +369,6 @@ responses:
   - text: "Muito obrigado! Validei sua autenticação, podemos continuar."
   utter_error_during_authentication_validation:
   - text: "Não consegui identificar que você se autenticou. Poderia tentar novamente?"
-  utter_profile_intro:
-  - text: Para personalizar essa experiência, gostaríamos de saber um pouquinho mais sobre você. Tudo bem?
   utter_profile_received:
   - text: Obrigada por responder! 😊
   - text: Anotado! 😊
