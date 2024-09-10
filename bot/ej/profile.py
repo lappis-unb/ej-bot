@@ -126,9 +126,7 @@ class Profile:
             return False, -1
 
         if conversation.send_profile_question:
-            current_votes = Conversation.get_voted_comments(
-                conversation_statistics
-            )
+            current_votes = Conversation.get_voted_comments(conversation_statistics)
             votes_to_send_profile_questions = (
                 conversation.votes_to_send_profile_questions
             )
