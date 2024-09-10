@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.7 - Sep 09, 2024
+
+### Added
+
+- Add Rasa Rule to stop the conversation.
+
+### Changed
+
+- Refactoring the Actions module to use the checker architecture.
+- Updates bp.yml responses.
+- Improves the integration between Rasa Actions and NLU.
+
 ## 0.4.6 - Sep 03, 2024
 
 ### Changed
