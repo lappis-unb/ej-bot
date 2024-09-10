@@ -1,5 +1,5 @@
 image:
-  name: rasa/rasa:3.3.6
+  name: rasa/rasa:3.6.20
   entrypoint: [""]
 
 services:

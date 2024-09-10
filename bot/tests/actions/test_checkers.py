@@ -11,8 +11,7 @@ from ej.user import User
 
 
 class TestCheckRemainingCommentsSlots:
-    def test_initialization(self, tracker, dispatcher):
-
+    def test_initialization(self, tracker, dispatcher, conversation_statistics):
         with pytest.raises(Exception):
             checker = CheckRemainingCommentsSlots(
                 dispatcher=dispatcher,
@@ -21,18 +20,20 @@ class TestCheckRemainingCommentsSlots:
             )
             checker.has_slots_to_return()
 
+        conversation_statistics["missing_votes"] = 1
         checker = CheckRemainingCommentsSlots(
             dispatcher=dispatcher,
-            conversation_statistics={"missing_votes": 1},
+            conversation_statistics=conversation_statistics,
             slots_type=SlotsType.DICT,
         )
 
         assert checker.has_slots_to_return()
         assert type(checker.slots) == dict
 
+        conversation_statistics["missing_votes"] = 0
         checker = CheckRemainingCommentsSlots(
             dispatcher=dispatcher,
-            conversation_statistics={"missing_votes": 0},
+            conversation_statistics=conversation_statistics,
             slots_type=SlotsType.LIST,
         )
 
