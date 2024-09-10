@@ -136,13 +136,9 @@ class CheckExternalAuthenticationSlots(CheckSlotsInterface):
             anonymous_votes_limit,
             self.conversation_statistics,
         ):
-            self._dispatch_messages()
             self.set_slots()
             return True
         return False
-
-    def _dispatch_messages(self):
-        self.dispatcher.utter_message(response="utter_vote_limit_anonymous_reached")
 
     def set_slots(self):
         match self.slots_type:
