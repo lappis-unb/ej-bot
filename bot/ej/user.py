@@ -111,10 +111,6 @@ class ExternalAuthenticationManager:
 
 
 class User:
-    """
-    For telegram channel, tracker_sender_id is the unique ID from the user talking with the bot.
-    """
-
     ANONYMOUS_USER_NAME = "Participante anônimo"
 
     def __init__(self, tracker: Any):
@@ -136,8 +132,27 @@ class User:
         if SECRET_KEY and self.sender_id:
             seed = f"{self.sender_id}{SECRET_KEY}".encode()
             seed_base64 = base64.b64encode(seed)
-            return hashlib.sha256(seed_base64).hexdigest()
+            ruby_compatible_base64 = self.get_base64_ruby_compatible_format(
+                seed_base64.decode()
+            )
+            return hashlib.sha256(ruby_compatible_base64.encode()).hexdigest()
         raise Exception("could not generate user password")
+
+    def get_base64_ruby_compatible_format(self, seed_base64: Text):
+        """
+         this is a hacking to generate the same Decidim encoded string for the user password.
+         At each 60 characters, we need to insert a \n character.
+         Also, a \n character must be inserted at the end of the base64 compatible version.
+
+        https://ruby-doc.org/stdlib-2.5.3/libdoc/base64/rdoc/Base64.html
+        """
+        ruby_compatible_base64 = ""
+        for count, char in enumerate(list(seed_base64)):
+            ruby_compatible_base64 += char
+            if not (count + 1) % 60:
+                ruby_compatible_base64 += "\n"
+        ruby_compatible_base64 += "\n"
+        return ruby_compatible_base64
 
     def registration_data(self):
         return json.dumps(

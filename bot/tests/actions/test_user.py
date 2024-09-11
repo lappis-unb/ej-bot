@@ -47,11 +47,18 @@ class TestUser:
 
         # encode the seed using base64 lib
         seed_base64 = base64.b64encode(seed)
+        assert len(seed_base64) == 192
+
+        base64_ruby_compatible_format = user.get_base64_ruby_compatible_format(
+            seed_base64.decode()
+        )
+        assert len(base64_ruby_compatible_format) == 196
 
         # encrypt the base64 seed with sha256 algorithm
-        password = hashlib.sha256(seed_base64).hexdigest()
+        password = hashlib.sha256(base64_ruby_compatible_format.encode()).hexdigest()
 
         assert user._get_password() == password
+        assert len(user._get_password()) == 64
 
     def test_generate_password(self, tracker):
         user = User(tracker)
@@ -62,12 +69,12 @@ class TestUser:
         user = User(tracker)
         user.sender_id = None
         with pytest.raises(Exception):
-            user._set_password()
+            user._get_password()
 
     def test_creating_user(self, tracker):
         user = User(tracker)
         assert user.name == "mr_davidCarlos"
-        assert user.email == f"1234-opinion-bot@mail.com"
+        assert user.email == f"5561981178174-opinion-bot@mail.com"
 
     def test_serializing_user(self, tracker):
         user = User(tracker)

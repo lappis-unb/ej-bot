@@ -92,7 +92,7 @@ def tracker(conversation_statistics):
         return slots[slot]
 
     tracker = Mock()
-    tracker.sender_id = "1234"
+    tracker.sender_id = "+5561981178174"
     tracker.conversation_statistics = conversation_statistics
     tracker.get_slot = lambda x: "1234"
     tracker.get_latest_input_channel = lambda: "whatsapp"
