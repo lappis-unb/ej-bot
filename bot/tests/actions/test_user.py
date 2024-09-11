@@ -2,7 +2,8 @@ import json
 from bot.ej.settings import SECRET_KEY
 import pytest
 
-from bot.ej.user import CheckAuthenticationDialogue, User
+from bot.ej.auth import CheckAuthenticationDialogue
+from bot.ej.user import User
 
 
 class TestCheckAuthenticationDialogue:
