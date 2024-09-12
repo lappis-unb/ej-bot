@@ -43,9 +43,9 @@ class User:
 
     def get_base64_ruby_compatible_format(self, seed_base64: Text):
         """
-         this is a hacking to generate the same Decidim encoded string for the user password.
-         At each 60 characters, we need to insert a \n character.
-         Also, a \n character must be inserted at the end of the base64 compatible version.
+         this is a hack to generate the same Decidim-encoded string for the user password.
+         Every 60 characters, we need to insert a \n character in the Python base64-encoded string.
+         Also, a \n character must be inserted at the end.
 
         https://ruby-doc.org/stdlib-2.5.3/libdoc/base64/rdoc/Base64.html
         """
