@@ -4,7 +4,7 @@ import json
 from typing import Any, Text
 
 from actions.logger import custom_logger
-from bot.ej.auth import ExternalAuthenticationManager
+from ej.auth import ExternalAuthenticationManager
 from ej.ej_client import EjClient
 
 from .routes import auth_route, registration_route

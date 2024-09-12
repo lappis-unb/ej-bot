@@ -69,10 +69,10 @@ class ActionAskHasCompletedRegistration(Action):
     ) -> List[EventType]:
         try:
             user = User(tracker)
-            authorization_service = ExternalAuthenticationManager(
+            authentication_manager = ExternalAuthenticationManager(
                 tracker.sender_id, user.secret_id
             )
-            auth_link = authorization_service.get_authentication_link()
+            auth_link = authentication_manager.get_authentication_link()
             message = CheckAuthenticationDialogue.get_message()
             dispatcher.utter_message(response="utter_get_token", auth_link=auth_link)
             dispatcher.utter_message(**message)

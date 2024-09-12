@@ -11,11 +11,11 @@ from ej.settings import EJCommunicationError, BOARD_ID, CONVERSATION_ID
 
 
 def get_slots(conversation: Conversation, user: User):
-    authorization_service = ExternalAuthenticationManager(
+    authentication_manager = ExternalAuthenticationManager(
         user.tracker.sender_id, user.secret_id
     )
     return [
-        SlotSet("auth_link", authorization_service.get_authentication_link()),
+        SlotSet("auth_link", authentication_manager.get_authentication_link()),
         SlotSet("conversation_id", conversation.id),
         SlotSet("conversation_text", conversation.text),
         SlotSet("anonymous_votes_limit", conversation.anonymous_votes_limit),
